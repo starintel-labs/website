@@ -1,0 +1,18 @@
+{
+  "name": "@starintel/blog",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "blog.starintel.actor - longform Org technical blog",
+  "scripts": {
+    "build": "node --experimental-strip-types build.ts",
+    "test": "true",
+    "lint": "true",
+    "typecheck": "true"
+  },
+  "devDependencies": {
+    "@starintel/content": "workspace:*",
+    "@starintel/seo": "workspace:*",
+    "@starintel/ui": "workspace:*"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "slug": "resume",
+  "title": "Resume",
+  "date": null,
+  "author": null,
+  "description": "nsaspy - systems and intelligence tooling engineer. Common Lisp, Nim, Prolog, Python, Elisp.",
+  "excerpt": "Systems and intelligence tooling engineer. I build StarIntel, a local-first, document-driven intelligence platform that combines symbolic AI - expert systems, Prolog planning and verification, actor-based orchestration - with statistical models where they earn their place.",
+  "tags": [],
+  "filetags": ":nsaspy:resume:",
+  "id": "nsaspy-resume",
+  "status": null,
+  "anchors": [
+    "nsaspy",
+    "selected-work",
+    "starintel-platform-2023-present",
+    "infrastructure-and-delivery",
+    "skills",
+    "principles"
+  ],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+    "path": "nsaspy/resume.org",
+    "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+    "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+    "content_sha256": "159cfd32e30bd7871dd02e926d39a8473f9ea95a78b9747a1fe9adcb9a8e9879"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@starintel/content",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Generated-content readers, manifest types, and static page rendering for StarIntel web properties",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@starintel/seo": "workspace:*",
+    "@starintel/ui": "workspace:*"
+  },
+  "scripts": {
+    "build": "true",
+    "test": "node --experimental-strip-types --test src/*.test.ts",
+    "lint": "true",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.7.2"
+  }
+}

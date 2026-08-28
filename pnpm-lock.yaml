@@ -15,6 +15,9 @@ importers:
       '@types/node':
         specifier: ^24.0.0
         version: 24.13.3
+      pnpm:
+        specifier: 11.24.0
+        version: 11.24.0
       prettier:
         specifier: ^3.4.2
         version: 3.9.6
@@ -24,6 +27,18 @@ importers:
       vitest:
         specifier: ^3.0.0
         version: 3.2.7(@types/node@24.13.3)
+
+  apps/blog:
+    devDependencies:
+      '@starintel/content':
+        specifier: workspace:*
+        version: link:../../packages/content
+      '@starintel/seo':
+        specifier: workspace:*
+        version: link:../../packages/seo
+      '@starintel/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
 
   apps/main:
     dependencies:
@@ -40,6 +55,9 @@ importers:
         specifier: ^0.10.9
         version: 0.10.9
     devDependencies:
+      '@starintel/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@types/amqplib':
         specifier: ^0.10.7
         version: 0.10.8
@@ -49,6 +67,34 @@ importers:
       vite:
         specifier: ^7.0.0
         version: 7.3.6(@types/node@24.13.3)
+
+  apps/nsaspy:
+    devDependencies:
+      '@starintel/content':
+        specifier: workspace:*
+        version: link:../../packages/content
+      '@starintel/seo':
+        specifier: workspace:*
+        version: link:../../packages/seo
+      '@starintel/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+
+  packages/content:
+    dependencies:
+      '@starintel/seo':
+        specifier: workspace:*
+        version: link:../seo
+      '@starintel/ui':
+        specifier: workspace:*
+        version: link:../ui
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
 
   packages/seo:
     devDependencies:
@@ -544,6 +590,11 @@ packages:
     resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
 
+  pnpm@11.24.0:
+    resolution: {integrity: sha512-vSfjRel23LC+C3oSKCF7BJqBfiGx81XJDb59xGZxiVqLwebQbCRVRQXqk+oLRfSJon7Bv7yN5qlln8oPFvoAAA==}
+    engines: {node: '>=22.13'}
+    hasBin: true
+
   postcss@8.5.26:
     resolution: {integrity: sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==}
     engines: {node: ^10 || ^12 || >=14}
@@ -1025,6 +1076,8 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@4.0.7: {}
+
+  pnpm@11.24.0: {}
 
   postcss@8.5.26:
     dependencies:

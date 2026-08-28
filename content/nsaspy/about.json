@@ -1,0 +1,21 @@
+{
+  "slug": "about",
+  "title": "About",
+  "date": null,
+  "author": null,
+  "description": "nsaspy - builder of StarIntel, a symbolic AI intelligence platform.",
+  "excerpt": "I build StarIntel: a local-first, document-driven intelligence platform. The thesis is simple: language models are useful components, but reasoning, planning, and verification belong to symbolic systems.",
+  "tags": [],
+  "filetags": ":nsaspy:about:",
+  "id": "nsaspy-about",
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+    "path": "nsaspy/about.org",
+    "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+    "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+    "content_sha256": "cd41dc511a4fdfb790038bd887d91142425988b6e2640e3cfce12cfed56412f2"
+  }
+}
