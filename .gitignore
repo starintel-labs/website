@@ -1,0 +1,29 @@
+# Generated build output
+dist/
+_site/
+out/
+.vite/
+node_modules/
+*.tsbuildinfo
+
+# Emacs
+*~
+\#*\#
+.\#*
+.cache/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Nix
+result
+result-*
+.direnv/
+
+# OS
+.DS_Store
+
+# Local state
+/var/

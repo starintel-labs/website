@@ -1,0 +1,59 @@
+/*
+ * StarIntel design tokens.
+ * Visual DNA shared with the Quasar operator interface: deep surfaces,
+ * gold signal accents, cyan telemetry, restrained glow, technical density.
+ */
+:root {
+  /* Surfaces */
+  --si-shell: #050a11;
+  --si-shell-raised: #08111d;
+  --si-panel: #0b1624;
+  --si-panel-2: #101d2d;
+  --si-line: #24364c;
+  --si-line-faint: #16283c;
+
+  /* Text */
+  --si-text: #dce7f2;
+  --si-text-strong: #f4f8fc;
+  --si-muted: #8da2b8;
+  --si-faint: #5c7188;
+
+  /* Signals */
+  --si-gold: #f6c945;
+  --si-gold-strong: #ffd95a;
+  --si-gold-dim: #8a6f1d;
+  --si-cyan: #38bdf8;
+  --si-danger: #fb7185;
+  --si-warning: #f59e0b;
+  --si-success: #22c55e;
+
+  /* Glow */
+  --si-glow-gold: 0 0 18px rgba(246, 201, 69, 0.16);
+  --si-glow-cyan: 0 0 18px rgba(56, 189, 248, 0.14);
+
+  /* Geometry */
+  --si-radius: 7px;
+  --si-radius-lg: 11px;
+  --si-topbar-height: 56px;
+  --si-maxw: 1180px;
+
+  /* Type */
+  --si-font-mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular,
+    Menlo, Consolas, monospace;
+  --si-font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", sans-serif;
+  --si-font-serif: "Charter", "Bitstream Charter", "Sitka Text", Cambria,
+    Georgia, serif;
+
+  /* Motion */
+  --si-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --si-fast: 140ms;
+  --si-slow: 380ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --si-fast: 0ms;
+    --si-slow: 0ms;
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@starintel/seo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared SEO helpers: meta, canonical, Open Graph, JSON-LD",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "true",
+    "test": "node --experimental-strip-types --test src/*.test.ts",
+    "lint": "true",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
