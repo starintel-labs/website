@@ -13,6 +13,8 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import type { ValidateFunction } from "ajv";
 
+export * from "./public.ts";
+
 export const STARINTEL_V09_SCHEMA_VERSION = "0.9.0";
 
 /** Required envelope fields per StarIntel v0.9. */

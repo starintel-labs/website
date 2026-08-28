@@ -1,0 +1,11 @@
+{
+  "extends": "../../packages/config/tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["vite/client"],
+    "paths": {
+      "@starintel/ui/*": ["../../packages/ui/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "server/**/*.ts", "vite.config.ts"]
+}

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#050a11" />
+    <meta
+      name="description"
+      content="StarIntel radar: live aggregate activity of the platform, projected through a strict public-safe allowlist."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://starintel.actor/radar" />
+    <meta name="robots" content="noindex" />
+    <meta property="og:title" content="StarIntel Radar" />
+    <meta property="og:type" content="website" />
+    <title>Radar — StarIntel</title>
+  </head>
+  <body>
+    <header class="si-topbar">
+      <a class="si-topbar__brand" href="/" aria-label="StarIntel home" data-wordmark></a>
+      <nav class="si-topbar__nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/research/">Research</a>
+        <a href="/radar" aria-current="page">Radar</a>
+        <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">Blog</a>
+      </nav>
+    </header>
+
+    <main class="si-shell si-section">
+      <div class="si-section__head">
+        <h2 class="si-section__title">Radar</h2>
+        <span class="si-chip si-chip--live" id="radar-status" data-state="connecting">connecting</span>
+      </div>
+      <div class="si-grid" style="grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr)">
+        <div class="si-panel" style="padding: 0.6rem">
+          <canvas
+            id="radar-canvas"
+            width="1200"
+            height="1200"
+            style="width: 100%; height: auto; display: block; border-radius: 8px"
+            role="img"
+            aria-label="Live radar visualization of StarIntel event activity"
+          >
+          </canvas>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1rem">
+          <div class="si-panel">
+            <div class="faint mono" style="font-size: 0.72rem; letter-spacing: 0.12em">
+              EVENTS / SECOND
+            </div>
+            <div class="mono gold" style="font-size: 2.2rem" id="radar-rate">—</div>
+            <div class="faint mono" style="font-size: 0.75rem" id="radar-total">0 events observed</div>
+          </div>
+          <div class="si-panel">
+            <div class="faint mono" style="font-size: 0.72rem; letter-spacing: 0.12em; margin-bottom: 0.6rem">
+              EVENT FAMILIES
+            </div>
+            <div id="radar-families" style="display: flex; flex-direction: column; gap: 0.45rem"></div>
+          </div>
+          <div class="si-panel">
+            <div class="faint mono" style="font-size: 0.72rem; letter-spacing: 0.12em; margin-bottom: 0.6rem">
+              PAYLOAD VOLUME
+            </div>
+            <div id="radar-sizes" style="display: flex; gap: 0.4rem; flex-wrap: wrap"></div>
+          </div>
+        </div>
+      </div>
+      <p class="faint" style="font-size: 0.82rem; max-width: 60rem">
+        The browser receives only aggregate, allowlisted fields: timestamps, event family, public
+        document type, payload-size bucket, and counts. The projector processing the full event
+        stream fails closed on anything it does not recognize. Raw messages never leave the
+        private network.
+      </p>
+    </main>
+
+    <footer class="si-footer">
+      <div class="si-shell">
+        <span><span data-wordmark-sm></span></span>
+        <span><a href="/">starintel.actor</a></span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/radar.ts"></script>
+  </body>
+</html>
