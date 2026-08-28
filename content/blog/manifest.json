@@ -1,0 +1,41 @@
+{
+  "target": "blog",
+  "generated_at": "2026-08-28T06:20:56.470Z",
+  "source_commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+  "count": 1,
+  "documents": [
+    {
+      "slug": "bootstrapping-the-starintel-web-platform",
+      "title": "Bootstrapping the StarIntel web platform",
+      "date": "[2026-08-28 Fri]",
+      "author": "nsaspy",
+      "description": "How the StarIntel website platform is being built: Org as the source of truth, deterministic export, Prolog verification, and a fail-closed publication gate.",
+      "excerpt": "Every editorial surface of the new StarIntel web platform - the blog, the research index, the nsaspy site - is authored in Org mode. The workflow is deliberately boring:",
+      "tags": [
+        "starintel",
+        "website",
+        "org",
+        "prolog",
+        "publishing"
+      ],
+      "filetags": null,
+      "id": null,
+      "status": null,
+      "anchors": [
+        "org-is-the-source-of-truth",
+        "deterministic-export",
+        "publication-is-a-gate-not-a-default",
+        "the-website-as-a-system",
+        "what-verifies-the-whole-thing"
+      ],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "blog/posts/2026-08-28-bootstrapping-the-starintel-web-platform.org",
+        "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "blob": null,
+        "content_sha256": "3fa138f2488ff2fe21b3c93c406781aacb055c18f18298f676072f8f66e8c305"
+      }
+    }
+  ]
+}

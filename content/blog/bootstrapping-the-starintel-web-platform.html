@@ -1,0 +1,113 @@
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org36211e4">Org is the source of truth</a></li>
+<li><a href="#org449a05e">Deterministic export</a></li>
+<li><a href="#org93c8a14">Publication is a gate, not a default</a></li>
+<li><a href="#orgfa9e75b">The website as a system</a></li>
+<li><a href="#org68d98ab">What verifies the whole thing</a></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org36211e4" class="outline-2">
+<h2 id="org-is-the-source-of-truth">Org is the source of truth</h2>
+<div class="outline-text-2" id="text-org36211e4">
+<p>
+Every editorial surface of the new StarIntel web platform - the blog, the
+research index, the nsaspy site - is authored in Org mode. The workflow is
+deliberately boring:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-text">open Emacs
+write Org
+save
+run the publisher
+done
+</pre>
+</div>
+
+<p>
+No CMS, no markdown drift, no content database. Org files live in the
+repositories that own them; the website consumes deterministic exports.
+</p>
+</div>
+</div>
+<div id="outline-container-org449a05e" class="outline-2">
+<h2 id="deterministic-export">Deterministic export</h2>
+<div class="outline-text-2" id="text-org449a05e">
+<p>
+The exporter is an Emacs batch process with exactly one job per file:
+produce a body-only HTML fragment and a JSON metadata sidecar. Heading
+anchors are slugged from the heading text, so they survive content edits
+elsewhere in the document. Syntax highlighting comes from htmlize with CSS
+classes that the shared design system styles.
+</p>
+
+<p>
+The publisher then enriches every artifact with provenance before anything
+is written anywhere: source repository, path, commit, and a content hash.
+A published page always answers the question &ldquo;where exactly did this come
+from?&rdquo;
+</p>
+</div>
+</div>
+<div id="outline-container-org93c8a14" class="outline-2">
+<h2 id="publication-is-a-gate-not-a-default">Publication is a gate, not a default</h2>
+<div class="outline-text-2" id="text-org93c8a14">
+<p>
+Research content is different from editorial content. Auto Research produces
+documents continuously; none of it becomes public because a file exists.
+The pipeline enforces two independent conditions:
+</p>
+
+<ol class="org-ol">
+<li>the document&rsquo;s approval state must be APPROVED with recorded evidence
+(actor, evidence reference, decided date, pinned base commit and blob);</li>
+<li>the document must appear on an explicit allowlist in the publishing
+configuration.</li>
+</ol>
+
+<p>
+Both are checked before export. Both fail closed: an empty allowlist
+publishes nothing, and unknown approval states are treated as unapproved.
+The first public research corpus will be empty by default, and that is the
+correct starting state.
+</p>
+</div>
+</div>
+<div id="outline-container-orgfa9e75b" class="outline-2">
+<h2 id="the-website-as-a-system">The website as a system</h2>
+<div class="outline-text-2" id="text-orgfa9e75b">
+<p>
+The main site leads with symbolic AI because that is what StarIntel is:
+expert systems, Prolog planning and verification, actor orchestration, and
+structured v0.9 documents with provenance. The dynamic surfaces are narrow
+projections:
+</p>
+
+<ul class="org-ul">
+<li>recent documents sample from the newest one hundred public documents,
+through an allowlisted schema, never the raw database;</li>
+<li>/radar streams aggregate event rates through a private projector that
+fails closed on anything it does not recognize.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org68d98ab" class="outline-2">
+<h2 id="what-verifies-the-whole-thing">What verifies the whole thing</h2>
+<div class="outline-text-2" id="text-org68d98ab">
+<p>
+A Prolog knowledge base tracks the program itself: tasks, dependencies,
+completed state, and invariants. Verification gates the merge: no GitHub
+Actions anywhere, Forgejo workflows present, CI secrets referenced but never
+embedded, public pages free of internal hostnames, every published Org file
+carrying provenance. If an invariant fails, the build fails.
+</p>
+
+<p>
+That is the whole trick: make the rules executable, then obey them.
+</p>
+</div>
+</div>

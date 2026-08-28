@@ -1,0 +1,81 @@
+{
+  "target": "nsaspy",
+  "generated_at": "2026-08-28T06:20:16.653Z",
+  "source_commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+  "count": 3,
+  "documents": [
+    {
+      "slug": "2026-08-28",
+      "title": "2026-08-28",
+      "date": null,
+      "author": null,
+      "description": "Website platform bootstrap: monorepo, design system, Org publishing pipeline.",
+      "excerpt": "Kicked off the unified StarIntel web platform in earnest:",
+      "tags": [],
+      "filetags": ":nsaspy:daily:starintel:website:",
+      "id": "nsaspy-daily-2026-08-28",
+      "status": null,
+      "anchors": [
+        "website-platform-bootstrap"
+      ],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "nsaspy/daily/2026-08-28.org",
+        "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "content_sha256": "3294b7615ff1c1750f58f5a3c270752d226fc0bba787a7946f402590ac9d793a"
+      }
+    },
+    {
+      "slug": "prolog-rlm",
+      "title": "prolog-rlm",
+      "date": null,
+      "author": null,
+      "description": "Prolog reasoning and research-approval machinery that gates StarIntel publication.",
+      "excerpt": "Prolog is the control plane for StarIntel s reasoning about itself: task knowledge bases with dependency graphs, restartable state, invariant verification suites, and the research-approval machinery (prolog-rlm.research-approval.v1) that gates what the platform is allowed to publ",
+      "tags": [],
+      "filetags": ":nsaspy:projects:prolog:rlm:",
+      "id": "nsaspy-project-prolog-rlm",
+      "status": null,
+      "anchors": [
+        "prolog-rlm",
+        "what-it-does",
+        "why-prolog"
+      ],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "nsaspy/projects/prolog-rlm.org",
+        "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "content_sha256": "bc576fbb64435332742b79a59ae5c721e880dfb317b09099fcf95ad55bad48f6"
+      }
+    },
+    {
+      "slug": "starintel",
+      "title": "StarIntel",
+      "date": null,
+      "author": null,
+      "description": "Local-first, document-driven intelligence platform: symbolic AI, actors, structured documents.",
+      "excerpt": "A local-first, document-driven intelligence platform. StarIntel models knowledge explicitly, orchestrates work with actors, and verifies outcomes with Prolog.",
+      "tags": [],
+      "filetags": ":nsaspy:projects:starintel:",
+      "id": "nsaspy-project-starintel",
+      "status": null,
+      "anchors": [
+        "starintel",
+        "components",
+        "design-invariants"
+      ],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "nsaspy/projects/starintel.org",
+        "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "content_sha256": "aec84dc526bbb7bbf3e1d5ae0bc85961d7127a27f34779ae1826b8110d6847a2"
+      }
+    }
+  ]
+}

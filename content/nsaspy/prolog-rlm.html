@@ -1,0 +1,50 @@
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org6159b30">prolog-rlm</a>
+<ul>
+<li><a href="#org53122d9">What it does</a></li>
+<li><a href="#org4b71fea">Why Prolog</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org6159b30" class="outline-2">
+<h2 id="prolog-rlm">prolog-rlm</h2>
+<div class="outline-text-2" id="text-org6159b30">
+<p>
+Prolog is the control plane for StarIntel&rsquo;s reasoning about itself: task
+knowledge bases with dependency graphs, restartable state, invariant
+verification suites, and the research-approval machinery
+(<code>prolog-rlm.research-approval.v1</code>) that gates what the platform is allowed
+to publish.
+</p>
+</div>
+<div id="outline-container-org53122d9" class="outline-3">
+<h3 id="what-it-does">What it does</h3>
+<div class="outline-text-3" id="text-org53122d9">
+<ul class="org-ul">
+<li><b>Planning</b>: on-disk task KBs; <code>ready/1</code>, <code>blocked/2</code>, <code>next_task/1</code> derive
+executable order from declared dependencies and persisted progress.</li>
+<li><b>Verification</b>: invariant suites that fail non-zero - no GitHub Actions in
+CI, public radar schemas allowlisted, published Org carrying provenance,
+v0.9 documents validating.</li>
+<li><b>Approval</b>: lifecycle status (DRAFT, RESEARCHING, REVIEW, DONE) and
+approval state are independent dimensions; approval requires an actor,
+evidence, and pinned base commit/blob.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4b71fea" class="outline-3">
+<h3 id="why-prolog">Why Prolog</h3>
+<div class="outline-text-3" id="text-org4b71fea">
+<p>
+Because publication rules, invariants, and dependency ordering are logic.
+Encoding them in a general-purpose language invites drift; encoding them in
+Prolog makes the rules executable, inspectable, and falsifiable.
+</p>
+</div>
+</div>
+</div>

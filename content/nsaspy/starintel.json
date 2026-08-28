@@ -1,0 +1,25 @@
+{
+  "slug": "starintel",
+  "title": "StarIntel",
+  "date": null,
+  "author": null,
+  "description": "Local-first, document-driven intelligence platform: symbolic AI, actors, structured documents.",
+  "excerpt": "A local-first, document-driven intelligence platform. StarIntel models knowledge explicitly, orchestrates work with actors, and verifies outcomes with Prolog.",
+  "tags": [],
+  "filetags": ":nsaspy:projects:starintel:",
+  "id": "nsaspy-project-starintel",
+  "status": null,
+  "anchors": [
+    "starintel",
+    "components",
+    "design-invariants"
+  ],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+    "path": "nsaspy/projects/starintel.org",
+    "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+    "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+    "content_sha256": "aec84dc526bbb7bbf3e1d5ae0bc85961d7127a27f34779ae1826b8110d6847a2"
+  }
+}

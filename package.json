@@ -28,5 +28,8 @@
     "prettier": "^3.4.2",
     "typescript": "^5.7.2",
     "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "smol-toml": "^1.8.0"
   }
 }
