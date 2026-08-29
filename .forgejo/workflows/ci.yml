@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: checkout
         run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global --add safe.directory "*"
           git clone --no-checkout "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" repo
           cd repo
           git fetch --depth=1 origin "$GITHUB_SHA"
