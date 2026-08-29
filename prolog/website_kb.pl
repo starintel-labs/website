@@ -5,7 +5,6 @@
 :- module(website_kb, [
     completed/1,
     failed/1,
-    failed/2,
     ready/1,
     blocked/2,
     next_task/1,
@@ -16,33 +15,22 @@
     program_complete/0
 ]).
 
-:- use_module(plan).
-
-:- multifile user:done/1.
-:- multifile user:failed/2.
-:- multifile user:note/3.
-:- dynamic user:done/1.
-:- dynamic user:failed/2.
-:- dynamic user:note/3.
-
-%% completed(Task) -- task marked done in persisted state (state.pl, user module).
-completed(Task) :- catch(user:done(Task), _, fail).
+%% completed(Task) -- task marked done in persisted state.
+completed(Task) :- state:done(Task).
 
 %% failed(Task, Reason) -- task marked failed in persisted state.
-failed(Task, Reason) :- catch(user:failed(Task, Reason), _, fail).
-
-failed(Task) :- failed(Task, _).
+failed(Task) :- catch(state:failed(Task, _), _, fail).
 
 %% pending(Task) -- defined, not done, not failed.
 pending(Task) :-
-    task(Task, _),
+    plan:task(Task, _),
     \+ completed(Task),
     \+ failed(Task).
 
 %% blocked(Task, Dependency) -- a pending task and one unfinished prerequisite.
 blocked(Task, Dep) :-
     pending(Task),
-    depends(Task, Dep),
+    plan:depends(Task, Dep),
     \+ completed(Dep).
 
 %% ready(Task) -- pending with all prerequisites completed.
@@ -58,7 +46,7 @@ next_task(Task) :-
 
 %% progress(Done, Total) over all defined tasks.
 progress(Done, Total) :-
-    findall(T, task(T, _), Ts),
+    findall(T, plan:task(T, _), Ts),
     length(Ts, Total),
     findall(D, (member(D, Ts), completed(D)), Ds),
     length(Ds, Done).
@@ -71,7 +59,7 @@ task_status(Task, blocked) :- blocked(Task, _).
 task_status(Task, waiting) :- pending(Task), \+ blocked(Task, _).
 
 print_plan :-
-    forall(task(T, Desc), (
+    forall(plan:task(T, Desc), (
         (   task_status(T, done) -> S = 'DONE'
         ;   task_status(T, failed) -> S = 'FAILED'
         ;   task_status(T, ready) -> S = 'READY'

@@ -19,10 +19,10 @@
     "lint": "pnpm -r lint",
     "format": "prettier --check .",
     "facts": "node scripts/generate-facts.mjs",
-    "verify": "swipl -q -s prolog/plan.pl -s prolog/state.pl -s prolog/generated_facts.pl -s prolog/website_kb.pl -s prolog/verify.pl -g verify:verify_all",
-    "plan": "swipl -q -s prolog/plan.pl -s prolog/state.pl -s prolog/website_kb.pl -g print_plan -g halt",
+    "verify": "swipl -q -s prolog/run.pl -g run:verify_all",
+    "plan": "swipl -q -s prolog/run.pl -g run:print_plan",
     "publish": "node scripts/publish.mjs",
-    "verify:ci": "swipl -q -s prolog/plan.pl -s prolog/state.pl -s prolog/generated_facts.pl -s prolog/website_kb.pl -s prolog/verify.pl -g verify:verify_ci"
+    "verify:ci": "swipl -q -s prolog/run.pl -g run:verify_ci"
   },
   "devDependencies": {
     "@starintel/content": "workspace:*",

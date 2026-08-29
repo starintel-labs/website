@@ -4,13 +4,13 @@
 %% scripts/generate-facts.mjs from the actual tree). Final verification
 %% halts non-zero on any failure.
 
-:- module(verify, []).
+:- module(verify, [verify_steps/1, verify_all/0, verify_ci/0]).
 
-:- dynamic(violation/1).
+:- use_module(plan).
+
 :- dynamic(failure/2).
 :- dynamic(passed/1).
 
-:- use_module(website_kb).
 
 %% ---- check engine ----
 
@@ -26,83 +26,83 @@ check(Name, Goal) :-
 
 %% Forgejo is the CI execution authority.
 inv_forgejo_workflows_exist :-
-    user:forgejo_workflow(_).
+    facts:forgejo_workflow(_).
 
 inv_forgejo_workflows_self_contained :-
-    forall(user:forgejo_workflow(W), user:workflow_self_contained(W, true)).
+    forall(facts:forgejo_workflow(W), facts:workflow_self_contained(W, true)).
 
 inv_forgejo_secrets_not_embedded :-
-    forall(user:forgejo_workflow(W), user:workflow_secrets_referenced_only(W, true)).
+    forall(facts:forgejo_workflow(W), facts:workflow_secrets_referenced_only(W, true)).
 
 inv_no_internal_hosts_in_ci :-
-    forall(user:forgejo_workflow(W), user:workflow_no_internal_hosts(W, true)).
+    forall(facts:forgejo_workflow(W), facts:workflow_no_internal_hosts(W, true)).
 
 %% No GitHub Actions in this repository.
 inv_github_actions_absent :-
-    user:github_workflows_present(false).
+    facts:github_workflows_present(false).
 
 %% www aliases apex (canonicalization lives in the main app server).
 inv_www_aliases_apex :-
-    user:www_canonicalization_present(true).
+    facts:www_canonicalization_present(true).
 
 %% docs.starintel.actor stays deferred.
 inv_docs_deferred :-
-    user:docs_app_present(false),
-    user:docs_deploy_in_ci(false).
+    facts:docs_app_present(false),
+    facts:docs_deploy_in_ci(false).
 
 %% Every published document carries full provenance.
 inv_published_docs_have_provenance :-
-    forall(user:published_doc(T, S), user:doc_provenance_ok(T, S, true)).
+    forall(facts:published_doc(T, S), facts:doc_provenance_ok(T, S, true)).
 
 %% Research publication is approval-gated.
 inv_research_approval_gated :-
-    forall(user:published_doc(research, S), user:research_approval_ok(S, true)).
+    forall(facts:published_doc(research, S), facts:research_approval_ok(S, true)).
 
 %% Dailies: URL date (slug) matches the document date.
 inv_daily_dates_match :-
-    forall(user:daily_doc(S), daily_date_consistent(S)).
+    forall(facts:daily_doc(S), daily_date_consistent(S)).
 
 daily_date_consistent(S) :-
-    user:daily_date(S, Date),
+    facts:daily_date(S, Date),
     Date == S.
 
 %% Radar: allowlisted aggregate schema only, fail closed, no payload forwarding.
 inv_radar_safe :-
-    user:radar_projector_present(true),
-    user:radar_fails_closed(true),
-    user:radar_no_payload_forwarding(true).
+    facts:radar_projector_present(true),
+    facts:radar_fails_closed(true),
+    facts:radar_no_payload_forwarding(true).
 
 %% StarIntel v0.9 validation authority is pinned and complete.
 inv_v09_pinned :-
-    user:v09_required_fields_complete(true),
-    user:v09_schema_pinned(true).
+    facts:v09_required_fields_complete(true),
+    facts:v09_schema_pinned(true).
 
 %% Auto Dig tooling exists (checked when the sibling checkout is available).
 inv_auto_dig_tooling :-
-    user:autodig_backend_present(true),
-    user:importer_present(true).
+    facts:autodig_backend_present(true),
+    facts:importer_present(true).
 
 %% OpenCode harness present (proposals only, provenance-anchored).
 inv_opencode_harness :-
-    user:opencode_harness_present(true).
+    facts:opencode_harness_present(true).
 
 %% Publishing configuration: explicit targets, configurable output repo.
 inv_publishing_config :-
-    user:publish_targets_configured(true),
-    user:output_repo_configurable(true).
+    facts:publish_targets_configured(true),
+    facts:output_repo_configurable(true).
 
 %% No internal infrastructure hostnames anywhere in the public tree.
 inv_no_internal_hostnames :-
-    user:internal_hostname_leaks(0).
+    facts:internal_hostname_leaks(0).
 
 %% Program state consistency: done/1 facts must reference real tasks.
 inv_state_consistent :-
-    forall(user:done(T), plan:task(T, _)).
+    forall(website_kb:completed(T), plan:task(T, _)).
 
 %% Program complete: every task done.
 inv_program_complete :-
-    progress(_, _),
-    \+ (task(T, _), \+ completed(T)).
+    website_kb:progress(_, _),
+    \+ (plan:task(T, _), \+ website_kb:completed(T)).
 
 %% ---- runner ----
 
@@ -139,7 +139,7 @@ verify_steps(IncludeProgram) :-
                    (assertz(failure(Name, exception(Error))),
                     format('FAIL  ~w (exception)~n', [Name]))))),
     findall(F, failure(F, _), Fs),
-    progress(Done, Total),
+    website_kb:progress(Done, Total),
     (   Fs == [] ->
         format('~nVERIFIED: all invariants hold. Program: [~w/~w] tasks.~n', [Done, Total]),
         halt(0)
