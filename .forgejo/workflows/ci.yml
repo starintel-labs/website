@@ -23,7 +23,7 @@ jobs:
       - name: system deps
         run: |
           apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git swipl emacs-nox jq > /dev/null
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git swi-prolog emacs-nox jq > /dev/null
       - name: pnpm
         run: npm install --global pnpm@11.24.0
       - name: install
