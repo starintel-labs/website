@@ -75,6 +75,7 @@ function loadValidator(): ValidateFunction<StarIntelV09Doc> {
   const ajv = new Ajv2020({ allErrors: true, strict: false, allowUnionTypes: true });
   addFormats(ajv, { date: true, "date-time": true });
   cachedValidator = ajv.compile<StarIntelV09Doc>(schema);
+  if (!cachedValidator) throw new Error("failed to compile StarIntel v0.9 schema validator");
   return cachedValidator;
 }
 
