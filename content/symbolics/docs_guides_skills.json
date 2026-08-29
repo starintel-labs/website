@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/skills",
+  "title": "Skills",
+  "date": null,
+  "author": null,
+  "description": "Skills are focused instructions Agent Zero can load when a task needs them.",
+  "excerpt": "Skills are focused instructions Agent Zero can load when a task needs them.",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/skills.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "b6b4ee38f91ee309f6b6c18eedb155a7fe004fcbe7bd13322e2f514601e5ab89",
+    "dirty": true
+  }
+}

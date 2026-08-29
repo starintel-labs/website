@@ -4,6 +4,7 @@ autodig_backend_present(true).
 content_manifest('blog', present).
 content_manifest('research', present).
 content_manifest('nsaspy', present).
+content_manifest('symbolics', present).
 daily_date('2026-08-28', '2026-08-28').
 daily_doc('2026-08-28').
 doc_provenance_ok('blog', 'bootstrapping-the-starintel-web-platform', true).
@@ -12,6 +13,25 @@ doc_provenance_ok('nsaspy', 'about', true).
 doc_provenance_ok('nsaspy', 'prolog-rlm', true).
 doc_provenance_ok('nsaspy', 'starintel', true).
 doc_provenance_ok('nsaspy', 'resume', true).
+doc_provenance_ok('symbolics', 'docs/guides/a0-cli-connector', true).
+doc_provenance_ok('symbolics', 'docs/guides/a2a-setup', true).
+doc_provenance_ok('symbolics', 'docs/guides/agent-profiles', true).
+doc_provenance_ok('symbolics', 'docs/guides/api-integration', true).
+doc_provenance_ok('symbolics', 'docs/guides/browser', true).
+doc_provenance_ok('symbolics', 'docs/guides/contribution', true).
+doc_provenance_ok('symbolics', 'docs/guides/create-plugin', true).
+doc_provenance_ok('symbolics', 'docs/guides/desktop', true).
+doc_provenance_ok('symbolics', 'docs/guides/launcher', true).
+doc_provenance_ok('symbolics', 'docs/guides/local-model-tool-use', true).
+doc_provenance_ok('symbolics', 'docs/guides/mcp-setup', true).
+doc_provenance_ok('symbolics', 'docs/guides/memory', true).
+doc_provenance_ok('symbolics', 'docs/guides/model-presets', true).
+doc_provenance_ok('symbolics', 'docs/guides/onboarding', true).
+doc_provenance_ok('symbolics', 'docs/guides/projects', true).
+doc_provenance_ok('symbolics', 'docs/guides/self-update', true).
+doc_provenance_ok('symbolics', 'docs/guides/skills', true).
+doc_provenance_ok('symbolics', 'docs/guides/troubleshooting', true).
+doc_provenance_ok('symbolics', 'docs/guides/usage', true).
 docs_app_present(false).
 docs_deploy_in_ci(false).
 forgejo_workflow('ci.yml').
@@ -27,6 +47,25 @@ published_doc('nsaspy', 'about').
 published_doc('nsaspy', 'prolog-rlm').
 published_doc('nsaspy', 'starintel').
 published_doc('nsaspy', 'resume').
+published_doc('symbolics', 'docs/guides/a0-cli-connector').
+published_doc('symbolics', 'docs/guides/a2a-setup').
+published_doc('symbolics', 'docs/guides/agent-profiles').
+published_doc('symbolics', 'docs/guides/api-integration').
+published_doc('symbolics', 'docs/guides/browser').
+published_doc('symbolics', 'docs/guides/contribution').
+published_doc('symbolics', 'docs/guides/create-plugin').
+published_doc('symbolics', 'docs/guides/desktop').
+published_doc('symbolics', 'docs/guides/launcher').
+published_doc('symbolics', 'docs/guides/local-model-tool-use').
+published_doc('symbolics', 'docs/guides/mcp-setup').
+published_doc('symbolics', 'docs/guides/memory').
+published_doc('symbolics', 'docs/guides/model-presets').
+published_doc('symbolics', 'docs/guides/onboarding').
+published_doc('symbolics', 'docs/guides/projects').
+published_doc('symbolics', 'docs/guides/self-update').
+published_doc('symbolics', 'docs/guides/skills').
+published_doc('symbolics', 'docs/guides/troubleshooting').
+published_doc('symbolics', 'docs/guides/usage').
 radar_fails_closed(true).
 radar_no_payload_forwarding(true).
 radar_projector_present(true).

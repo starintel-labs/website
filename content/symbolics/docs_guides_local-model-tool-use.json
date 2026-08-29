@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/local-model-tool-use",
+  "title": "Local Model Tool Use",
+  "date": null,
+  "author": null,
+  "description": "Small local models can struggle with Agent Zero's full default communication shape. The safest first fix is prompt/profile/plugin-only: use a smaller behavior contract while leaving Agent Zero's core ",
+  "excerpt": "Small local models can struggle with Agent Zero's full default communication shape. The safest first fix is prompt/profile/plugin-only: use a smaller behavior contract while leaving Agent Zero's core ",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/local-model-tool-use.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "982541be643777705e4de0ed85c2dd940e14632275482dc8a15943a70200507c",
+    "dirty": true
+  }
+}

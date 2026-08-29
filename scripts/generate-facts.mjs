@@ -77,7 +77,7 @@ for (const wf of forgejoWorkflows) {
 emit(`docs_deploy_in_ci(${docsInCi ? "true" : "false"}).`);
 
 // ---- content manifests + provenance ----
-const TARGETS = ["blog", "research", "nsaspy"];
+const TARGETS = ["blog", "research", "nsaspy", "symbolics"];
 const esc = (s) => String(s).replaceAll("'", "''").replaceAll("\\", "\\\\");
 for (const target of TARGETS) {
   const manifestPath = join(root, "content", target, "manifest.json");

@@ -32,3 +32,10 @@ include = "**/*.org"
 exclude = ["**/index.org"]
 output_path = "content/nsaspy"
 enabled = true
+
+[targets.symbolics]
+source_root = "../../Documents/AI/a0-symbolics"
+include = "docs/guides/*.md"
+output_path = "content/symbolics"
+type = "markdown"
+enabled = true

@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/a2a-setup",
+  "title": "A2A Server Setup",
+  "date": null,
+  "author": null,
+  "description": "Agent Zero can communicate with other Agent Zero instances using the A2A (Agent-to-Agent) protocol based on FastA2A. This guide shows you how to enable and configure A2A connectivity through the Setti",
+  "excerpt": "Agent Zero can communicate with other Agent Zero instances using the A2A (Agent-to-Agent) protocol based on FastA2A. This guide shows you how to enable and configure A2A connectivity through the Setti",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/a2a-setup.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "7cd68eda8163a3b66370f1d5ab6ce146122a20ccdac07d910e073f6c57743316",
+    "dirty": true
+  }
+}

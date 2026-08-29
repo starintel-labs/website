@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/self-update",
+  "title": "Self Update",
+  "date": null,
+  "author": null,
+  "description": "For day-to-day upgrades inside a running instance:",
+  "excerpt": "For day-to-day upgrades inside a running instance:",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/self-update.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "4e1b622bb04bb1d982f342e6fde493ec198f033ef493c1d18d4df8a424e77d89",
+    "dirty": true
+  }
+}

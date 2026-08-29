@@ -5,6 +5,7 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { brandTheme, wordmarkAria } from "@starintel/ui/brand";
 import { wordmarkHtml } from "@starintel/ui/symbolics";
 import { metaTags, articleJsonLd, jsonLdScript } from "@starintel/seo";
 
@@ -83,6 +84,8 @@ export interface PageOptions {
   canonical: string;
   baseUrl: string;
   contentHtml: string;
+  /** Brand key selecting the stated wordmark (see @starintel/ui/brand). */
+  brand?: string;
   /** Extra nav links rendered after the brand. */
   nav?: { href: string; label: string; current?: boolean; external?: boolean }[];
   /** Org body content? Applies org typography. */
@@ -102,6 +105,7 @@ const CSS_HREFS = [
 ];
 
 export function renderPage(o: PageOptions): string {
+  const theme = brandTheme(o.brand);
   const nav = (o.nav ?? [])
     .map(
       (l) =>
@@ -124,6 +128,7 @@ export function renderPage(o: PageOptions): string {
       description: o.description,
       canonical: o.canonical,
       type: "article",
+      siteName: theme.orgName,
       robots: o.robots ?? undefined,
     })}
     ${feed}
@@ -131,7 +136,7 @@ export function renderPage(o: PageOptions): string {
   </head>
   <body>
     <header class="si-topbar">
-      <a class="si-topbar__brand" href="/" aria-label="StarIntel">${wordmarkHtml("si-wordmark--sm")}</a>
+      <a class="si-topbar__brand" href="/" aria-label="${escapeHtml(wordmarkAria(theme))}">${wordmarkHtml(o.brand ?? "starintel", "si-wordmark--sm")}</a>
       <nav class="si-topbar__nav" aria-label="Primary">
         ${nav}
       </nav>
@@ -141,7 +146,7 @@ ${o.contentHtml}
     </main>
     <footer class="si-footer">
       <div class="si-shell">
-        <span>${wordmarkHtml("si-wordmark--sm")} <span class="muted">— symbolic AI, structurally.</span></span>
+        <span>${wordmarkHtml(o.brand ?? "starintel", "si-wordmark--sm")} <span class="muted">— ${escapeHtml(theme.tagline)}</span></span>
         <span><a href="https://starintel.actor/">starintel.actor</a></span>
       </div>
     </footer>

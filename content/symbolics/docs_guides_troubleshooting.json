@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/troubleshooting",
+  "title": "Troubleshooting and FAQ",
+  "date": null,
+  "author": null,
+  "description": "This page addresses frequently asked questions (FAQ) and provides troubleshooting steps for common issues encountered while using Agent Zero.",
+  "excerpt": "This page addresses frequently asked questions (FAQ) and provides troubleshooting steps for common issues encountered while using Agent Zero.",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/troubleshooting.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "1648637513bf9d665eec76e7deb4e055f3b8af0457e547007003fec4d39fb330",
+    "dirty": true
+  }
+}

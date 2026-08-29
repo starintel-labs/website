@@ -69,7 +69,13 @@ function matchPattern(baseDir, pattern) {
   );
   const out = [];
   const walk = (dir) => {
-    for (const e of readdirSync(dir, { withFileTypes: true })) {
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return; // unreadable directory (runtime sockets, permission dirs)
+    }
+    for (const e of entries) {
       const full = join(dir, e.name);
       if (e.isDirectory()) walk(full);
       else if (re.test(relative(baseDir, full).replaceAll("\\", "/"))) out.push(full);
@@ -199,7 +205,9 @@ function main() {
     return 2;
   }
 
-  let files = matchPattern(sourceRoot, t.include ?? "**/*.org").filter((f) => f.endsWith(".org"));
+  let files = matchPattern(sourceRoot, t.include ?? "**/*.org").filter((f) =>
+    t.type === "markdown" ? f.endsWith(".md") : f.endsWith(".org"),
+  );
   for (const pat of t.exclude ?? []) {
     files = files.filter((f) => !globMatch(relative(sourceRoot, f), [pat]));
   }
@@ -241,6 +249,59 @@ function main() {
   const tmp = `/tmp/opencode/publish-${target}-${process.pid}`;
   rmSync(tmp, { recursive: true, force: true });
   mkdirSync(tmp, { recursive: true });
+
+  // Markdown targets skip the Org exporter: files are copied verbatim and
+  // rendered by the site builder (deterministic transform downstream).
+  if (t.type === "markdown") {
+    const outDir = join(outRepo, t.output_path);
+    const documents = [];
+    const sourceCommit = git(sourceRoot, "rev-parse", "HEAD").stdout || null;
+    const dirty = git(sourceRoot, "status", "--short").stdout.length > 0;
+    for (const g of publishable) {
+      const slug = slugFor(g.rel, g.keywords);
+      const prov = sourceProvenance(sourceRoot, g.rel);
+      const doc = {
+        slug,
+        title: g.keywords.TITLE ?? titleFromMarkdown(g.file) ?? slug,
+        date: null,
+        author: null,
+        description: g.keywords.DESCRIPTION ?? descriptionFromMarkdown(g.file) ?? "",
+        excerpt: descriptionFromMarkdown(g.file) ?? "",
+        tags: [],
+        filetags: null,
+        id: null,
+        status: null,
+        anchors: [],
+        approval: null,
+        source: {
+          repo: prov.source_repo,
+          path: prov.source_path,
+          commit: prov.source_commit,
+          blob: null,
+          content_sha256: sha256(g.file),
+          dirty,
+        },
+      };
+      documents.push(doc);
+      if (!dryRun) {
+        mkdirSync(outDir, { recursive: true });
+        writeFileSync(join(outDir, `${slug.replaceAll("/", "_")}.md`), readFileSync(g.file));
+        writeFileSync(join(outDir, `${slug.replaceAll("/", "_")}.json`), JSON.stringify(doc, null, 2) + "\n");
+      }
+      console.log(`  ${dryRun ? "would write" : "wrote"} ${join(t.output_path, slug + ".md")}`);
+    }
+    documents.sort((a, b) => a.slug.localeCompare(b.slug));
+    if (!dryRun) {
+      mkdirSync(outDir, { recursive: true });
+      writeFileSync(
+        join(outDir, "manifest.json"),
+        JSON.stringify({ target, type: "markdown", generated_at: new Date().toISOString(), source_commit: sourceCommit, count: documents.length, documents }, null, 2) + "\n",
+      );
+      console.log(`manifest: ${documents.length} document(s) -> ${join(outDir, "manifest.json")}`);
+    }
+    rmSync(tmp, { recursive: true, force: true });
+    return 0;
+  }
 
   const emacs = process.env.EMACS ?? "emacs";
   const exportRun = sh(
@@ -335,7 +396,7 @@ function slugFor(relPath, keywords) {
   const kslug = keywords.SLUG;
   if (kslug) return kslug;
   const title = keywords.TITLE;
-  const base = relPath.replace(/\.org$/, "");
+  const base = relPath.replace(/\.org$/, "").replace(/\.md$/, "");
   const useTitle = title && base.split("/").pop()?.match(/^\d{4}-\d{2}-\d{2}$/); // dailies keep date slugs
   const src = useTitle ? title : base;
   return src
@@ -343,6 +404,23 @@ function slugFor(relPath, keywords) {
     .replaceAll(/[^a-z0-9/]+/g, "-")
     .replaceAll(/^-+|-+$/g, "")
     .replaceAll("/", "/");
+}
+
+/** First markdown H1, if any. */
+function titleFromMarkdown(file) {
+  const m = readFileSync(file, "utf8").match(/^#\s+(.+)$/m);
+  return m ? m[1].trim() : null;
+}
+
+/** First non-heading, non-badge paragraph line of a markdown file. */
+function descriptionFromMarkdown(file) {
+  const lines = readFileSync(file, "utf8").split("\n");
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t || t.startsWith("#") || t.startsWith("!") || t.startsWith("[!") || t.startsWith("|") || t.startsWith("<")) continue;
+    return t.replace(/[*_`]/g, "").slice(0, 200);
+  }
+  return "";
 }
 
 process.exit(main());

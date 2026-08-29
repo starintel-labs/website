@@ -61,10 +61,11 @@ export function chip(
 export function topbar(
   brandHref: string,
   links: { href: string; label: string; active?: boolean; external?: boolean }[],
+  brand: Brand | string = "starintel",
 ): HTMLElement {
-  const brand = el("a", { class: "si-topbar__brand", href: brandHref });
+  const brandEl = el("a", { class: "si-topbar__brand", href: brandHref });
   import("./symbolics.js").then(({ renderWordmark }) => {
-    brand.replaceChildren(renderWordmark({ size: "sm" }));
+    brandEl.replaceChildren(renderWordmark({ brand, size: "sm" }));
   });
   const nav = el("nav", { class: "si-topbar__nav", "aria-label": "Primary" });
   for (const l of links) {
@@ -79,10 +80,14 @@ export function topbar(
     }
     nav.append(a);
   }
-  return el("header", { class: "si-topbar" }, brand, nav);
+  return el("header", { class: "si-topbar" }, brandEl, nav);
 }
 
-export function footer(note: string, links: { href: string; label: string }[] = []): HTMLElement {
+export function footer(
+  note: string,
+  links: { href: string; label: string }[] = [],
+  brand: Brand | string = "starintel",
+): HTMLElement {
   const shell = el("div", { class: "si-shell" });
   const left = el("span", {}, note);
   const right = el("span", { class: "si-footer__links" });
@@ -93,3 +98,6 @@ export function footer(note: string, links: { href: string; label: string }[] = 
   shell.append(left, right);
   return el("footer", { class: "si-footer" }, shell);
 }
+
+export { brandTheme } from "./brand.ts";
+import type { Brand } from "./brand.ts";

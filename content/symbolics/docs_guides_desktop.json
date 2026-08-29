@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/desktop",
+  "title": "Desktop Guide",
+  "date": null,
+  "author": null,
+  "description": "Agent Zero has its own Linux desktop inside the right-side Canvas.",
+  "excerpt": "Agent Zero has its own Linux desktop inside the right-side Canvas.",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/desktop.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "97829d5780d791be41a5881e48de486a987030580bde26c9f074bbb29e5ac0ec",
+    "dirty": true
+  }
+}

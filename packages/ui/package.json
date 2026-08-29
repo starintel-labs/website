@@ -11,7 +11,8 @@
     "./css/layout.css": "./css/layout.css",
     "./symbolics": "./src/symbolics.ts",
     "./components": "./src/components.ts",
-    "./assets/*": "./assets/*"
+    "./assets/*": "./assets/*",
+    "./brand": "./src/brand.ts"
   },
   "scripts": {
     "build": "true",

@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/mcp-setup",
+  "title": "MCP Setup",
+  "date": null,
+  "author": null,
+  "description": "MCP lets Agent Zero use tools from other apps and services.",
+  "excerpt": "MCP lets Agent Zero use tools from other apps and services.",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/mcp-setup.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "102c70597bd968f8f45f021b0f73ead9d8fb5bb874f6e9c8bc6bf8e15b83b98f",
+    "dirty": true
+  }
+}

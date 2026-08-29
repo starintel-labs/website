@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/model-presets",
+  "title": "Model Presets",
+  "date": null,
+  "author": null,
+  "description": "Model Presets are named, reusable model setups. Every setup contains a main,",
+  "excerpt": "Model Presets are named, reusable model setups. Every setup contains a main,",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/model-presets.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "ee70668e4cfe3400529e6f9fe45a9fa2b2e2080f681e7b2dfdc3b2ecbae23e4b",
+    "dirty": true
+  }
+}
