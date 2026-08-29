@@ -12,6 +12,12 @@ importers:
         specifier: ^1.8.0
         version: 1.8.0
     devDependencies:
+      '@starintel/content':
+        specifier: workspace:*
+        version: link:packages/content
+      '@starintel/starintel-doc':
+        specifier: workspace:*
+        version: link:packages/starintel-doc
       '@types/node':
         specifier: ^24.0.0
         version: 24.13.3
@@ -27,6 +33,18 @@ importers:
       vitest:
         specifier: ^3.0.0
         version: 3.2.7(@types/node@24.13.3)
+
+  apps/admin:
+    devDependencies:
+      '@starintel/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vite:
+        specifier: ^7.0.0
+        version: 7.3.6(@types/node@24.13.3)
 
   apps/blog:
     devDependencies:

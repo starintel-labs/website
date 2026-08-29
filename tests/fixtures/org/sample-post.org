@@ -1,0 +1,30 @@
+#+title: Test Post: Actors & Prolog
+#+date: <2026-08-27 Wed>
+#+author: nsaspy
+#+description: A sample post with code, tables, and footnotes.
+#+slug: test-actors-prolog
+#+filetags: :starintel:prolog:actors:
+
+* First section
+
+This is a paragraph with a footnote.[fn:1]
+
+#+begin_src lisp
+(defun hello (name)
+  "Say hello."
+  (format "hello, %s" name))
+#+end_src
+
+** Subsection here
+
+| a | b |
+|---+---|
+| 1 | 2 |
+
+* Second section
+
+More text.
+
+* Footnotes
+
+[fn:1] A footnote.

@@ -19,11 +19,13 @@
     "lint": "pnpm -r lint",
     "format": "prettier --check .",
     "facts": "node scripts/generate-facts.mjs",
-    "verify": "swipl -q -s prolog/plan.pl -s prolog/state.pl -s prolog/generated_facts.pl -s prolog/website_kb.pl -s prolog/verify.pl -g verify_all -g halt",
+    "verify": "swipl -q -s prolog/plan.pl -s prolog/state.pl -s prolog/generated_facts.pl -s prolog/website_kb.pl -s prolog/verify.pl -g verify:verify_all",
     "plan": "swipl -q -s prolog/plan.pl -s prolog/state.pl -s prolog/website_kb.pl -g print_plan -g halt",
     "publish": "node scripts/publish.mjs"
   },
   "devDependencies": {
+    "@starintel/content": "workspace:*",
+    "@starintel/starintel-doc": "workspace:*",
     "@types/node": "^24.0.0",
     "pnpm": "11.24.0",
     "prettier": "^3.4.2",

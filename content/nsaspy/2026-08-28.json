@@ -1,7 +1,7 @@
 {
   "slug": "2026-08-28",
   "title": "2026-08-28",
-  "date": null,
+  "date": "[2026-08-28 Fri]",
   "author": null,
   "description": "Website platform bootstrap: monorepo, design system, Org publishing pipeline.",
   "excerpt": "Kicked off the unified StarIntel web platform in earnest:",
@@ -18,6 +18,6 @@
     "path": "nsaspy/daily/2026-08-28.org",
     "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
     "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
-    "content_sha256": "3294b7615ff1c1750f58f5a3c270752d226fc0bba787a7946f402590ac9d793a"
+    "content_sha256": "c1c7b675604cea7d4d9be4d9e3ee063e9a053f2b3c424748ac295f178e4872d9"
   }
 }

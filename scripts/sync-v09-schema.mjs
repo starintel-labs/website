@@ -8,7 +8,7 @@
  * Canonical source: ../starintel-gpt-auto-dig/schemas/starintel-doc-v0.9.0.schema.json
  * (override with STARINTEL_AUTO_DIG env var).
  */
-import { readFileSync, writeFileSync, copyFileSync } from "node:fs";
+import { readFileSync, writeFileSync, copyFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,12 +25,27 @@ function sha(p) {
 }
 
 if (check) {
-  if (sha(canonical) !== sha(vendored)) {
-    console.error(`v0.9 schema drift: vendored copy differs from ${canonical}`);
-    console.error("run: node scripts/sync-v09-schema.mjs");
-    process.exit(1);
+  if (existsSync(canonical)) {
+    if (sha(canonical) !== sha(vendored)) {
+      console.error(`v0.9 schema drift: vendored copy differs from ${canonical}`);
+      console.error("run: node scripts/sync-v09-schema.mjs");
+      process.exit(1);
+    }
+    console.log("v0.9 schema in sync with canonical source");
+  } else {
+    // Canonical repo not checked out (e.g. CI): verify vendored copy against
+    // the pinned committed hash instead.
+    const pin = vendored + ".sha256";
+    if (!existsSync(pin)) {
+      console.error("v0.9 schema pin file missing and canonical repo unavailable");
+      process.exit(1);
+    }
+    if (sha(vendored) !== readFileSync(pin, "utf8").trim()) {
+      console.error("v0.9 schema vendored copy does not match pinned hash");
+      process.exit(1);
+    }
+    console.log("v0.9 schema matches pinned hash (canonical repo unavailable)");
   }
-  console.log("v0.9 schema in sync");
 } else {
   copyFileSync(canonical, vendored);
   writeFileSync(vendored + ".sha256", sha(vendored) + "\n");

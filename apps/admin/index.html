@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#050a11" />
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="StarIntel operator console: Auto Dig run coordination and platform health." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>StarIntel Admin</title>
+  </head>
+  <body>
+    <header class="si-topbar">
+      <a class="si-topbar__brand" href="/" aria-label="StarIntel admin" data-wordmark></a>
+      <nav class="si-topbar__nav" aria-label="Primary">
+        <a href="/" aria-current="page">Runs</a>
+        <a href="https://starintel.actor/" target="_blank" rel="noopener">starintel.actor</a>
+      </nav>
+      <span class="si-chip si-chip--live" id="api-status" data-state="connecting">connecting</span>
+    </header>
+
+    <main class="si-shell si-section">
+      <section class="si-grid" id="health-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))">
+        <div class="si-panel"><div class="faint mono" style="font-size:0.72rem;letter-spacing:0.12em">BACKEND</div><div class="mono" id="health-backend" style="margin-top:0.4rem">—</div></div>
+        <div class="si-panel"><div class="faint mono" style="font-size:0.72rem;letter-spacing:0.12em">SCHEMA</div><div class="mono" id="health-schema" style="margin-top:0.4rem">—</div></div>
+        <div class="si-panel"><div class="faint mono" style="font-size:0.72rem;letter-spacing:0.12em">DTYPES</div><div class="mono" id="health-dtypes" style="margin-top:0.4rem">—</div></div>
+        <div class="si-panel"><div class="faint mono" style="font-size:0.72rem;letter-spacing:0.12em">READINESS</div><div class="mono" id="health-ready" style="margin-top:0.4rem">—</div></div>
+      </section>
+
+      <section class="si-section">
+        <div class="si-section__head">
+          <h2 class="si-section__title">Auto Dig runs</h2>
+          <button class="si-chip" id="refresh" style="cursor:pointer">refresh</button>
+        </div>
+        <div class="si-panel" style="padding:0; overflow-x:auto">
+          <table style="width:100%; border-collapse:collapse; font-family:var(--si-font-mono); font-size:0.8rem">
+            <thead>
+              <tr style="color:var(--si-muted); text-align:left">
+                <th style="padding:0.7rem 1rem; border-bottom:1px solid var(--si-line)">RUN</th>
+                <th style="padding:0.7rem 1rem; border-bottom:1px solid var(--si-line)">TARGET</th>
+                <th style="padding:0.7rem 1rem; border-bottom:1px solid var(--si-line)">STATE</th>
+                <th style="padding:0.7rem 1rem; border-bottom:1px solid var(--si-line)">DOCS</th>
+                <th style="padding:0.7rem 1rem; border-bottom:1px solid var(--si-line)">UPDATED</th>
+                <th style="padding:0.7rem 1rem; border-bottom:1px solid var(--si-line)">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="runs-body">
+              <tr><td colspan="6" style="padding:1rem" class="muted">Loading runs…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <p class="faint" style="font-size:0.78rem">
+        State transitions are validated server-side and fail closed on illegal moves or terminal
+        runs. Mutations carry idempotency keys. This console never displays credentials.
+      </p>
+    </main>
+
+    <footer class="si-footer">
+      <div class="si-shell">
+        <span><span data-wordmark-sm></span></span>
+        <span><a href="https://starintel.actor/">starintel.actor</a></span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/admin.ts"></script>
+  </body>
+</html>
