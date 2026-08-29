@@ -41,6 +41,6 @@ jobs:
       - name: prolog facts
         run: node scripts/generate-facts.mjs
       - name: prolog verification
-        run: pnpm verify
+        run: pnpm "verify:ci"
       - name: ci hygiene
         run: node scripts/ci-hygiene.mjs

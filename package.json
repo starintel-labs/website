@@ -21,7 +21,8 @@
     "facts": "node scripts/generate-facts.mjs",
     "verify": "swipl -q -s prolog/plan.pl -s prolog/state.pl -s prolog/generated_facts.pl -s prolog/website_kb.pl -s prolog/verify.pl -g verify:verify_all",
     "plan": "swipl -q -s prolog/plan.pl -s prolog/state.pl -s prolog/website_kb.pl -g print_plan -g halt",
-    "publish": "node scripts/publish.mjs"
+    "publish": "node scripts/publish.mjs",
+    "verify:ci": "swipl -q -s prolog/plan.pl -s prolog/state.pl -s prolog/generated_facts.pl -s prolog/website_kb.pl -s prolog/verify.pl -g verify:verify_ci"
   },
   "devDependencies": {
     "@starintel/content": "workspace:*",

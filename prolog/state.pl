@@ -1,3 +1,5 @@
+:- discontiguous(done/1).
+:- discontiguous(note/2). 
 %% state.pl -- persisted progress for the website platform program.
 %% Written and updated by the actor as tasks complete. Restartable from disk.
 %% Facts:
