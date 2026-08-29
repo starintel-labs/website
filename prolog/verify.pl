@@ -77,10 +77,15 @@ inv_v09_pinned :-
     facts:v09_required_fields_complete(true),
     facts:v09_schema_pinned(true).
 
-%% Auto Dig tooling exists (checked when the sibling checkout is available).
+%% Auto Dig tooling exists (checked when the sibling checkout is available;
+%% an isolated CI checkout of this repository skips it - the tooling is
+%% gated by the auto-dig repository's own Forgejo CI).
 inv_auto_dig_tooling :-
     facts:autodig_backend_present(true),
     facts:importer_present(true).
+inv_auto_dig_tooling :-
+    facts:autodig_backend_present(false),
+    facts:importer_present(false).
 
 %% OpenCode harness present (proposals only, provenance-anchored).
 inv_opencode_harness :-
