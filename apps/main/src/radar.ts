@@ -20,6 +20,7 @@ interface RadarEvent {
   dtype?: string;
   size_bucket: "s" | "m" | "l" | "xl";
   count: number;
+  type?: "event";
 }
 
 interface RadarRate {

@@ -12,7 +12,7 @@ if (foot) foot.replaceChildren(renderWordmark({ size: "sm" }));
 document.querySelector<HTMLAnchorElement>(".si-topbar__brand")?.setAttribute("href", "/");
 
 const apiStatus = document.getElementById("api-status")!;
-const runsBody = document.getElementById("runs-body")!;
+const runsBody = document.getElementById("runs-body") as HTMLTableSectionElement;
 
 function setStatus(state: string, label: string): void {
   apiStatus.dataset.state = state;

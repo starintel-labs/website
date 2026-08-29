@@ -9,9 +9,15 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import Ajv2020 from "ajv/dist/2020.js";
-import addFormats from "ajv-formats";
-import type { ValidateFunction } from "ajv";
+import Ajv2020Default from "ajv/dist/2020.js";
+import * as addFormatsModule from "ajv-formats";
+import type { Ajv, ValidateFunction } from "ajv";
+
+const Ajv2020 = Ajv2020Default as unknown as new (options?: Record<string, unknown>) => Ajv;
+const addFormats = addFormatsModule as unknown as (
+  ajv: Ajv,
+  formats: Record<string, boolean>,
+) => Ajv;
 
 export * from "./public.ts";
 

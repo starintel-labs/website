@@ -2,14 +2,14 @@
  * RabbitMQ consumer feeding the radar projector. Optional: when RABBIT_URL
  * is unset the radar renders standby. Fail closed on unrecognized routing.
  */
-import type { Connection } from "amqplib";
+import type { ChannelModel } from "amqplib";
 import type { Config } from "./config.ts";
 import { projectDelivery, RadarAggregator, type PublicRadarEvent, type RateTotals } from "./projector.ts";
 
 export class RadarFeed {
   #cfg: Config;
   #aggregator: RadarAggregator;
-  #conn: Connection | null = null;
+  #conn: ChannelModel | null = null;
   #state: "off" | "connecting" | "live" | "down" = "off";
   #retryMs = 3000;
 
@@ -49,8 +49,9 @@ export class RadarFeed {
     this.#state = "connecting";
     try {
       const amqp = await import("amqplib");
-      this.#conn = await amqp.connect(this.#cfg.rabbitUrl!);
-      const ch = await this.#conn.createChannel();
+      const conn = await amqp.connect(this.#cfg.rabbitUrl!);
+      this.#conn = conn;
+      const ch = await conn.createChannel();
       await ch.assertExchange(this.#cfg.rabbitExchange, "topic", { durable: true });
       const q = await ch.assertQueue("", { exclusive: true, autoDelete: true });
       await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.new.*");

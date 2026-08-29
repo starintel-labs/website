@@ -75,10 +75,8 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
   const resolvedCfg: Config = { ...cfg, staticDir: join(here, "..", cfg.staticDir) };
   const recent = new RecentDocumentsService(resolvedCfg);
   const hub = new SseHub();
-  let sseRateCb: ((totals: Parameters<SseHub["sendRate"]>[0], rps: number) => void) | null = null;
   const radar = new RadarFeed(resolvedCfg, (events) => hub.sendEvents(events), (totals, rps) => {
     hub.sendRate(totals, rps);
-    sseRateCb?.(totals, rps);
   });
 
   async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
