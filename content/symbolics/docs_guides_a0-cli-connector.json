@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/a0-cli-connector",
+  "title": "A0 CLI Connector",
+  "date": null,
+  "author": null,
+  "description": "A0 CLI connects your terminal to Agent Zero.",
+  "excerpt": "A0 CLI connects your terminal to Agent Zero.",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/a0-cli-connector.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "7e8e2c699f762d06562a63a3069a06bc068e7eee3dc5e442a6ef99bc7835549d",
+    "dirty": true
+  }
+}

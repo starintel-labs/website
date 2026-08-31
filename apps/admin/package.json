@@ -1,0 +1,20 @@
+{
+  "name": "@starintel/admin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "admin.starintel.actor - operator console over the Auto Dig backend API",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "true",
+    "lint": "true",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@starintel/ui": "workspace:*",
+    "typescript": "^5.7.2",
+    "vite": "^7.0.0"
+  }
+}

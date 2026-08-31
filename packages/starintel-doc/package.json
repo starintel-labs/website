@@ -1,0 +1,24 @@
+{
+  "name": "@starintel/starintel-doc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "StarIntel v0.9 document helpers: schema validation and public-safe projections",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "true",
+    "test": "node --experimental-strip-types --test src/*.test.ts",
+    "lint": "true",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.7.2"
+  }
+}

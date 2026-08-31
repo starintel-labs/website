@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/api-integration",
+  "title": "Adding External APIs Without Code",
+  "date": null,
+  "author": null,
+  "description": "One of Agent Zero's most powerful capabilities is the ability to integrate external APIs on the fly without writing any code. By simply providing API documentation or code snippets, the agent can lear",
+  "excerpt": "One of Agent Zero's most powerful capabilities is the ability to integrate external APIs on the fly without writing any code. By simply providing API documentation or code snippets, the agent can lear",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/api-integration.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "88bc254e6c6fd5e40de3251425f3485866cc1bc966902e6ec50130284d88eae1",
+    "dirty": true
+  }
+}

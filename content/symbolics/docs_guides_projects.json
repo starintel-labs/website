@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/projects",
+  "title": "Projects",
+  "date": null,
+  "author": null,
+  "description": "Projects tell Agent Zero what world it is working in.",
+  "excerpt": "Projects tell Agent Zero what world it is working in.",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/projects.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "99c995ee148dc3419fbc1c90d1cbdf2c8eed8e4091d134ce182a50071327bade",
+    "dirty": true
+  }
+}

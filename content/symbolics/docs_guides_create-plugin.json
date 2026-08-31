@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/create-plugin",
+  "title": "Create A Small Plugin",
+  "date": null,
+  "author": null,
+  "description": "The fastest way to understand Agent Zero plugins is to make one small enough to",
+  "excerpt": "The fastest way to understand Agent Zero plugins is to make one small enough to",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/create-plugin.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "50e234c4c41a995e78ea97c74bdef593f96a921f0533d6c4543a8edac3e49b7a",
+    "dirty": true
+  }
+}

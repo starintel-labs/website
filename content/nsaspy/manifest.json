@@ -1,0 +1,130 @@
+{
+  "target": "nsaspy",
+  "generated_at": "2026-08-29T10:53:23.168Z",
+  "source_commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+  "count": 5,
+  "documents": [
+    {
+      "slug": "2026-08-28",
+      "title": "2026-08-28",
+      "date": "[2026-08-28 Fri]",
+      "author": null,
+      "description": "Website platform bootstrap: monorepo, design system, Org publishing pipeline.",
+      "excerpt": "Kicked off the unified StarIntel web platform in earnest:",
+      "tags": [],
+      "filetags": ":nsaspy:daily:starintel:website:",
+      "id": "nsaspy-daily-2026-08-28",
+      "status": null,
+      "anchors": [
+        "website-platform-bootstrap"
+      ],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "nsaspy/daily/2026-08-28.org",
+        "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "content_sha256": "c1c7b675604cea7d4d9be4d9e3ee063e9a053f2b3c424748ac295f178e4872d9"
+      }
+    },
+    {
+      "slug": "about",
+      "title": "About",
+      "date": null,
+      "author": null,
+      "description": "nsaspy - builder of StarIntel, a symbolic AI intelligence platform.",
+      "excerpt": "I build StarIntel: a local-first, document-driven intelligence platform. The thesis is simple: language models are useful components, but reasoning, planning, and verification belong to symbolic systems.",
+      "tags": [],
+      "filetags": ":nsaspy:about:",
+      "id": "nsaspy-about",
+      "status": null,
+      "anchors": [],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "nsaspy/about.org",
+        "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "content_sha256": "cd41dc511a4fdfb790038bd887d91142425988b6e2640e3cfce12cfed56412f2"
+      }
+    },
+    {
+      "slug": "prolog-rlm",
+      "title": "prolog-rlm",
+      "date": null,
+      "author": null,
+      "description": "Prolog reasoning and research-approval machinery that gates StarIntel publication.",
+      "excerpt": "Prolog is the control plane for StarIntel s reasoning about itself: task knowledge bases with dependency graphs, restartable state, invariant verification suites, and the research-approval machinery (prolog-rlm.research-approval.v1) that gates what the platform is allowed to publ",
+      "tags": [],
+      "filetags": ":nsaspy:projects:prolog:rlm:",
+      "id": "nsaspy-project-prolog-rlm",
+      "status": null,
+      "anchors": [
+        "prolog-rlm",
+        "what-it-does",
+        "why-prolog"
+      ],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "nsaspy/projects/prolog-rlm.org",
+        "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "content_sha256": "bc576fbb64435332742b79a59ae5c721e880dfb317b09099fcf95ad55bad48f6"
+      }
+    },
+    {
+      "slug": "starintel",
+      "title": "StarIntel",
+      "date": null,
+      "author": null,
+      "description": "Local-first, document-driven intelligence platform: symbolic AI, actors, structured documents.",
+      "excerpt": "A local-first, document-driven intelligence platform. StarIntel models knowledge explicitly, orchestrates work with actors, and verifies outcomes with Prolog.",
+      "tags": [],
+      "filetags": ":nsaspy:projects:starintel:",
+      "id": "nsaspy-project-starintel",
+      "status": null,
+      "anchors": [
+        "starintel",
+        "components",
+        "design-invariants"
+      ],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "nsaspy/projects/starintel.org",
+        "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "content_sha256": "aec84dc526bbb7bbf3e1d5ae0bc85961d7127a27f34779ae1826b8110d6847a2"
+      }
+    },
+    {
+      "slug": "resume",
+      "title": "Resume",
+      "date": null,
+      "author": null,
+      "description": "nsaspy - systems and intelligence tooling engineer. Common Lisp, Nim, Prolog, Python, Elisp.",
+      "excerpt": "Systems and intelligence tooling engineer. I build StarIntel, a local-first, document-driven intelligence platform that combines symbolic AI - expert systems, Prolog planning and verification, actor-based orchestration - with statistical models where they earn their place.",
+      "tags": [],
+      "filetags": ":nsaspy:resume:",
+      "id": "nsaspy-resume",
+      "status": null,
+      "anchors": [
+        "nsaspy",
+        "selected-work",
+        "starintel-platform-2023-present",
+        "infrastructure-and-delivery",
+        "skills",
+        "principles"
+      ],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "nsaspy/resume.org",
+        "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+        "content_sha256": "159cfd32e30bd7871dd02e926d39a8473f9ea95a78b9747a1fe9adcb9a8e9879"
+      }
+    }
+  ]
+}

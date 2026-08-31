@@ -1,0 +1,101 @@
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org8c8611d">StarIntel</a>
+<ul>
+<li><a href="#org3bd3571">Components</a></li>
+<li><a href="#orgd95135d">Design invariants</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org8c8611d" class="outline-2">
+<h2 id="starintel">StarIntel</h2>
+<div class="outline-text-2" id="text-org8c8611d">
+<p>
+A local-first, document-driven intelligence platform. StarIntel models
+knowledge explicitly, orchestrates work with actors, and verifies outcomes
+with Prolog.
+</p>
+</div>
+<div id="outline-container-org3bd3571" class="outline-3">
+<h3 id="components">Components</h3>
+<div class="outline-text-3" id="text-org3bd3571">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Component</th>
+<th scope="col" class="org-left">Role</th>
+<th scope="col" class="org-left">Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">starintel-server</td>
+<td class="org-left">ingest, persistence, search, actor routing</td>
+<td class="org-left">Common Lisp</td>
+</tr>
+
+<tr>
+<td class="org-left">StarIntel v0.9 model</td>
+<td class="org-left">fifty typed document kinds + provenance</td>
+<td class="org-left">JSON Schema, polyglot</td>
+</tr>
+
+<tr>
+<td class="org-left">Quasar</td>
+<td class="org-left">operator graph workspace</td>
+<td class="org-left">TypeScript</td>
+</tr>
+
+<tr>
+<td class="org-left">Auto Dig</td>
+<td class="org-left">autonomous OSINT investigations</td>
+<td class="org-left">Nim</td>
+</tr>
+
+<tr>
+<td class="org-left">Auto Research</td>
+<td class="org-left">autonomous research with approval gates</td>
+<td class="org-left">Python, Org</td>
+</tr>
+
+<tr>
+<td class="org-left">prolog-rlm</td>
+<td class="org-left">reasoning + approval verification</td>
+<td class="org-left">Prolog</td>
+</tr>
+
+<tr>
+<td class="org-left">star-cl</td>
+<td class="org-left">document contract in Common Lisp</td>
+<td class="org-left">Common Lisp</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgd95135d" class="outline-3">
+<h3 id="design-invariants">Design invariants</h3>
+<div class="outline-text-3" id="text-orgd95135d">
+<ul class="org-ul">
+<li>Every document carries sources, evidence, and assessment metadata.</li>
+<li>Schema validation is strict and pinned (v0.9, additive compatibility).</li>
+<li>Publication is gated: approval state is machine-checked, with evidence.</li>
+<li>Storage is CouchDB; routing is RabbitMQ topic exchanges; supervision is
+Sento actors; the whole stack builds reproducibly under Nix.</li>
+</ul>
+</div>
+</div>
+</div>

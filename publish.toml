@@ -1,0 +1,41 @@
+# StarIntel website publishing configuration.
+#
+# Org sources live in their owning repositories and are exported
+# deterministically into this repository's content/ tree. Output
+# repositories are explicit: writes only ever go to
+# `default_output_repo` or an explicitly provided --output-repo.
+
+[settings]
+default_output_repo = "."
+
+[targets.blog]
+source_root = "../starintel-social-presence/blog"
+include = "posts/**/*.org"
+output_path = "content/blog"
+enabled = true
+
+[targets.research]
+source_root = "../starintel-auto-research/roam/research"
+include = "**/*.org"
+exclude = ["**/index.org", "**/sources.org", "**/search-log.org"]
+output_path = "content/research"
+# Fail closed: a research document is published only when BOTH
+#  - its #+approval_state is APPROVED with evidence, and
+#  - its slug or org-id is listed below.
+# An empty list publishes nothing.
+require_approval = true
+public_ids = []
+
+[targets.nsaspy]
+source_root = "../starintel-social-presence/nsaspy"
+include = "**/*.org"
+exclude = ["**/index.org"]
+output_path = "content/nsaspy"
+enabled = true
+
+[targets.symbolics]
+source_root = "../../Documents/AI/a0-symbolics"
+include = "docs/guides/*.md"
+output_path = "content/symbolics"
+type = "markdown"
+enabled = true

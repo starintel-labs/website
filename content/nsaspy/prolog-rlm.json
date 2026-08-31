@@ -1,0 +1,25 @@
+{
+  "slug": "prolog-rlm",
+  "title": "prolog-rlm",
+  "date": null,
+  "author": null,
+  "description": "Prolog reasoning and research-approval machinery that gates StarIntel publication.",
+  "excerpt": "Prolog is the control plane for StarIntel s reasoning about itself: task knowledge bases with dependency graphs, restartable state, invariant verification suites, and the research-approval machinery (prolog-rlm.research-approval.v1) that gates what the platform is allowed to publ",
+  "tags": [],
+  "filetags": ":nsaspy:projects:prolog:rlm:",
+  "id": "nsaspy-project-prolog-rlm",
+  "status": null,
+  "anchors": [
+    "prolog-rlm",
+    "what-it-does",
+    "why-prolog"
+  ],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+    "path": "nsaspy/projects/prolog-rlm.org",
+    "commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+    "blob": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
+    "content_sha256": "bc576fbb64435332742b79a59ae5c721e880dfb317b09099fcf95ad55bad48f6"
+  }
+}

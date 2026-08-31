@@ -1,0 +1,324 @@
+/* StarIntel layout: topbar, panels, cards, grids, chips, hero primitives. */
+
+/* ---- Topbar ---- */
+.si-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  min-height: var(--si-topbar-height);
+  padding: 0 clamp(1rem, 3vw, 2rem);
+  background: rgba(5, 10, 17, 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--si-line-faint);
+}
+
+.si-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  color: var(--si-text-strong);
+  text-decoration: none;
+}
+
+.si-topbar__brand:hover {
+  text-decoration: none;
+}
+
+.si-topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.si-topbar__nav a {
+  font-family: var(--si-font-mono);
+  font-size: 0.82rem;
+  color: var(--si-muted);
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--si-radius);
+  border: 1px solid transparent;
+}
+
+.si-topbar__nav a:hover {
+  color: var(--si-text-strong);
+  background: var(--si-panel);
+  border-color: var(--si-line-faint);
+  text-decoration: none;
+}
+
+.si-topbar__nav a[aria-current="page"] {
+  color: var(--si-gold);
+  border-color: var(--si-gold-dim);
+  background: rgba(246, 201, 69, 0.06);
+}
+
+/* ---- Shell ---- */
+.si-shell {
+  max-width: var(--si-maxw);
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 2rem);
+}
+
+.si-footer {
+  border-top: 1px solid var(--si-line-faint);
+  margin-top: 5rem;
+  padding: 2rem clamp(1rem, 3vw, 2rem);
+  color: var(--si-faint);
+  font-size: 0.85rem;
+}
+
+.si-footer .si-shell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.5rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.si-footer a {
+  color: var(--si-muted);
+}
+
+/* ---- Panels & cards ---- */
+.si-panel {
+  background: linear-gradient(180deg, var(--si-panel-2), var(--si-panel));
+  border: 1px solid var(--si-line-faint);
+  border-radius: var(--si-radius-lg);
+  padding: 1.4rem 1.5rem;
+}
+
+.si-panel--glow {
+  box-shadow: var(--si-glow-gold);
+  border-color: rgba(246, 201, 69, 0.22);
+}
+
+.si-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.si-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: linear-gradient(180deg, var(--si-panel-2), var(--si-panel));
+  border: 1px solid var(--si-line-faint);
+  border-radius: var(--si-radius-lg);
+  padding: 1.1rem 1.2rem;
+  color: inherit;
+  transition:
+    border-color var(--si-fast) var(--si-ease),
+    transform var(--si-fast) var(--si-ease),
+    box-shadow var(--si-fast) var(--si-ease);
+}
+
+.si-card:hover {
+  border-color: var(--si-line);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), var(--si-glow-cyan);
+  text-decoration: none;
+}
+
+.si-card__dtype {
+  font-family: var(--si-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--si-gold);
+}
+
+.si-card__title {
+  color: var(--si-text-strong);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.si-card__desc {
+  color: var(--si-muted);
+  font-size: 0.88rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.si-card__meta {
+  margin-top: auto;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--si-line-faint);
+  color: var(--si-faint);
+  font-family: var(--si-font-mono);
+  font-size: 0.74rem;
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+/* ---- Chips ---- */
+.si-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-family: var(--si-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  color: var(--si-muted);
+  background: var(--si-panel);
+  border: 1px solid var(--si-line-faint);
+  border-radius: 999px;
+  padding: 0.16rem 0.6rem;
+  white-space: nowrap;
+}
+
+.si-chip--gold {
+  color: var(--si-gold);
+  border-color: var(--si-gold-dim);
+  background: rgba(246, 201, 69, 0.07);
+}
+
+.si-chip--cyan {
+  color: var(--si-cyan);
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.si-chip--live {
+  color: var(--si-success);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.si-chip--live::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--si-success);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+  animation: si-pulse 2.2s infinite;
+}
+
+@keyframes si-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ---- Hero ---- */
+.si-hero {
+  padding: clamp(3.5rem, 9vw, 7rem) 0 clamp(2.5rem, 6vw, 4.5rem);
+  position: relative;
+}
+
+.si-hero__kicker {
+  font-family: var(--si-font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--si-cyan);
+  margin-bottom: 1.1rem;
+}
+
+.si-hero__title {
+  font-size: clamp(2.1rem, 5.4vw, 3.6rem);
+  margin-bottom: 1rem;
+}
+
+.si-hero__title .si-glow {
+  color: var(--si-gold);
+  text-shadow: 0 0 26px rgba(246, 201, 69, 0.35);
+}
+
+.si-hero__lede {
+  max-width: 46rem;
+  color: var(--si-muted);
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+}
+
+.si-section {
+  padding: clamp(2rem, 5vw, 3.5rem) 0;
+}
+
+.si-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.4rem;
+}
+
+.si-section__title {
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+}
+
+.si-section__more {
+  font-family: var(--si-font-mono);
+  font-size: 0.8rem;
+}
+
+/* ---- Scanline backdrop (subtle) ---- */
+.si-scanlines {
+  position: relative;
+}
+
+.si-scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(220, 231, 242, 0.012) 3px 4px
+  );
+}
+
+/* ---- Symbolics wordmark ---- */
+.si-wordmark {
+  font-family: var(--si-font-mono);
+  white-space: nowrap;
+  color: var(--si-text-strong);
+  letter-spacing: 0.01em;
+  display: inline-block;
+}
+
+.si-wordmark__paren {
+  color: var(--si-faint);
+}
+
+.si-wordmark__name {
+  color: var(--si-text-strong);
+}
+
+.si-wordmark__lambda {
+  color: var(--si-gold);
+  text-shadow: 0 0 12px rgba(246, 201, 69, 0.45);
+}
+
+.si-wordmark--sm {
+  font-size: 0.95rem;
+}
+
+.si-wordmark--md {
+  font-size: 1.15rem;
+}
+
+.si-wordmark--lg {
+  font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+  letter-spacing: 0.02em;
+}
+
+.si-topbar .si-wordmark--sm {
+  font-size: 0.92rem;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@starintel/symbolics",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "a0-symbolics.starintel.actor - symbolics-branded site for the a0-symbolics agent framework",
+  "scripts": {
+    "build": "node --experimental-strip-types build.ts",
+    "test": "true",
+    "lint": "true",
+    "typecheck": "true"
+  },
+  "devDependencies": {
+    "@starintel/content": "workspace:*",
+    "@starintel/seo": "workspace:*",
+    "@starintel/ui": "workspace:*",
+    "marked": "^15.0.0"
+  }
+}

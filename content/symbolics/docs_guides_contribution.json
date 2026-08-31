@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/contribution",
+  "title": "Contributing to Agent Zero",
+  "date": null,
+  "author": null,
+  "description": "Contributions to improve Agent Zero are very welcome!  This guide outlines how to contribute code, documentation, or other improvements.",
+  "excerpt": "Contributions to improve Agent Zero are very welcome!  This guide outlines how to contribute code, documentation, or other improvements.",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/contribution.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "adf0181953982462af6cd21425cb003f56a7e6414c4a64413f1410bf17e48f78",
+    "dirty": true
+  }
+}

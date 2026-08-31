@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/browser",
+  "title": "Browser Guide",
+  "date": null,
+  "author": null,
+  "description": "Agent Zero has a built-in Browser for real web pages.",
+  "excerpt": "Agent Zero has a built-in Browser for real web pages.",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/browser.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "d3dba34c4b0c1f7ed226853f167cc9ef3d7d96f2bc88e39e0dad3db486592aa8",
+    "dirty": true
+  }
+}

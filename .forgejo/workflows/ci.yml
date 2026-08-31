@@ -1,0 +1,46 @@
+name: website-ci
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  verify:
+    name: build, test, verify
+    runs-on: ubuntu-latest
+    container: docker.io/library/node:24-bookworm
+    steps:
+      - name: checkout
+        run: |
+          git config --global --add safe.directory "*"
+          git clone --no-checkout "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" repo
+          cd repo
+          git fetch --depth=1 origin "$GITHUB_SHA"
+          git checkout --force "$GITHUB_SHA"
+          cd ..
+          mkdir -p "$GITHUB_WORKSPACE"
+          cp -a repo/. "$GITHUB_WORKSPACE"/
+      - name: system deps
+        run: |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git swi-prolog emacs-nox jq > /dev/null
+      - name: pnpm
+        run: npm install --global pnpm@11.24.0
+      - name: install
+        run: pnpm install --frozen-lockfile
+      - name: build
+        run: pnpm build
+      - name: unit tests
+        run: pnpm test
+      - name: typecheck
+        run: pnpm typecheck
+      - name: v0.9 schema pin check
+        run: node scripts/sync-v09-schema.mjs --check
+      - name: org export test
+        run: bash tests/run-org-export-test.sh
+      - name: prolog facts
+        run: node scripts/generate-facts.mjs
+      - name: prolog verification
+        run: pnpm "verify:ci"
+      - name: ci hygiene
+        run: node scripts/ci-hygiene.mjs

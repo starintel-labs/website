@@ -1,0 +1,28 @@
+<p>
+I build <b>StarIntel</b>: a local-first, document-driven intelligence platform.
+The thesis is simple: language models are useful components, but reasoning,
+planning, and verification belong to symbolic systems.
+</p>
+
+<p>
+StarIntel combines:
+</p>
+
+<ul class="org-ul">
+<li><b>Expert systems</b> - Prolog knowledge bases that plan work and verify
+invariants before anything ships.</li>
+<li><b>Actors</b> - supervised message-passing services (Common Lisp, Sento,
+RabbitMQ topic exchanges) with recursive dataflow.</li>
+<li><b>Structured documents</b> - the StarIntel v0.9 model: fifty typed document
+kinds, each carrying sources, evidence, assessment, and verification
+metadata.</li>
+<li><b>Autonomous workers</b> - Auto Dig investigates; Auto Research writes;
+both publish nothing that has not passed explicit human approval gates.</li>
+</ul>
+
+<p>
+Everything is Nix-built, schema-pinned, and provenance-tracked. When a model
+is the right tool - extraction, drafting, enrichment - it runs inside the
+same typed pipelines as everything else, and its output is never the final
+authority.
+</p>

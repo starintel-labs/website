@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/agent-profiles",
+  "title": "Agent Profiles and the Agent Editor",
+  "date": null,
+  "author": null,
+  "description": "Agent Profiles give a chat a repeatable role, set of instructions, model preset,",
+  "excerpt": "Agent Profiles give a chat a repeatable role, set of instructions, model preset,",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/agent-profiles.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "c27c1c9135e4ee7548bd60ed7201944225d6fce7811a12187957b69dc9ac8e0f",
+    "dirty": true
+  }
+}

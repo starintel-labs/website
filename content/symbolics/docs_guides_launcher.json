@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/launcher",
+  "title": "Agent Zero Launcher",
+  "date": null,
+  "author": null,
+  "description": "Agent Zero Launcher is the desktop app for installing, running, switching, and",
+  "excerpt": "Agent Zero Launcher is the desktop app for installing, running, switching, and",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/launcher.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "6a14c0157b76021fcacb7ebf2d91b48db894fb24b3e7fdc3c9a0d5160ce1eedd",
+    "dirty": true
+  }
+}

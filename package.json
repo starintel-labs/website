@@ -1,0 +1,39 @@
+{
+  "name": "starintel-website",
+  "private": true,
+  "version": "0.1.0",
+  "description": "StarIntel website applications and public web properties",
+  "type": "module",
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "pnpm -r --workspace-concurrency=1 build",
+    "build:main": "pnpm --filter @starintel/main build",
+    "build:blog": "pnpm --filter @starintel/blog build",
+    "build:nsaspy": "pnpm --filter @starintel/nsaspy build",
+    "build:admin": "pnpm --filter @starintel/admin build",
+    "test": "node --experimental-strip-types --test 'tests/**/*.test.ts' && pnpm -r --workspace-concurrency=1 test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "format": "prettier --check .",
+    "facts": "node scripts/generate-facts.mjs",
+    "verify": "swipl -q -s prolog/run.pl -g run:verify_all",
+    "plan": "swipl -q -s prolog/run.pl -g run:print_plan",
+    "publish": "node scripts/publish.mjs",
+    "verify:ci": "swipl -q -s prolog/run.pl -g run:verify_ci"
+  },
+  "devDependencies": {
+    "@starintel/content": "workspace:*",
+    "@starintel/starintel-doc": "workspace:*",
+    "@types/node": "^24.0.0",
+    "pnpm": "11.24.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "smol-toml": "^1.8.0"
+  }
+}

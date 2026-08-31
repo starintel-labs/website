@@ -1,0 +1,22 @@
+{
+  "slug": "docs/guides/onboarding",
+  "title": "First-Run Onboarding",
+  "date": null,
+  "author": null,
+  "description": "Use onboarding the first time you open Agent Zero, or any time the Web UI says",
+  "excerpt": "Use onboarding the first time you open Agent Zero, or any time the Web UI says",
+  "tags": [],
+  "filetags": null,
+  "id": null,
+  "status": null,
+  "anchors": [],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/a0-symbolics.git",
+    "path": "docs/guides/onboarding.md",
+    "commit": "3aed5dfff1ecee4d784d72e4a26bbd208d994436",
+    "blob": null,
+    "content_sha256": "cd8fa84191fd9cafe151594c81c6ef9f18bf14c0705e5f880ec7a5cca09b9fbc",
+    "dirty": true
+  }
+}
