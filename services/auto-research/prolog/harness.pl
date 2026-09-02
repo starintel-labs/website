@@ -38,7 +38,7 @@ execute_direct(RunDir, Workspace, PromptFile, Model0, Registry, Authority,
     read_file_to_string(RequestFile, Request, []),
     format(string(Query), '~s\n\n## Run request\n\n```json\n~s\n```\n',
            [Prompt, Request]),
-    atom_string(Model, Model0),
+    text_atom(Model0, Model),
     rlm_chain:openrouter_provider(Model, Provider),
     Handler = auto_research_harness:model_handler(Provider),
     Capabilities = [
@@ -87,7 +87,7 @@ register_native_tools(Registry, Workspace) :-
 register_project_list(Registry, Workspace) :-
     Schema = tool_schema{
         name:project_list,
-        description:"List files or directories beneath the Auto Research run workspace",
+        description:"List files or directories beneath the Auto Research run workspace; use path . for the workspace root",
         capability:tool(project_list),
         effect:read,
         arguments:_{
@@ -184,7 +184,11 @@ register_project_append(Registry, Workspace) :-
     rlm_tool:tool_register(Registry, Schema, Handler, ok(_)).
 
 project_list_handler(Workspace, Args, Result) :-
-    relative_workspace_path(Workspace, Args.path, Path, Relative),
+    text_string(Args.path, Relative),
+    ( Relative == "."
+    -> Path = Workspace
+    ; relative_workspace_path(Workspace, Relative, Path, _)
+    ),
     ( exists_directory(Path) -> true ; throw(error(existence_error(directory, Relative), _)) ),
     directory_files(Path, RawEntries),
     exclude(dot_entry, RawEntries, Entries0),
@@ -209,7 +213,7 @@ project_write_handler(Workspace, Args, Result) :-
     make_directory_path(Parent),
     setup_call_cleanup(
         open(Path, write, Stream, [encoding(utf8),type(text)]),
-        write(Stream, Content),
+        format(Stream, '~s', [Content]),
         close(Stream)),
     string_length(Content, Characters),
     Result = json{path:Relative, characters:Characters}.
@@ -221,7 +225,7 @@ project_append_handler(Workspace, Args, Result) :-
     make_directory_path(Parent),
     setup_call_cleanup(
         open(Path, append, Stream, [encoding(utf8),type(text)]),
-        write(Stream, Content),
+        format(Stream, '~s', [Content]),
         close(Stream)),
     string_length(Content, Characters),
     Result = json{path:Relative, characters:Characters}.
@@ -250,6 +254,12 @@ dot_entry('..').
 text_string(Value, String) :-
     ( string(Value) -> String = Value
     ; atom(Value) -> atom_string(Value, String)
+    ; throw(error(type_error(text, Value), _))
+    ).
+
+text_atom(Value, Atom) :-
+    ( atom(Value) -> Atom = Value
+    ; string(Value) -> atom_string(Atom, Value)
     ; throw(error(type_error(text, Value), _))
     ).
 
