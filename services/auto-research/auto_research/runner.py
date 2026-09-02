@@ -37,11 +37,10 @@ class HarnessRunner:
             "--prompt-file",
             str(self.prompt),
         ]
-        env = os.environ.copy()
         completed = subprocess.run(
             command,
             cwd=run_dir,
-            env=env,
+            env=_provider_environment(),
             text=True,
             capture_output=True,
             timeout=900,
@@ -57,3 +56,25 @@ class HarnessRunner:
         if not result_path.is_file():
             raise HarnessError("Prolog-RLM harness returned success without result.json")
         return result_path.read_text(encoding="utf-8")
+
+
+def _provider_environment() -> dict[str, str]:
+    allowed_exact = {
+        "PATH",
+        "HOME",
+        "LANG",
+        "LC_ALL",
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR",
+        "HTTP_PROXY",
+        "HTTPS_PROXY",
+        "NO_PROXY",
+        "http_proxy",
+        "https_proxy",
+        "no_proxy",
+    }
+    env = {key: value for key, value in os.environ.items() if key in allowed_exact}
+    for key, value in os.environ.items():
+        if key.startswith("OPENROUTER_"):
+            env[key] = value
+    return env
