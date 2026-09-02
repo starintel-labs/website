@@ -23,7 +23,7 @@ jobs:
       - name: system deps
         run: |
           apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git swi-prolog emacs-nox jq > /dev/null
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git swi-prolog emacs-nox jq python3 python3-pip python3-venv > /dev/null
       - name: pnpm
         run: npm install --global pnpm@11.24.0
       - name: install
@@ -34,6 +34,13 @@ jobs:
         run: pnpm test
       - name: typecheck
         run: pnpm typecheck
+      - name: auto research service tests
+        run: |
+          python3 -m venv /tmp/auto-research-venv
+          /tmp/auto-research-venv/bin/pip install -q -e 'services/auto-research[dev]'
+          /tmp/auto-research-venv/bin/pytest services/auto-research/tests
+      - name: auto research Prolog syntax
+        run: swipl -q -g "load_files('services/auto-research/prolog/harness.pl',[silent(true)]),halt."
       - name: v0.9 schema pin check
         run: node scripts/sync-v09-schema.mjs --check
       - name: org export test
