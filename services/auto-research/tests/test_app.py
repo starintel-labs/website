@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 from auto_research.app import create_app
 from auto_research.config import Settings
+from auto_research.runner import _provider_environment
 
 
 class FakeForgejo:
@@ -86,3 +87,13 @@ def test_authenticated_forgejo_tool_endpoint(tmp_path: Path) -> None:
     assert response.status_code == 200
     assert response.json()["number"] == 1
     assert fake.calls == [("starintel-labs/website", "extra slice", "details")]
+
+
+def test_prolog_environment_excludes_service_secrets(monkeypatch) -> None:
+    monkeypatch.setenv("AUTO_RESEARCH_API_TOKEN", "api-secret")
+    monkeypatch.setenv("FORGEJO_TOKEN", "forgejo-secret")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "provider-secret")
+    environment = _provider_environment()
+    assert "AUTO_RESEARCH_API_TOKEN" not in environment
+    assert "FORGEJO_TOKEN" not in environment
+    assert environment["OPENROUTER_API_KEY"] == "provider-secret"
