@@ -60,6 +60,13 @@
   overflow: hidden;
 }
 
+/* modifier: primary content cards must not lose prose to the clamp */
+.si-card--open .si-card__desc {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
+
 .si-card__meta {
   margin-top: auto;
   padding-top: 0.6rem;
@@ -462,6 +469,10 @@ a.si-doclist__item:hover {
   .si-doclist__meta {
     order: -1;
   }
+
+  .si-terminal__body {
+    font-size: 0.7rem;
+  }
 }
 
 /* ---- Metric ---- */
@@ -550,6 +561,11 @@ a.si-doclist__item:hover {
   border-radius: var(--si-radius-lg);
   color: var(--si-text-muted);
   background: var(--si-bg-surface);
+}
+
+/* an empty state inside a grid owns the whole row */
+.si-grid > .si-empty {
+  grid-column: 1 / -1;
 }
 
 .si-empty__mark {

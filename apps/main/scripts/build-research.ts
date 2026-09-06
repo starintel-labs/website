@@ -32,11 +32,22 @@ rmSync(outRoot, { recursive: true, force: true });
 mkdirSync(outRoot, { recursive: true });
 cpSync(join(websiteRoot, "packages", "design", "src", "css"), join(outRoot, "css"), { recursive: true });
 
+// Research pages ship their CSS alongside the documents; the site-root /css
+// path is not part of this app's dist.
+const RESEARCH_CSS = [
+  "/research/css/tokens.css",
+  "/research/css/base.css",
+  "/research/css/layout.css",
+  "/research/css/components.css",
+  "/research/css/org.css",
+  "/research/css/motion.css",
+];
+
 const NAV = [
-  { href: "/", label: "Home" },
-  { href: "/research/", label: "Research", current: true },
-  { href: "/radar", label: "Radar" },
-  { href: "https://blog.starintel.actor/", label: "Blog", external: true },
+  { href: "/", label: "home" },
+  { href: "/research/", label: "research", current: true },
+  { href: "/radar", label: "radar" },
+  { href: "https://blog.starintel.actor/", label: "blog", external: true },
   { href: "https://nsaspy.starintel.actor/", label: "nsaspy", external: true },
 ];
 
@@ -54,6 +65,7 @@ for (const doc of docs) {
     canonical: `${BASE}/${doc.slug}/`,
     baseUrl: "https://starintel.actor",
     nav: NAV,
+    css: RESEARCH_CSS,
     contentHtml: article.html,
     jsonLd: articleJsonLd({
       headline: doc.title,
@@ -88,13 +100,14 @@ writeFileSync(
     canonical: `${BASE}/`,
     baseUrl: "https://starintel.actor",
     nav: NAV,
+    css: RESEARCH_CSS,
     contentHtml: `  <section class="si-hero" style="padding-top:2.5rem">
     <p class="si-hero__kicker">Auto Research · approval-gated</p>
     <h1 class="si-hero__title" style="font-size:2rem">Research</h1>
     <p class="si-hero__lede">Published output of StarIntel Auto Research. Every document here passed an explicit human approval gate with recorded evidence, and carries its source repository, path, commit, and content hash. Nothing publishes merely because it exists.</p>
   </section>
   <section class="si-grid" style="margin-top:2rem">
-${cards || '      <div class="si-card"><span class="si-card__title">No public research published yet</span><span class="si-card__desc">Publication is fail closed: documents appear here only when explicitly approved and allowlisted.</span></div>'}
+${cards || '      <div class="si-empty"><span class="si-empty__mark">(λ)</span><span class="si-empty__title">No public research published yet</span><span>Publication is fail closed: documents appear here only when explicitly approved and allowlisted.</span></div>'}
   </section>`,
   }),
 );
