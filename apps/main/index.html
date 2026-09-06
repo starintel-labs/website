@@ -37,7 +37,7 @@
       <a class="si-topbar__brand" href="/" aria-label="StarIntel home" data-wordmark></a>
       <nav class="si-topbar__nav" aria-label="Primary">
         <a href="/" data-active="home">home</a>
-        <a href="/research/">research</a>
+        <a href="https://auto-research.starintel.actor/" target="_blank" rel="noopener">research</a>
         <a href="/radar" data-active="radar">radar</a>
         <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">blog</a>
         <a href="https://nsaspy.starintel.actor/" target="_blank" rel="noopener">nsaspy</a>
@@ -66,7 +66,7 @@
               and content hash. Public surfaces are fail-closed projections of that pipeline.
             </p>
             <div class="si-hero__actions">
-              <a class="si-btn si-btn--primary" href="/research/">explore research</a>
+              <a class="si-btn si-btn--primary" href="https://auto-research.starintel.actor/" target="_blank" rel="noopener">explore research</a>
               <a class="si-btn" href="https://git.starintel.actor/starintel-labs" target="_blank" rel="noopener">view code</a>
             </div>
             <p class="si-hero__tech">
@@ -228,13 +228,13 @@
               </div>
               <p style="margin:0 0 0.8rem;font-size:0.9rem;color:var(--si-text-secondary)">
                 Auto Dig and Auto Research actors work the corpus autonomously, but publication is
-                fail closed: an operator must approve each document with recorded evidence before
-                it can render, and the approval state is re-checked at build time.
+                fail closed: an operator must approve each document with recorded evidence, and
+                every artifact carries its source repository, path, commit, and content hash.
               </p>
               <p class="faint mono" style="margin:0 0 1rem;font-size:0.75rem">
                 state: queue empty — publication is fail closed, not idle
               </p>
-              <a class="si-btn si-btn--ghost" href="/research/">visit the research index</a>
+              <a class="si-btn si-btn--ghost" href="https://auto-research.starintel.actor/" target="_blank" rel="noopener">open the research archive</a>
             </div>
             <div class="si-panel">
               <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.7rem">
@@ -260,8 +260,7 @@
               <ul style="margin:0;padding-left:1.1em;font-family:var(--si-font-mono);font-size:0.8rem;color:var(--si-text-secondary)">
                 <li style="margin-bottom:0.35em"><a href="/api/recent-documents?sample=4">/api/recent-documents</a> — allowlisted projection</li>
                 <li style="margin-bottom:0.35em"><a href="/radar/stream">/radar/stream</a> — aggregate SSE feed</li>
-                <li style="margin-bottom:0.35em"><a href="/healthz">/healthz</a> · <a href="/readyz">/readyz</a> — service state</li>
-                <li><a href="/research/">/research/</a> — published research index</li>
+                <li><a href="/healthz">/healthz</a> · <a href="/readyz">/readyz</a> — service state</li>
               </ul>
               <p class="faint" style="margin:0.8rem 0 0;font-size:0.78rem">
                 Internal infrastructure is never exposed to the browser; projections scrub and
@@ -292,7 +291,7 @@ events ──▶ private projector ──▶ allowlisted stream ──▶ /radar
       <div class="si-shell">
         <span><span data-wordmark-sm></span> <span class="muted">— symbolic systems, structurally.</span></span>
         <span>
-          <a href="/research/">Research</a> ·
+          <a href="https://auto-research.starintel.actor/" target="_blank" rel="noopener">Research</a> ·
           <a href="/radar">Radar</a> ·
           <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">Blog</a> ·
           <a href="https://nsaspy.starintel.actor/" target="_blank" rel="noopener">nsaspy</a> ·
