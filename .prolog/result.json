@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-09-06T18:16:43Z",
+  "facts_sha256": "c7a1cc3edb7841c0aa476e59f4d829c8b8bbf28ece92f950d70cc4db18247e4f",
+  "head": "495595ff43ff3a9226cc14a9a812caaf8ec70c95",
+  "reason": "SWI-Prolog exited 1",
+  "status": "fail",
+  "stderr_sha256": "58c6c28c8c5c4163d27e93b4d89d99f18b0b41b5d4b7ac340dfddd26f87f9122",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "swipl_exit": 1,
+  "verify_sha256": "a8fe7992fa4faf2ebdbe946e9fd441261be817764b22422e7ff4ea405cd6bedb",
+  "worktree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

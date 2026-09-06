@@ -1,4 +1,17 @@
 % Ground facts and machine observations for this worktree.
 task('obsidian-gold-website').
-repo_state('2b9c6a05d8272d245c0eaf3783240bf8545fad05', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+repo_state('495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
 research_required(false).
+
+% Task-specific requirements (claimed by the work, verified by evidence).
+requirement(vendored_design_package).
+requirement(consumes_starintel_design).
+requirement(obsidian_gold_theme).
+requirement(no_fabricated_data).
+requirement(ui_smoke_tests).
+observation('c2736e5ad28a9287', command(['pnpm', 'build']), exit(0), '77a509aa3932f0e7595d31f0fb8aa9b368f2760dd7380d64ee5fc5cb2239ad95', '495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('319ca893584d146a', command(['pnpm', 'test']), exit(0), '2e6eed8fb37d1c797d9bf15d5a96bd04259996e4cf3498f98d5189ee8f0bda8a', '495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('b550fdb3c6256687', command(['pnpm', 'typecheck']), exit(0), '284cd4e61e792da00bc83dbe94439937c58e4a2ef3d90356f045fd042819f74c', '495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('221f8207201945fc', command(['node', 'scripts/sync-v09-schema.mjs', '--check']), exit(0), '07f360ca4da1643416bc503d0f6466da84baa0562f6d5c60edbca5cc2fbf7d4d', '495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('aee1ef0b86a1e2bb', command(['node', 'scripts/sync-design.mjs', '--check']), exit(0), '65aee92792d458fd03b396509e930c0b2d5bdcda43ce9165908e8cb969215c52', '495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('208902a63e9b0b1e', command(['node', 'scripts/ci-hygiene.mjs']), exit(0), 'f9e78f4a8b1776abc33ac709cd6529bd3272e3206da842e481babf13d98e95b5', '495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
