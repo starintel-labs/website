@@ -1,6 +1,6 @@
 % Ground facts and machine observations for this worktree.
 task('obsidian-gold-website').
-repo_state('495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+repo_state('d44fe711146c4b65e1bff8bb332ef5f39f4cdc4e', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
 research_required(false).
 
 % Task-specific requirements (claimed by the work, verified by evidence).
@@ -15,3 +15,9 @@ observation('b550fdb3c6256687', command(['pnpm', 'typecheck']), exit(0), '284cd4
 observation('221f8207201945fc', command(['node', 'scripts/sync-v09-schema.mjs', '--check']), exit(0), '07f360ca4da1643416bc503d0f6466da84baa0562f6d5c60edbca5cc2fbf7d4d', '495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
 observation('aee1ef0b86a1e2bb', command(['node', 'scripts/sync-design.mjs', '--check']), exit(0), '65aee92792d458fd03b396509e930c0b2d5bdcda43ce9165908e8cb969215c52', '495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
 observation('208902a63e9b0b1e', command(['node', 'scripts/ci-hygiene.mjs']), exit(0), 'f9e78f4a8b1776abc33ac709cd6529bd3272e3206da842e481babf13d98e95b5', '495595ff43ff3a9226cc14a9a812caaf8ec70c95', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('8675b752a2114117', command(['pnpm', 'build']), exit(0), '135fde28d1099d50bf09e4819440701173d6604fc4c811839c8f7c764b818c6b', 'd44fe711146c4b65e1bff8bb332ef5f39f4cdc4e', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('b6ffa9276c625e0a', command(['pnpm', 'test']), exit(0), '26e6ef6327767424eb2ab3f0978829c5b94c01e502049e798a2c9fdb000baf16', 'd44fe711146c4b65e1bff8bb332ef5f39f4cdc4e', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('18ee5f033ff551bc', command(['pnpm', 'typecheck']), exit(0), 'f3256278b7759513fa7b840c2b8dd607a11c08a70c941dd754d0d910729b28b6', 'd44fe711146c4b65e1bff8bb332ef5f39f4cdc4e', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('5cc7700dfa4dac02', command(['node', 'scripts/sync-v09-schema.mjs', '--check']), exit(0), '07f360ca4da1643416bc503d0f6466da84baa0562f6d5c60edbca5cc2fbf7d4d', 'd44fe711146c4b65e1bff8bb332ef5f39f4cdc4e', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('0bbd4f84074f532e', command(['node', 'scripts/sync-design.mjs', '--check']), exit(0), '65aee92792d458fd03b396509e930c0b2d5bdcda43ce9165908e8cb969215c52', 'd44fe711146c4b65e1bff8bb332ef5f39f4cdc4e', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+observation('dd4176f74c885745', command(['node', 'scripts/ci-hygiene.mjs']), exit(0), 'f9e78f4a8b1776abc33ac709cd6529bd3272e3206da842e481babf13d98e95b5', 'd44fe711146c4b65e1bff8bb332ef5f39f4cdc4e', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').

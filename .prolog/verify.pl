@@ -50,9 +50,7 @@ consumes_starintel_design :-
     read_repo_file('/apps/main/package.json', M),
     atom_codes(MA, M),
     sub_atom(MA, _, _, _, '"@starintel/design": "workspace:*"'),
-    \+ exists(rp('/packages/ui/package.json')).
-
-exists(Abs) :- exists_file(Abs).
+    \+ (rp('/packages/ui/package.json', UI), exists_file(UI)).
 
 % The main page declares the obsidian-gold theme and the semantic canvas token.
 obsidian_gold_theme :-
