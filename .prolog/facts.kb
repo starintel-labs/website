@@ -1,0 +1,4 @@
+% Ground facts and machine observations for this worktree.
+task('obsidian-gold-website').
+repo_state('2b9c6a05d8272d245c0eaf3783240bf8545fad05', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855').
+research_required(false).

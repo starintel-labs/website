@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@starintel/seo": "workspace:*",
-    "@starintel/ui": "workspace:*"
+    "@starintel/design": "workspace:*"
   },
   "scripts": {
     "build": "true",

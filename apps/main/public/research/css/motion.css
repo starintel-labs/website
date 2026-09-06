@@ -1,0 +1,71 @@
+/* StarIntel motion: keyframes and reduced-motion guarantees. */
+
+@keyframes si-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes si-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes si-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes si-node-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes si-edge-flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+/* Symbolic-graph motion hooks: apply to inline SVG node/edge elements. */
+.si-anim-node {
+  animation: si-node-breathe 4.5s var(--si-ease) infinite;
+}
+
+.si-anim-edge {
+  stroke-dasharray: 4 8;
+  animation: si-edge-flow 2.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --si-fast: 0ms;
+    --si-slow: 0ms;
+  }
+
+  .si-anim-node,
+  .si-anim-edge,
+  .si-skeleton::after,
+  .si-spinner,
+  .si-chip--live::before,
+  .si-status--live .si-status__dot {
+    animation: none;
+  }
+
+  .si-anim-edge {
+    stroke-dasharray: none;
+  }
+}

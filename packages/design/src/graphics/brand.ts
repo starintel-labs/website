@@ -3,8 +3,8 @@
  * Every StarIntel web property renders its wordmark from here so the
  * stated name is templated, never hardcoded.
  *
- *   starintel -> (starintel(λx.xx))
- *   symbolics -> (symbolics(λx.xx))
+ *   starintel -> (starintel(λx.xx))   compact: starintel (λ)
+ *   symbolics -> (symbolics(λx.xx))   compact: symbolics (λ)
  */
 
 export type Brand = "starintel" | "symbolics";
@@ -14,6 +14,8 @@ export interface BrandTheme {
   name: string;
   /** Full wordmark string. */
   wordmark: string;
+  /** Compact wordmark string. */
+  compact: string;
   /** Organization display name for titles/SEO. */
   orgName: string;
   /** Footer tagline. */
@@ -24,12 +26,14 @@ export const BRANDS: Record<Brand, BrandTheme> = {
   starintel: {
     name: "starintel",
     wordmark: "(starintel(λx.xx))",
+    compact: "starintel (λ)",
     orgName: "StarIntel",
-    tagline: "symbolic AI, structurally.",
+    tagline: "symbolic systems, structurally.",
   },
   symbolics: {
     name: "symbolics",
     wordmark: "(symbolics(λx.xx))",
+    compact: "symbolics (λ)",
     orgName: "Symbolics",
     tagline: "agents with a full Linux computer.",
   },

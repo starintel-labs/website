@@ -16,7 +16,7 @@
   "dependencies": {
     "@starintel/starintel-doc": "workspace:*",
     "@starintel/seo": "workspace:*",
-    "@starintel/ui": "workspace:*",
+    "@starintel/design": "workspace:*",
     "amqplib": "^0.10.9"
   },
   "devDependencies": {

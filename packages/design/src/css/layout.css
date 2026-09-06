@@ -1,0 +1,321 @@
+/* StarIntel layout: shell, topbar, bands, hero, grids, footer, wordmark. */
+
+/* ---- Shell ---- */
+.si-shell {
+  max-width: var(--si-maxw);
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 2rem);
+}
+
+/* ---- Topbar ---- */
+.si-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: var(--si-space-5);
+  min-height: var(--si-topbar-height);
+  padding: 0 clamp(1rem, 3vw, 2rem);
+  background: color-mix(in srgb, var(--si-bg-canvas) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--si-border);
+}
+
+.si-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  color: var(--si-text-bright);
+  text-decoration: none;
+}
+
+.si-topbar__brand:hover {
+  text-decoration: none;
+}
+
+.si-topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--si-space-1);
+  margin-left: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.si-topbar__nav::-webkit-scrollbar {
+  display: none;
+}
+
+.si-topbar__nav a {
+  font-family: var(--si-font-mono);
+  font-size: 0.82rem;
+  color: var(--si-text-muted);
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--si-radius-sm);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.si-topbar__nav a:hover {
+  color: var(--si-text-bright);
+  background: var(--si-bg-surface);
+  border-color: var(--si-border);
+  text-decoration: none;
+}
+
+/* Selected navigation is gold -- the primary gold placement in the chrome. */
+.si-topbar__nav a[aria-current="page"] {
+  color: var(--si-accent-primary);
+  border-color: var(--si-border-accent);
+  background: var(--si-accent-wash);
+}
+
+/* ---- Bands: full-width horizontal divisions of the page ---- */
+.si-band {
+  border-top: 1px solid var(--si-border);
+}
+
+.si-band--accent {
+  border-top-color: var(--si-border-strong);
+}
+
+/* ---- Sections ---- */
+.si-section {
+  padding: clamp(2rem, 5vw, 3.5rem) 0;
+}
+
+.si-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--si-space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--si-space-5);
+}
+
+.si-section__title {
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+}
+
+.si-section__more {
+  font-family: var(--si-font-mono);
+  font-size: 0.8rem;
+}
+
+/* ---- Hero: prose left, symbolic visual right ---- */
+.si-hero {
+  padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(2.5rem, 6vw, 4.5rem);
+  position: relative;
+}
+
+.si-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(280px, 5fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.si-hero__kicker {
+  font-family: var(--si-font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--si-text-muted);
+  margin: 0 0 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* a short gold rule anchors the kicker without glowing text */
+.si-hero__kicker::before {
+  content: "";
+  width: 2rem;
+  height: 1px;
+  background: var(--si-accent-dim);
+  flex: none;
+}
+
+.si-hero__title {
+  font-size: clamp(2rem, 4.6vw, 3.2rem);
+  margin-bottom: var(--si-space-4);
+}
+
+.si-hero__title .si-glow {
+  color: var(--si-accent-primary);
+}
+
+.si-hero__lede {
+  max-width: 44rem;
+  color: var(--si-text-secondary);
+  font-size: clamp(1rem, 1.4vw, 1.12rem);
+  margin: 0 0 var(--si-space-4);
+}
+
+.si-hero__lede + .si-hero__lede {
+  margin-bottom: var(--si-space-5);
+}
+
+.si-hero__actions {
+  display: flex;
+  gap: var(--si-space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--si-space-5);
+}
+
+.si-hero__visual {
+  position: relative;
+  min-width: 0;
+}
+
+.si-hero__tech {
+  font-family: var(--si-font-mono);
+  font-size: 0.78rem;
+  color: var(--si-text-faint);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.si-hero__tech .sep {
+  color: var(--si-border-strong);
+  user-select: none;
+}
+
+/* ---- Grids ---- */
+.si-grid {
+  display: grid;
+  gap: var(--si-space-4);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.si-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.si-grid--trio {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.si-grid--quad {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* ---- Footer ---- */
+.si-footer {
+  border-top: 1px solid var(--si-border);
+  margin-top: var(--si-space-8);
+  padding: var(--si-space-6) clamp(1rem, 3vw, 2rem);
+  color: var(--si-text-faint);
+  font-size: 0.85rem;
+}
+
+.si-footer .si-shell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--si-space-4) var(--si-space-7);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.si-footer a {
+  color: var(--si-text-muted);
+}
+
+.si-footer a:hover {
+  color: var(--si-text-bright);
+}
+
+/* ---- Scanline backdrop (subtle engineering-workstation texture) ---- */
+.si-scanlines {
+  position: relative;
+}
+
+.si-scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(236, 229, 214, 0.012) 3px 4px
+  );
+}
+
+/* ---- Wordmark ---- */
+.si-wordmark {
+  font-family: var(--si-font-mono);
+  white-space: nowrap;
+  color: var(--si-text-bright);
+  letter-spacing: 0.01em;
+  display: inline-block;
+}
+
+.si-wordmark__paren {
+  color: var(--si-text-faint);
+}
+
+.si-wordmark__name {
+  color: var(--si-text-bright);
+}
+
+.si-wordmark__lambda {
+  color: var(--si-accent-primary);
+}
+
+.si-wordmark--sm {
+  font-size: 0.95rem;
+}
+
+.si-wordmark--md {
+  font-size: 1.15rem;
+}
+
+.si-wordmark--lg {
+  font-size: clamp(1.6rem, 4.5vw, 2.8rem);
+  letter-spacing: 0.02em;
+}
+
+.si-topbar .si-wordmark--sm {
+  font-size: 0.92rem;
+}
+
+/* ---- Responsive: genuine layout transformations, not squeezing ---- */
+@media (max-width: 1024px) {
+  .si-grid--quad {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .si-hero__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 2fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .si-hero__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .si-hero__visual {
+    order: -1;
+    max-width: 420px;
+  }
+
+  .si-grid--2,
+  .si-grid--trio,
+  .si-grid--quad {
+    grid-template-columns: 1fr;
+  }
+
+  .si-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .si-footer .si-shell {
+    flex-direction: column;
+    gap: var(--si-space-3);
+  }
+}

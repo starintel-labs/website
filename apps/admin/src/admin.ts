@@ -1,14 +1,14 @@
 /** StarIntel admin console: Auto Dig run coordination. No fake data — every
  * panel reflects a live API response or an explicit error state. */
-import { renderWordmark } from "@starintel/ui/symbolics";
-import "@starintel/ui/css/tokens.css";
-import "@starintel/ui/css/base.css";
-import "@starintel/ui/css/layout.css";
+import { renderWordmark } from "@starintel/design/wordmark";
+import "@starintel/design/css/tokens.css";
+import "@starintel/design/css/base.css";
+import "@starintel/design/css/layout.css";
 
 const brand = document.querySelector<HTMLElement>("[data-wordmark]");
-if (brand) brand.replaceChildren(renderWordmark({ size: "sm" }));
+if (brand) brand.replaceChildren(renderWordmark({ size: "sm", compact: true }));
 const foot = document.querySelector<HTMLElement>("[data-wordmark-sm]");
-if (foot) foot.replaceChildren(renderWordmark({ size: "sm" }));
+if (foot) foot.replaceChildren(renderWordmark({ size: "sm", compact: true }));
 document.querySelector<HTMLAnchorElement>(".si-topbar__brand")?.setAttribute("href", "/");
 
 const apiStatus = document.getElementById("api-status")!;
@@ -20,13 +20,13 @@ function setStatus(state: string, label: string): void {
 }
 
 const STATE_COLORS: Record<string, string> = {
-  created: "var(--si-cyan)",
-  running: "var(--si-success)",
-  paused: "var(--si-warning)",
-  stopped: "var(--si-faint)",
-  completed: "var(--si-gold)",
-  failed: "var(--si-danger)",
-  "on-disk": "var(--si-faint)",
+  created: "var(--si-accent-secondary)",
+  running: "var(--si-status-success)",
+  paused: "var(--si-status-warning)",
+  stopped: "var(--si-text-faint)",
+  completed: "var(--si-accent-primary)",
+  failed: "var(--si-status-danger)",
+  "on-disk": "var(--si-text-faint)",
 };
 
 const ACTIONS: Record<string, string[]> = {
@@ -92,7 +92,7 @@ async function refresh(): Promise<void> {
     }
     for (const r of runs.runs) {
       const row = runsBody.insertRow();
-      const color = STATE_COLORS[r.state] ?? "var(--si-faint)";
+      const color = STATE_COLORS[r.state] ?? "var(--si-text-faint)";
       const actions = (ACTIONS[r.state] ?? [])
         .map(
           (a) =>
@@ -100,7 +100,7 @@ async function refresh(): Promise<void> {
         )
         .join(" ");
       row.innerHTML = `
-        <td style="padding:0.65rem 1rem; color:var(--si-text-strong)">${r.run_id}</td>
+        <td style="padding:0.65rem 1rem; color:var(--si-text-bright)">${r.run_id}</td>
         <td style="padding:0.65rem 1rem">${r.target ?? "—"}</td>
         <td style="padding:0.65rem 1rem; color:${color}">${r.state}</td>
         <td style="padding:0.65rem 1rem">${r.progress?.documents ?? "—"}</td>

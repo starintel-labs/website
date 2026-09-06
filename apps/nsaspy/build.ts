@@ -35,7 +35,7 @@ const about = all.find((d) => d.slug === "about");
 
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
-cpSync(join(websiteRoot, "packages", "ui", "css"), join(dist, "css"), { recursive: true });
+cpSync(join(websiteRoot, "packages", "design", "src", "css"), join(dist, "css"), { recursive: true });
 
 const NAV = [
   { href: "/", label: "Dailies", current: true },

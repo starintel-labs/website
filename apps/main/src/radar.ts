@@ -3,15 +3,15 @@
  * sweep visualization. Frames are batched visually; aggregate counts always
  * reflect the full observed volume.
  */
-import { renderWordmark } from "@starintel/ui/symbolics";
-import "@starintel/ui/css/tokens.css";
-import "@starintel/ui/css/base.css";
-import "@starintel/ui/css/layout.css";
+import { renderWordmark } from "@starintel/design/wordmark";
+import "@starintel/design/css/tokens.css";
+import "@starintel/design/css/base.css";
+import "@starintel/design/css/layout.css";
 
 const brand = document.querySelector<HTMLElement>("[data-wordmark]");
-if (brand) brand.replaceChildren(renderWordmark({ size: "sm" }));
+if (brand) brand.replaceChildren(renderWordmark({ size: "sm", compact: true }));
 const foot = document.querySelector<HTMLElement>("[data-wordmark-sm]");
-if (foot) foot.replaceChildren(renderWordmark({ size: "sm" }));
+if (foot) foot.replaceChildren(renderWordmark({ size: "sm", compact: true }));
 
 interface RadarEvent {
   t: string;
@@ -34,10 +34,10 @@ interface RadarRate {
 type RadarFrame = RadarEvent | RadarRate;
 
 const FAMILY_COLORS: Record<string, string> = {
-  document: "#f6c945",
-  actor: "#38bdf8",
-  system: "#22c55e",
-  unknown: "#5c7188",
+  document: "#e0b04a",
+  actor: "#7fa8bd",
+  system: "#7cae7f",
+  unknown: "#655e50",
 };
 const SIZE_LABEL: Record<string, string> = { s: "<2KB", m: "2–64KB", l: "64KB–1MB", xl: ">1MB" };
 
@@ -115,13 +115,13 @@ function drawSweep(now: number): void {
   const R = w / 2 - 24;
   ctx.clearRect(0, 0, w, w);
 
-  ctx.fillStyle = "#07111f";
+  ctx.fillStyle = "#0d0b08";
   ctx.beginPath();
   ctx.arc(c, c, R + 8, 0, Math.PI * 2);
   ctx.fill();
 
   // range rings
-  ctx.strokeStyle = "rgba(36,54,76,0.9)";
+  ctx.strokeStyle = "rgba(82,69,42,0.9)";
   ctx.lineWidth = 1.5;
   for (const r of [0.28, 0.5, 0.72, 0.92]) {
     ctx.beginPath();
@@ -129,7 +129,7 @@ function drawSweep(now: number): void {
     ctx.stroke();
   }
   // cross hairs
-  ctx.strokeStyle = "rgba(36,54,76,0.55)";
+  ctx.strokeStyle = "rgba(82,69,42,0.55)";
   ctx.beginPath();
   ctx.moveTo(c - R, c);
   ctx.lineTo(c + R, c);
@@ -141,9 +141,9 @@ function drawSweep(now: number): void {
   const sweepAngle = ((now / 2400) % 1) * Math.PI * 2;
   const grad = ctx.createConicGradient?.(sweepAngle - 0.9, c, c);
   if (grad) {
-    grad.addColorStop(0, "rgba(246,201,69,0)");
-    grad.addColorStop(0.92, "rgba(246,201,69,0)");
-    grad.addColorStop(1, "rgba(246,201,69,0.20)");
+    grad.addColorStop(0, "rgba(224,176,74,0)");
+    grad.addColorStop(0.92, "rgba(224,176,74,0)");
+    grad.addColorStop(1, "rgba(224,176,74,0.22)");
     ctx.fillStyle = grad;
     ctx.beginPath();
     ctx.moveTo(c, c);
@@ -151,7 +151,7 @@ function drawSweep(now: number): void {
     ctx.closePath();
     ctx.fill();
   }
-  ctx.strokeStyle = "rgba(246,201,69,0.9)";
+  ctx.strokeStyle = "rgba(224,176,74,0.9)";
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(c, c);

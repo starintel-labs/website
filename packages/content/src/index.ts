@@ -5,8 +5,8 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { brandTheme, wordmarkAria } from "@starintel/ui/brand";
-import { wordmarkHtml } from "@starintel/ui/symbolics";
+import { brandTheme, wordmarkAria } from "@starintel/design/brand";
+import { wordmarkHtml } from "@starintel/design/wordmark";
 import { metaTags, articleJsonLd, jsonLdScript } from "@starintel/seo";
 
 /** Parse Org timestamp forms like "<2026-08-28 Fri>" or "[2026-08-28 Fri]" or "2026-08-28". */
@@ -84,7 +84,7 @@ export interface PageOptions {
   canonical: string;
   baseUrl: string;
   contentHtml: string;
-  /** Brand key selecting the stated wordmark (see @starintel/ui/brand). */
+  /** Brand key selecting the stated wordmark (see @starintel/design/brand). */
   brand?: string;
   /** Extra nav links rendered after the brand. */
   nav?: { href: string; label: string; current?: boolean; external?: boolean }[];
@@ -101,7 +101,9 @@ const CSS_HREFS = [
   "/css/tokens.css",
   "/css/base.css",
   "/css/layout.css",
+  "/css/components.css",
   "/css/org.css",
+  "/css/motion.css",
 ];
 
 export function renderPage(o: PageOptions): string {
@@ -121,7 +123,7 @@ export function renderPage(o: PageOptions): string {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#050a11">
+    <meta name="theme-color" content="#090807">
     ${css}
     ${metaTags({
       title: o.title,
@@ -136,7 +138,7 @@ export function renderPage(o: PageOptions): string {
   </head>
   <body>
     <header class="si-topbar">
-      <a class="si-topbar__brand" href="/" aria-label="${escapeHtml(wordmarkAria(theme))}">${wordmarkHtml(o.brand ?? "starintel", "si-wordmark--sm")}</a>
+      <a class="si-topbar__brand" href="/" aria-label="${escapeHtml(wordmarkAria(theme))}">${wordmarkHtml(o.brand ?? "starintel", "si-wordmark--sm", true)}</a>
       <nav class="si-topbar__nav" aria-label="Primary">
         ${nav}
       </nav>
@@ -173,7 +175,7 @@ export function renderOrgArticle(opts: {
   const tags = filetagsToTags(d.filetags, opts.tagList ?? d.tags);
   const chips = [
     d.isoDate ? `<span class="si-chip">${d.isoDate}</span>` : "",
-    d.author ? `<span class="si-chip si-chip--cyan">${escapeHtml(d.author)}</span>` : "",
+    d.author ? `<span class="si-chip si-chip--accent">${escapeHtml(d.author)}</span>` : "",
     ...tags.slice(0, 8).map((t) => `<span class="si-chip">${escapeHtml(t)}</span>`),
   ]
     .filter(Boolean)
@@ -185,7 +187,7 @@ export function renderOrgArticle(opts: {
           .join("")}</ul></div>`
       : null;
   const provenance = `<div class="si-panel" style="margin-top:3rem;font-size:0.78rem">
-  <strong class="mono" style="font-size:0.72rem;letter-spacing:0.12em;color:var(--si-gold)">PROVENANCE</strong>
+  <strong class="mono" style="font-size:0.72rem;letter-spacing:0.12em;color:var(--si-accent-primary)">PROVENANCE</strong>
   <p class="muted mono" style="margin:0.6rem 0 0;font-size:0.75rem;overflow-wrap:anywhere">
     source ${escapeHtml(d.source.repo ?? "unknown")} · ${escapeHtml(d.source.path ?? "")}<br>
     commit ${escapeHtml((d.source.commit ?? "").slice(0, 12))} · sha256 ${escapeHtml(d.source.content_sha256.slice(0, 16))}…

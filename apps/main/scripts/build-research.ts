@@ -30,7 +30,7 @@ const docs = normalize(manifest);
 
 rmSync(outRoot, { recursive: true, force: true });
 mkdirSync(outRoot, { recursive: true });
-cpSync(join(websiteRoot, "packages", "ui", "css"), join(outRoot, "css"), { recursive: true });
+cpSync(join(websiteRoot, "packages", "design", "src", "css"), join(outRoot, "css"), { recursive: true });
 
 const NAV = [
   { href: "/", label: "Home" },

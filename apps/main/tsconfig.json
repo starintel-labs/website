@@ -5,7 +5,7 @@
     "allowImportingTsExtensions": true,
     "types": ["vite/client"],
     "paths": {
-      "@starintel/ui/*": ["../../packages/ui/*"]
+      "@starintel/design/*": ["../../packages/design/*"]
     }
   },
   "include": ["src/**/*.ts", "server/**/*.ts", "vite.config.ts"]

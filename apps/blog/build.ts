@@ -31,7 +31,7 @@ rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
 
 // Shared CSS from the design system.
-cpSync(join(websiteRoot, "packages", "ui", "css"), join(dist, "css"), { recursive: true });
+cpSync(join(websiteRoot, "packages", "design", "src", "css"), join(dist, "css"), { recursive: true });
 
 const NAV = [
   { href: "/", label: "Blog", current: true },

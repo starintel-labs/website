@@ -36,9 +36,9 @@ importers:
 
   apps/admin:
     devDependencies:
-      '@starintel/ui':
+      '@starintel/design':
         specifier: workspace:*
-        version: link:../../packages/ui
+        version: link:../../packages/design
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
@@ -51,24 +51,24 @@ importers:
       '@starintel/content':
         specifier: workspace:*
         version: link:../../packages/content
+      '@starintel/design':
+        specifier: workspace:*
+        version: link:../../packages/design
       '@starintel/seo':
         specifier: workspace:*
         version: link:../../packages/seo
-      '@starintel/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
 
   apps/main:
     dependencies:
+      '@starintel/design':
+        specifier: workspace:*
+        version: link:../../packages/design
       '@starintel/seo':
         specifier: workspace:*
         version: link:../../packages/seo
       '@starintel/starintel-doc':
         specifier: workspace:*
         version: link:../../packages/starintel-doc
-      '@starintel/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       amqplib:
         specifier: ^0.10.9
         version: 0.10.9
@@ -91,40 +91,49 @@ importers:
       '@starintel/content':
         specifier: workspace:*
         version: link:../../packages/content
+      '@starintel/design':
+        specifier: workspace:*
+        version: link:../../packages/design
       '@starintel/seo':
         specifier: workspace:*
         version: link:../../packages/seo
-      '@starintel/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
 
   apps/symbolics:
     devDependencies:
       '@starintel/content':
         specifier: workspace:*
         version: link:../../packages/content
+      '@starintel/design':
+        specifier: workspace:*
+        version: link:../../packages/design
       '@starintel/seo':
         specifier: workspace:*
         version: link:../../packages/seo
-      '@starintel/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       marked:
         specifier: ^15.0.0
         version: 15.0.12
 
   packages/content:
     dependencies:
+      '@starintel/design':
+        specifier: workspace:*
+        version: link:../design
       '@starintel/seo':
         specifier: workspace:*
         version: link:../seo
-      '@starintel/ui':
-        specifier: workspace:*
-        version: link:../ui
     devDependencies:
       '@types/node':
         specifier: ^24.0.0
         version: 24.13.3
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
+  packages/design:
+    devDependencies:
+      '@types/node':
+        specifier: ^26.4.1
+        version: 26.4.1
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
@@ -147,12 +156,6 @@ importers:
       '@types/node':
         specifier: ^24.0.0
         version: 24.13.3
-      typescript:
-        specifier: ^5.7.2
-        version: 5.9.3
-
-  packages/ui:
-    devDependencies:
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
@@ -478,6 +481,9 @@ packages:
   '@types/node@24.13.3':
     resolution: {integrity: sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==}
 
+  '@types/node@26.4.1':
+    resolution: {integrity: sha512-k97ENvZWtvA6yqz5/FS6a7duDgOPEeOQOc2iKS/nY6mX6qJUKtLnWzQS+Xj6tXweyj6ZcTAK2Qecetnvi9nCLA==}
+
   '@vitest/expect@3.2.7':
     resolution: {integrity: sha512-E8eBXaKibuvH2pSZErOjdVb5vF4PbKYcrnluBTYxEk1l/VhhwZg1kZQsdtjq+CsF5CFydf2Rdkz7jDHKSisi3w==}
 
@@ -706,6 +712,9 @@ packages:
 
   undici-types@7.18.2:
     resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
+
+  undici-types@8.3.0:
+    resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
 
   url-parse@1.5.10:
     resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
@@ -965,6 +974,10 @@ snapshots:
     dependencies:
       undici-types: 7.18.2
 
+  '@types/node@26.4.1':
+    dependencies:
+      undici-types: 8.3.0
+
   '@vitest/expect@3.2.7':
     dependencies:
       '@types/chai': 5.2.3
@@ -1197,6 +1210,8 @@ snapshots:
   typescript@5.9.3: {}
 
   undici-types@7.18.2: {}
+
+  undici-types@8.3.0: {}
 
   url-parse@1.5.10:
     dependencies:

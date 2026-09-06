@@ -30,6 +30,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: build
         run: pnpm build
+      - name: design system pin check
+        run: node scripts/sync-design.mjs --check
       - name: unit tests
         run: pnpm test
       - name: typecheck
