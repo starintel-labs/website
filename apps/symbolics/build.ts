@@ -30,7 +30,7 @@ const docs = [...manifest.documents].sort((a, b) => a.title.localeCompare(b.titl
 
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
-cpSync(join(websiteRoot, "packages", "ui", "css"), join(dist, "css"), { recursive: true });
+cpSync(join(websiteRoot, "packages", "design", "src", "css"), join(dist, "css"), { recursive: true });
 
 const NAV = [
   { href: "/", label: "Overview", current: true },
@@ -62,7 +62,7 @@ for (const doc of guides) {
     </p>
     ${body}
     <div class="si-panel" style="margin-top:3rem;font-size:0.78rem">
-      <strong class="mono" style="font-size:0.72rem;letter-spacing:0.12em;color:var(--si-gold)">PROVENANCE</strong>
+      <strong class="mono" style="font-size:0.72rem;letter-spacing:0.12em;color:var(--si-accent-primary)">PROVENANCE</strong>
       <p class="muted mono" style="margin:0.6rem 0 0;font-size:0.75rem;overflow-wrap:anywhere">
         source ${escapeHtml(doc.source.repo ?? "unknown")} · ${escapeHtml(doc.source.path ?? "")}<br>
         commit ${escapeHtml((doc.source.commit ?? "").slice(0, 12))} · sha256 ${escapeHtml(doc.source.content_sha256.slice(0, 16))}…${escapeHtml(dirtyNote)}

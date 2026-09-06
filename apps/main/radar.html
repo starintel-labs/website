@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-si-theme="obsidian-gold">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#050a11" />
+    <meta name="theme-color" content="#090807" />
     <meta
       name="description"
       content="StarIntel radar: live aggregate activity of the platform, projected through a strict public-safe allowlist."
@@ -16,17 +16,19 @@
     <title>Radar — StarIntel</title>
   </head>
   <body>
+    <a class="si-skip-link" href="#main">skip to content</a>
     <header class="si-topbar">
       <a class="si-topbar__brand" href="/" aria-label="StarIntel home" data-wordmark></a>
       <nav class="si-topbar__nav" aria-label="Primary">
-        <a href="/">Home</a>
-        <a href="/research/">Research</a>
-        <a href="/radar" aria-current="page">Radar</a>
-        <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">Blog</a>
+        <a href="/" data-active="home">home</a>
+        <a href="https://auto-research.starintel.actor/" target="_blank" rel="noopener">research</a>
+        <a href="/radar" aria-current="page">radar</a>
+        <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">blog</a>
+        <a href="https://git.starintel.actor/starintel-labs" target="_blank" rel="noopener">code</a>
       </nav>
     </header>
 
-    <main class="si-shell si-section">
+    <main id="main" class="si-shell si-section">
       <div class="si-section__head">
         <h2 class="si-section__title">Radar</h2>
         <span class="si-chip si-chip--live" id="radar-status" data-state="connecting">connecting</span>

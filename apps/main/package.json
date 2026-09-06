@@ -6,7 +6,7 @@
   "description": "starintel.actor - StarIntel main website, radar, and public-safe API surfaces",
   "scripts": {
     "dev": "vite",
-    "build": "node --experimental-strip-types scripts/build-research.ts && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "start": "node --experimental-strip-types server/main.ts",
     "test": "node --experimental-strip-types --test server/*.test.ts",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@starintel/starintel-doc": "workspace:*",
     "@starintel/seo": "workspace:*",
-    "@starintel/ui": "workspace:*",
+    "@starintel/design": "workspace:*",
     "amqplib": "^0.10.9"
   },
   "devDependencies": {

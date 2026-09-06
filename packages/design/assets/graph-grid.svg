@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Graph grid texture">
+  <!-- graph-paper grid for graph/terminal surfaces -->
+  <defs>
+    <pattern id="gg-major" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#2b2519" stroke-width="1"/>
+    </pattern>
+    <pattern id="gg-minor" width="12" height="12" patternUnits="userSpaceOnUse">
+      <path d="M12 0H0V12" fill="none" stroke="#1b1710" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="240" height="240" fill="url(#gg-minor)"/>
+  <rect width="240" height="240" fill="url(#gg-major)"/>
+</svg>

@@ -1,0 +1,153 @@
+/*
+ * StarIntel design tokens -- obsidian-gold (default theme).
+ *
+ * Semantic tokens only. Applications must consume these variables, never raw
+ * hex values, so themes can be swapped without touching component semantics.
+ *
+ * Theme contract:
+ *   <html data-si-theme="obsidian-gold">
+ * obsidian-gold is the DEFAULT: :root carries its values, and the attribute
+ * block re-asserts them so explicit selection and fallback always agree.
+ * Future themes replace values here without rewriting component semantics.
+ */
+
+:root,
+[data-si-theme="obsidian-gold"] {
+  /* --- canvas hierarchy: black, rising to raised --- */
+  --si-bg-canvas: #090807;
+  --si-bg-surface: #16120c;
+  --si-bg-raised: #1d1811;
+  --si-bg-highlight: #261f13;
+
+  /* --- text: ivory carries readable content --- */
+  --si-text-primary: #ece5d6;
+  --si-text-secondary: #b5ab96;
+  --si-text-muted: #8a8172;
+  --si-text-faint: #655e50;
+  --si-text-bright: #f8f4ea;
+
+  /* --- accent: gold is structural and scarce --- */
+  --si-accent-primary: #e0b04a;
+  --si-accent-strong: #f0c869;
+  --si-accent-dim: #9a7a24;
+  --si-accent-wash: rgba(224, 176, 74, 0.07);
+  --si-accent-wash-strong: rgba(224, 176, 74, 0.14);
+
+  /* telemetry accent: steel signal, used sparingly for live/observer state */
+  --si-accent-secondary: #7fa8bd;
+  --si-accent-secondary-dim: #3d5666;
+
+  /* --- borders --- */
+  --si-border: #332b1b;
+  --si-border-strong: #52452a;
+  --si-border-accent: rgba(224, 176, 74, 0.35);
+
+  /* --- status --- */
+  --si-status-success: #7cae7f;
+  --si-status-warning: #dd9f45;
+  --si-status-danger: #d9776c;
+  --si-status-info: #7fa8bd;
+
+  /* --- graph vocabulary --- */
+  --si-graph-node: #ece5d6;
+  --si-graph-node-accent: #e0b04a;
+  --si-graph-node-dim: #655e50;
+  --si-graph-edge: #3a3324;
+  --si-graph-edge-active: #9a7a24;
+  --si-graph-selected: #e0b04a;
+  --si-graph-label: #b5ab96;
+
+  /* --- code --- */
+  --si-code-bg: #12100a;
+  --si-code-border: #2b2519;
+  --si-code-text: #d8d0bf;
+  --si-code-comment: #655e50;
+  --si-code-keyword: #7fa8bd;
+  --si-code-string: #e0b04a;
+  --si-code-function: #f0c869;
+  --si-code-variable: #ece5d6;
+  --si-code-type: #9fb8c9;
+  --si-code-constant: #c9a0dc;
+  --si-code-number: #c9a0dc;
+
+  /* --- terminal --- */
+  --si-terminal-bg: #070605;
+  --si-terminal-border: #2b2519;
+  --si-terminal-text: #cfc6b3;
+  --si-terminal-prompt: #e0b04a;
+  --si-terminal-header: #1b1710;
+
+  /* --- typography --- */
+  --si-font-mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular,
+    Menlo, Consolas, monospace;
+  --si-font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", sans-serif;
+  --si-font-serif: "Charter", "Bitstream Charter", "Sitka Text", Cambria,
+    Georgia, serif;
+  --si-text-size-base: 16px;
+  --si-leading-body: 1.6;
+  --si-leading-tight: 1.25;
+
+  /* --- spacing scale --- */
+  --si-space-1: 0.25rem;
+  --si-space-2: 0.5rem;
+  --si-space-3: 0.75rem;
+  --si-space-4: 1rem;
+  --si-space-5: 1.5rem;
+  --si-space-6: 2rem;
+  --si-space-7: 3rem;
+  --si-space-8: 4.5rem;
+
+  /* --- geometry --- */
+  --si-radius-sm: 3px;
+  --si-radius-md: 6px;
+  --si-radius-lg: 10px;
+  --si-topbar-height: 56px;
+  --si-maxw: 1180px;
+
+  /* --- elevation & glow (warm, restrained) --- */
+  --si-shadow-panel: 0 1px 0 rgba(255, 240, 200, 0.02) inset,
+    0 10px 30px rgba(0, 0, 0, 0.4);
+  --si-shadow-pop: 0 14px 40px rgba(0, 0, 0, 0.55);
+  --si-glow-accent: 0 0 18px rgba(224, 176, 74, 0.14);
+
+  /* --- motion --- */
+  --si-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --si-fast: 140ms;
+  --si-slow: 380ms;
+
+  /* --- focus --- */
+  --si-focus: 2px solid var(--si-accent-primary);
+  --si-focus-offset: 2px;
+}
+
+/*
+ * Legacy aliases -- DEPRECATED.
+ * Kept so properties published before the design-system extraction
+ * (and any un-migrated consumer) continue to render. New code must use
+ * the semantic names above.
+ */
+:root,
+[data-si-theme="obsidian-gold"] {
+  --si-shell: var(--si-bg-canvas);
+  --si-shell-raised: var(--si-bg-raised);
+  --si-panel: var(--si-bg-surface);
+  --si-panel-2: var(--si-bg-raised);
+  --si-line: var(--si-border-strong);
+  --si-line-faint: var(--si-border);
+  --si-text: var(--si-text-primary);
+  --si-text-strong: var(--si-text-bright);
+  --si-muted: var(--si-text-muted);
+  --si-faint: var(--si-text-faint);
+  --si-gold: var(--si-accent-primary);
+  --si-gold-strong: var(--si-accent-strong);
+  --si-gold-dim: var(--si-accent-dim);
+  --si-cyan: var(--si-accent-secondary);
+  --si-danger: var(--si-status-danger);
+  --si-warning: var(--si-status-warning);
+  --si-success: var(--si-status-success);
+  --si-glow-gold: var(--si-glow-accent);
+  --si-glow-cyan: 0 0 18px rgba(127, 168, 189, 0.1);
+  --si-radius: var(--si-radius-md);
+  --si-radius-lg: var(--si-radius-lg);
+}

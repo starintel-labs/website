@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Lambda grid texture">
+  <!-- subtle tiling texture: engineering grid with faint lambda watermarks -->
+  <defs>
+    <pattern id="lg-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#241e13" stroke-width="1"/>
+    </pattern>
+    <pattern id="lg-lambda" width="120" height="120" patternUnits="userSpaceOnUse">
+      <text x="60" y="76" font-family="ui-monospace, monospace" font-size="44" fill="#241e13" text-anchor="middle">&#955;</text>
+    </pattern>
+  </defs>
+  <rect width="240" height="240" fill="url(#lg-grid)"/>
+  <rect width="240" height="240" fill="url(#lg-lambda)"/>
+</svg>
