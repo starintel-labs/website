@@ -5,7 +5,6 @@
  * never inspects or forwards message bodies. Anything unrecognized is
  * counted as `unknown` and carries no other information (fail closed).
  */
-import type { Config } from "./config.ts";
 
 export const RADAR_EVENT_FAMILIES = ["document", "actor", "system", "unknown"] as const;
 export const RADAR_SIZE_BUCKETS = ["s", "m", "l", "xl"] as const;
@@ -31,6 +30,7 @@ interface PendingAggregate {
 
 const DTYPE_RE = /^[a-z][a-z0-9-]{0,63}$/;
 const KIND_RE = /^[a-z][a-z0-9_-]{0,63}$/;
+const DOCUMENT_KINDS = new Set(["new", "ingest", "updated"]);
 
 export function sizeBucket(bytes: number): (typeof RADAR_SIZE_BUCKETS)[number] {
   if (bytes < 2048) return "s";
@@ -41,8 +41,9 @@ export function sizeBucket(bytes: number): (typeof RADAR_SIZE_BUCKETS)[number] {
 
 /**
  * Project a raw AMQP delivery onto the public schema.
- * routing keys look like `documents.new.<dtype>` or `actors.<name>.<action>`;
- * only the shape is interpreted, never the payload.
+ * Routing keys look like `documents.new.<dtype>`, `documents.ingest.<dtype>`,
+ * `documents.updated.<dtype>`, or `actors.<name>.<action>`. Only the shape is
+ * interpreted, never the payload.
  */
 export function projectDelivery(routingKey: string, payloadBytes: number, now = new Date()): PublicRadarEvent | null {
   const parts = routingKey.split(".");
@@ -50,18 +51,18 @@ export function projectDelivery(routingKey: string, payloadBytes: number, now = 
   let kind: string;
   let dtype: string | undefined;
 
-  if (parts[0] === "documents" && (parts[1] === "new" || parts[1] === "ingest") && parts.length === 3) {
+  if (parts[0] === "documents" && DOCUMENT_KINDS.has(parts[1] ?? "") && parts.length === 3) {
     family = "document";
-    kind = parts[1];
+    kind = parts[1]!;
     dtype = DTYPE_RE.test(parts[2] ?? "") ? parts[2] : undefined;
     if (!dtype) {
       // Unrecognized dtype string: keep only family/kind, drop the value.
       family = "unknown";
-      kind = KIND_RE.test(parts[1] ?? "") ? (parts[1] as string) : "event";
+      kind = KIND_RE.test(parts[1] ?? "") ? parts[1]! : "event";
     }
   } else if (parts[0] === "actors" && parts.length >= 2) {
     family = "actor";
-    kind = KIND_RE.test(parts.at(-1) ?? "") ? (parts.at(-1) as string) : "event";
+    kind = KIND_RE.test(parts.at(-1) ?? "") ? parts.at(-1)! : "event";
   } else {
     family = "unknown";
     kind = "event";
@@ -117,6 +118,7 @@ export class RadarAggregator {
   }
 
   start(): void {
+    if (this.#timer) return;
     this.#timer = setInterval(() => this.flush(), this.#frameMs);
     this.#timer.unref?.();
   }
@@ -138,6 +140,7 @@ export class RadarAggregator {
 
   stop(): void {
     if (this.#timer) clearInterval(this.#timer);
+    this.#timer = undefined;
   }
 }
 
