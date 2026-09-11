@@ -70,7 +70,13 @@ function serveStatic(res: ServerResponse, cfg: Config, urlPath: string): void {
   createReadStream(file).pipe(res);
 }
 
-export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: ServerResponse) => void; readyz: () => Promise<{ radar: string; recent: "ok" | "down" }> } {
+export interface AppRuntime {
+  handle: (req: IncomingMessage, res: ServerResponse) => void;
+  readyz: () => Promise<{ radar: string; recent: "ok" | "down" }>;
+  stop: () => void;
+}
+
+export function createApp(cfg: Config): AppRuntime {
   const here = fileURLToPath(new URL(".", import.meta.url));
   const resolvedCfg: Config = { ...cfg, staticDir: join(here, "..", cfg.staticDir) };
   const recent = new RecentDocumentsService(resolvedCfg);
@@ -78,6 +84,7 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
   const radar = new RadarFeed(resolvedCfg, (events) => hub.sendEvents(events), (totals, rps) => {
     hub.sendRate(totals, rps);
   });
+  radar.start();
 
   async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const host = (req.headers.host ?? "").split(":")[0]!;
@@ -121,24 +128,35 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       return;
     }
     if (url.pathname === "/radar/stream") {
-      if (req.headers.accept !== "text/event-stream") {
+      const accept = req.headers.accept ?? "";
+      if (!accept.split(",").some((value) => value.trim().startsWith("text/event-stream"))) {
         sendJson(res, 406, { error: "text/event-stream required" });
         return;
       }
       res.writeHead(200, {
         "content-type": "text/event-stream",
-        "cache-control": "no-cache",
+        "cache-control": "no-cache, no-transform",
         connection: "keep-alive",
+        "x-accel-buffering": "no",
       });
       res.write(":ok\n\n");
-      const client = {
-        id: 0,
+      const clientId = hub.add({
         write: (chunk: string) => res.write(chunk),
         close: () => res.end(),
-      };
-      client.id = hub.size + 1;
-      hub.add(client);
-      req.on("close", () => hub.remove(client));
+      });
+      const heartbeat = setInterval(() => {
+        try {
+          res.write(":keepalive\n\n");
+        } catch {
+          clearInterval(heartbeat);
+          hub.remove(clientId);
+        }
+      }, 15_000);
+      heartbeat.unref?.();
+      req.on("close", () => {
+        clearInterval(heartbeat);
+        hub.remove(clientId);
+      });
       return;
     }
 
@@ -156,6 +174,10 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       });
     },
     readyz: async () => ({ radar: radar.state, recent: "ok" }),
+    stop: () => {
+      radar.stop();
+      hub.closeAll();
+    },
   };
 }
 
@@ -167,6 +189,7 @@ export function main(argv: string[] = process.argv): void {
     console.log(`starintel.actor serving ${cfg.staticDir} on http://${cfg.host}:${cfg.port}`);
   });
   const shutdown = () => {
+    app.stop();
     server.close(() => process.exit(0));
     setTimeout(() => process.exit(0), 2000).unref();
   };
