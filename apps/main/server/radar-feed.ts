@@ -53,24 +53,43 @@ export class RadarFeed {
     void conn?.close().catch(() => {});
   }
 
+  #scheduleReconnect(): void {
+    if (!this.#started || this.#retryTimer) return;
+    this.#state = "down";
+    this.#retryTimer = setTimeout(() => {
+      this.#retryTimer = undefined;
+      void this.connect();
+    }, this.#retryMs);
+    this.#retryTimer.unref?.();
+  }
+
   async connect(): Promise<void> {
     if (!this.#started || !this.#cfg.rabbitUrl) return;
     this.#state = "connecting";
+    let conn: ChannelModel | null = null;
     try {
       const amqp = await import("amqplib");
-      const conn = await amqp.connect(this.#cfg.rabbitUrl);
+      conn = await amqp.connect(this.#cfg.rabbitUrl);
       if (!this.#started) {
         await conn.close().catch(() => {});
         return;
       }
       this.#conn = conn;
+      conn.on("error", () => {
+        if (this.#started) this.#state = "down";
+      });
+      conn.on("close", () => {
+        if (this.#conn === conn) this.#conn = null;
+        this.#scheduleReconnect();
+      });
+
       const ch = await conn.createChannel();
       await ch.assertExchange(this.#cfg.rabbitExchange, "topic", { durable: true });
       const q = await ch.assertQueue("", { exclusive: true, autoDelete: true });
-      await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.new.*");
-      await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.ingest.*");
-      await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.updated.*");
-      await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "actors.*");
+      await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.new.#");
+      await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.ingest.#");
+      await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.updated.#");
+      await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "actors.#");
       this.#state = "live";
       await ch.consume(q.queue, (msg) => {
         if (!msg) return;
@@ -79,14 +98,9 @@ export class RadarFeed {
         ch.ack(msg);
       });
     } catch {
-      this.#conn = null;
-      if (!this.#started) return;
-      this.#state = "down";
-      this.#retryTimer = setTimeout(() => {
-        this.#retryTimer = undefined;
-        void this.connect();
-      }, this.#retryMs);
-      this.#retryTimer.unref?.();
+      if (conn && this.#conn === conn) this.#conn = null;
+      void conn?.close().catch(() => {});
+      this.#scheduleReconnect();
     }
   }
 }
