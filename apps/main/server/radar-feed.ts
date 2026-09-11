@@ -12,6 +12,8 @@ export class RadarFeed {
   #conn: ChannelModel | null = null;
   #state: "off" | "connecting" | "live" | "down" = "off";
   #retryMs = 3000;
+  #retryTimer: NodeJS.Timeout | undefined;
+  #started = false;
 
   constructor(
     cfg: Config,
@@ -30,6 +32,8 @@ export class RadarFeed {
   }
 
   start(): void {
+    if (this.#started) return;
+    this.#started = true;
     if (!this.#cfg.rabbitUrl) {
       this.#state = "off";
       return;
@@ -39,23 +43,33 @@ export class RadarFeed {
   }
 
   stop(): void {
+    this.#started = false;
+    if (this.#retryTimer) clearTimeout(this.#retryTimer);
+    this.#retryTimer = undefined;
     this.#aggregator.stop();
-    void this.#conn?.close().catch(() => {});
+    const conn = this.#conn;
     this.#conn = null;
     this.#state = "off";
+    void conn?.close().catch(() => {});
   }
 
   async connect(): Promise<void> {
+    if (!this.#started || !this.#cfg.rabbitUrl) return;
     this.#state = "connecting";
     try {
       const amqp = await import("amqplib");
-      const conn = await amqp.connect(this.#cfg.rabbitUrl!);
+      const conn = await amqp.connect(this.#cfg.rabbitUrl);
+      if (!this.#started) {
+        await conn.close().catch(() => {});
+        return;
+      }
       this.#conn = conn;
       const ch = await conn.createChannel();
       await ch.assertExchange(this.#cfg.rabbitExchange, "topic", { durable: true });
       const q = await ch.assertQueue("", { exclusive: true, autoDelete: true });
       await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.new.*");
       await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.ingest.*");
+      await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.updated.*");
       await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "actors.*");
       this.#state = "live";
       await ch.consume(q.queue, (msg) => {
@@ -65,8 +79,14 @@ export class RadarFeed {
         ch.ack(msg);
       });
     } catch {
+      this.#conn = null;
+      if (!this.#started) return;
       this.#state = "down";
-      setTimeout(() => void this.connect(), this.#retryMs);
+      this.#retryTimer = setTimeout(() => {
+        this.#retryTimer = undefined;
+        void this.connect();
+      }, this.#retryMs);
+      this.#retryTimer.unref?.();
     }
   }
 }
