@@ -4,18 +4,31 @@ on:
     branches: ["**"]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   verify:
     name: build, test, verify
     runs-on: ubuntu-latest
     container: docker.io/library/node:24-bookworm
     steps:
-      # GitHub-hosted runners check out the workspace implicitly; no `uses:`
-      # steps are permitted by the repository's self-contained CI contract.
+      # Keep CI self-contained: no third-party or `uses:` actions. GitHub does
+      # not populate the workspace automatically, so fetch the exact event SHA
+      # with the built-in read-only token.
       - name: system deps
         run: |
           apt-get update -qq
           DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git swi-prolog emacs-nox jq > /dev/null
+      - name: checkout
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git init .
+          git remote add origin "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          git -c http.extraHeader="AUTHORIZATION: basic $auth" fetch --no-tags --depth=1 origin "$GITHUB_SHA"
+          git checkout --detach FETCH_HEAD
       - name: pnpm
         run: npm install --global pnpm@11.24.0
       - name: install
