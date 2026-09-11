@@ -13,22 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     container: docker.io/library/node:24-bookworm
     steps:
-      # Keep CI self-contained: no third-party or `uses:` actions. GitHub does
-      # not populate the workspace automatically, so fetch the exact event SHA
-      # with the built-in read-only token.
+      # The sole allowed action is the official checkout action, pinned to the
+      # exact v6.1.0 commit. Everything else remains self-contained `run:`.
+      - name: checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
       - name: system deps
         run: |
           apt-get update -qq
           DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git swi-prolog emacs-nox jq > /dev/null
-      - name: checkout
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
-          git init .
-          git remote add origin "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
-          git -c http.extraHeader="AUTHORIZATION: basic $auth" fetch --no-tags --depth=1 origin "$GITHUB_SHA"
-          git checkout --detach FETCH_HEAD
       - name: pnpm
         run: npm install --global pnpm@11.24.0
       - name: install
