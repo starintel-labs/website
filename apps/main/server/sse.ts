@@ -4,7 +4,6 @@
 import type { PublicRadarEvent, RateTotals } from "./projector.ts";
 
 export interface SseClient {
-  id: number;
   write(chunk: string): void;
   close(): void;
 }
@@ -13,16 +12,29 @@ export class SseHub {
   #clients = new Map<number, SseClient>();
   #nextId = 1;
 
-  add(client: SseClient): void {
-    this.#clients.set(client.id, client);
+  add(client: SseClient): number {
+    const id = this.#nextId++;
+    this.#clients.set(id, client);
+    return id;
   }
 
-  remove(client: SseClient): void {
-    this.#clients.delete(client.id);
+  remove(id: number): void {
+    this.#clients.delete(id);
   }
 
   get size(): number {
     return this.#clients.size;
+  }
+
+  closeAll(): void {
+    for (const client of this.#clients.values()) {
+      try {
+        client.close();
+      } catch {
+        // Ignore disconnect races during shutdown.
+      }
+    }
+    this.#clients.clear();
   }
 
   sendEvents(events: PublicRadarEvent[]): void {
@@ -36,11 +48,11 @@ export class SseHub {
   }
 
   #broadcast(chunk: string): void {
-    for (const client of this.#clients.values()) {
+    for (const [id, client] of this.#clients.entries()) {
       try {
         client.write(chunk);
       } catch {
-        this.#clients.delete(client.id);
+        this.#clients.delete(id);
       }
     }
   }
