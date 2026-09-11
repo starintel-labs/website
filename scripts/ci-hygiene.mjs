@@ -4,7 +4,7 @@
  * Fails non-zero when invariants are violated.
  *
  *  1. .forgejo/workflows and .github/workflows both exist with at least one workflow
- *  2. authored workflows contain no `uses:` steps (self-contained)
+ *  2. authored workflows are run-only except for one exact, SHA-pinned official checkout action
  *  3. no literal secret values: tokens are referenced only via ${{ secrets.* }}
  *  4. no internal infrastructure hostnames (.star.intel) anywhere in CI config
  *  5. every workflow in BOTH systems runs the Prolog verification gate
@@ -16,6 +16,9 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
+const ALLOWED_USES = new Set([
+  "actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+]);
 let failures = 0;
 function fail(msg) {
   console.error(`FAIL: ${msg}`);
@@ -31,7 +34,12 @@ function checkWorkflowDir(label, dir, { forbidGithubUrls }) {
   if (workflows.length === 0) fail(`${label} workflows directory contains no workflows`);
   for (const wf of workflows) {
     const text = readFileSync(join(dir, wf), "utf8");
-    if (/^\s*uses:/m.test(text)) fail(`${label}/${wf}: 'uses:' step found; workflows must be self-contained (run: only)`);
+    for (const match of text.matchAll(/^\s*uses:\s*([^\s#]+).*$/gm)) {
+      const action = match[1];
+      if (!ALLOWED_USES.has(action)) {
+        fail(`${label}/${wf}: unapproved action '${action}'; only the SHA-pinned official checkout action is allowed`);
+      }
+    }
     if (/\$\{\{\s*secrets\.[A-Z0-9_]+\s*\}\}/.test(text)) {
       // secrets are allowed only as references; ensure no literal assignment nearby
       const literal = /(?:token|secret|password|api[_-]?key)\s*[:=]\s*["']?[A-Za-z0-9_\-]{16,}/i;
