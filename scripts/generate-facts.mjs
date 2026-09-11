@@ -50,6 +50,13 @@ const CI_SYSTEMS = [
   ["forgejo", join(root, ".forgejo", "workflows")],
   ["github", join(root, ".github", "workflows")],
 ];
+const ALLOWED_CI_USES = new Set([
+  "actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+]);
+function ciUsesApproved(text) {
+  const uses = [...text.matchAll(/^\s*uses:\s*([^\s#]+).*$/gm)].map((m) => m[1]);
+  return uses.every((action) => ALLOWED_CI_USES.has(action));
+}
 const ciWorkflowTexts = [];
 for (const [system, dir] of CI_SYSTEMS) {
   const workflows = existsSync(dir)
@@ -59,7 +66,9 @@ for (const [system, dir] of CI_SYSTEMS) {
     const text = readFileSync(join(dir, wf), "utf8");
     ciWorkflowTexts.push([system, wf, text]);
     emit(`ci_workflow('${system}', '${wf}').`);
-    const selfContained = !/^\s*uses:/m.test(text);
+    // "Self-contained" means run-only except for the one explicitly audited,
+    // exact-SHA official checkout action required to populate GitHub's job workspace.
+    const selfContained = ciUsesApproved(text);
     const secretsOk = !/(?:token|secret|password|api[_-]?key)\s*[:=]\s*["']?[A-Za-z0-9_\-]{16,}/i.test(
       text.replace(/\$\{\{[^}]*\}\}/g, ""),
     );
