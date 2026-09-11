@@ -21,5 +21,6 @@ The runtime needs:
 - `RADAR_FRAME_MS` — optional batching interval; defaults to `250` ms.
 
 When `RABBIT_URL` is unset, radar stays in standby and `/readyz` reports `radar: "off"`.
-With a valid broker URL it binds `documents.new.*`, `documents.ingest.*`,
-`documents.updated.*`, and `actors.*`, and `/readyz` reports `radar: "live"` once connected.
+With a valid broker URL it binds `documents.new.#`, `documents.ingest.#`,
+`documents.updated.#`, and `actors.#`; the projector exposes only its small
+allowlisted metadata schema, and `/readyz` reports `radar: "live"` once connected.
