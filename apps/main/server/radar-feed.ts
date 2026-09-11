@@ -84,7 +84,9 @@ export class RadarFeed {
       });
 
       const ch = await conn.createChannel();
-      await ch.assertExchange(this.#cfg.rabbitExchange, "topic", { durable: true });
+      // Radar is a consumer of the established event plane, never its owner.
+      // Passive-check the canonical exchange instead of creating/reconfiguring it.
+      await ch.checkExchange(this.#cfg.rabbitExchange);
       const q = await ch.assertQueue("", { exclusive: true, autoDelete: true });
       await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.new.#");
       await ch.bindQueue(q.queue, this.#cfg.rabbitExchange, "documents.ingest.#");
