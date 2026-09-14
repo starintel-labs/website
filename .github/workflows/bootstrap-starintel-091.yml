@@ -1,0 +1,97 @@
+name: bootstrap-starintel-091
+
+on:
+  push:
+    branches:
+      - fix/starintel-0.9.1-conformance
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-starintel-091
+  cancel-in-progress: false
+
+jobs:
+  sync-test-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: fix/starintel-0.9.1-conformance
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq swi-prolog emacs-nox jq >/dev/null
+          npm install --global pnpm@11.24.0
+
+      - name: Fetch exact canonical StarIntel release
+        env:
+          SCHEMA_COMMIT: 6479c0a9dc88ce9fed183515fc4df5d245de0b3a
+        run: |
+          set -euo pipefail
+          canonical="$RUNNER_TEMP/starintel-gpt-auto-dig"
+          git init -q "$canonical"
+          git -C "$canonical" remote add origin https://github.com/lost-rob0t/starintel-gpt-auto-dig.git
+          git -C "$canonical" fetch -q --depth=1 origin "$SCHEMA_COMMIT"
+          git -C "$canonical" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$canonical" rev-parse HEAD)" = "$SCHEMA_COMMIT"
+          echo "CANONICAL=$canonical" >> "$GITHUB_ENV"
+
+      - name: Sync exact schema and manifest
+        run: STARINTEL_AUTO_DIG="$CANONICAL" node scripts/sync-v09-schema.mjs
+
+      - name: Remove one-shot GitHub workflow before validation
+        run: |
+          git rm .github/workflows/bootstrap-starintel-091.yml
+          rmdir .github/workflows || true
+          rmdir .github || true
+
+      - name: Install workspace
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Design system pin check
+        run: node scripts/sync-design.mjs --check
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Exact StarIntel 0.9.1 schema check
+        run: STARINTEL_AUTO_DIG="$CANONICAL" node scripts/sync-v09-schema.mjs --check
+
+      - name: Org export test
+        run: bash tests/run-org-export-test.sh
+
+      - name: Prolog facts
+        run: node scripts/generate-facts.mjs
+
+      - name: Prolog verification
+        run: pnpm "verify:ci"
+
+      - name: CI hygiene
+        run: node scripts/ci-hygiene.mjs
+
+      - name: Commit only the tested tree
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No schema changes to commit"
+            exit 0
+          fi
+          git config user.name "starintel-schema-sync"
+          git config user.email "104283403+lost-rob0t@users.noreply.github.com"
+          git commit -m "fix(schema): sync website to StarIntel 0.9.1"
+          git push origin HEAD:fix/starintel-0.9.1-conformance
