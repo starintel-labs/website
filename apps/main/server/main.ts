@@ -55,6 +55,13 @@ function serveStatic(res: ServerResponse, cfg: Config, urlPath: string): void {
     return;
   }
   if (existsSync(file) && statSync(file).isDirectory()) file = join(file, "index.html");
+  // MPA routes use clean public URLs (/radar, /research) while Vite emits
+  // radar.html/research.html. Resolve extensionless paths to their generated
+  // HTML peer before falling through to the 404 page.
+  if (!existsSync(file) && extname(file) === "") {
+    const htmlFile = `${file}.html`;
+    if (existsSync(htmlFile) && statSync(htmlFile).isFile()) file = htmlFile;
+  }
   if (!existsSync(file) || !statSync(file).isFile()) {
     const notFound = join(cfg.staticDir, "404.html");
     if (existsSync(notFound)) {
@@ -107,6 +114,24 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       } catch {
         Object.assign(body, { recent: "down" });
         sendJson(res, 200, { status: "degraded", ...body });
+      }
+      return;
+    }
+    if (url.pathname === "/api/research/status" && req.method === "GET") {
+      if (!resolvedCfg.autoResearchUrl) {
+        sendJson(res, 200, { configured: false, status: "off" });
+        return;
+      }
+      try {
+        const base = resolvedCfg.autoResearchUrl.replace(/\/+$/, "");
+        const upstream = await fetch(`${base}/api/v1/health`, {
+          headers: { accept: "application/json" },
+          redirect: "error",
+          signal: AbortSignal.timeout(2_000),
+        });
+        sendJson(res, 200, { configured: true, status: upstream.ok ? "ok" : "down" });
+      } catch {
+        sendJson(res, 200, { configured: true, status: "down" });
       }
       return;
     }

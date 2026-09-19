@@ -12,6 +12,8 @@ export interface Config {
   couchdbDb: string;
   rabbitUrl: string | null;
   rabbitExchange: string;
+  /** Optional Auto Research harness base URL; only /health is projected publicly. */
+  autoResearchUrl: string | null;
   /** Recent-documents window and cache. */
   recentWindow: number;
   recentCacheMs: number;
@@ -38,6 +40,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     couchdbDb: env.COUCHDB_DB ?? "starintel",
     rabbitUrl: env.RABBIT_URL ?? null,
     rabbitExchange: env.RABBIT_EXCHANGE ?? "starintel",
+    autoResearchUrl: env.AUTO_RESEARCH_URL ?? null,
     recentWindow: Math.min(int("RECENT_WINDOW", 100), 100),
     recentCacheMs: int("RECENT_CACHE_MS", 60_000),
     radarFrameMs: Math.max(int("RADAR_FRAME_MS", 250), 50),
