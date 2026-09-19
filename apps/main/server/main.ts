@@ -110,6 +110,24 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       }
       return;
     }
+    if (url.pathname === "/api/research/status") {
+      if (!resolvedCfg.autoResearchUrl) {
+        sendJson(res, 200, { configured: false, status: "off" });
+        return;
+      }
+      try {
+        const base = resolvedCfg.autoResearchUrl.replace(/\/+$/, "");
+        const upstream = await fetch(`${base}/api/v1/health`, {
+          headers: { accept: "application/json" },
+          redirect: "error",
+          signal: AbortSignal.timeout(2_000),
+        });
+        sendJson(res, 200, { configured: true, status: upstream.ok ? "ok" : "down" });
+      } catch {
+        sendJson(res, 200, { configured: true, status: "down" });
+      }
+      return;
+    }
     if (url.pathname === "/api/recent-documents") {
       const sampleSize = Number(url.searchParams.get("sample") ?? "12");
       try {
