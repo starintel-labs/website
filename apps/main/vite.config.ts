@@ -10,7 +10,7 @@ export default defineConfig({
       input: {
         index: resolve(__dirname, "index.html"),
         radar: resolve(__dirname, "radar.html"),
-        research: resolve(__dirname, "research.html"),
+        research: resolve(__dirname, "research.html"),\n        store: resolve(__dirname, "store.html"),
       },
     },
   },
