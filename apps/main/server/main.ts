@@ -1,6 +1,7 @@
 /**
  * starintel.actor server: static assets + public-safe dynamic surfaces.
- * Dynamic surfaces: /api/recent-documents, /radar/stream (SSE), /healthz, /readyz.
+ * Dynamic surfaces: /api/recent-documents, /radar/stream (SSE),
+ * /api/radar/music/status, /radar/music/stream, /healthz, /readyz.
  * Canonicalization: www.starintel.actor -> starintel.actor (301).
  */
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
@@ -8,6 +9,7 @@ import { createReadStream, existsSync, statSync } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadConfig, type Config } from "./config.ts";
+import { NavidromeRadio } from "./navidrome-radio.ts";
 import { RecentDocumentsService } from "./recent.ts";
 import { RadarFeed } from "./radar-feed.ts";
 import { SseHub } from "./sse.ts";
@@ -77,6 +79,60 @@ function serveStatic(res: ServerResponse, cfg: Config, urlPath: string): void {
   createReadStream(file).pipe(res);
 }
 
+async function proxyRadio(req: IncomingMessage, res: ServerResponse, radio: NavidromeRadio): Promise<void> {
+  const controller = new AbortController();
+  const close = () => controller.abort();
+  res.once("close", close);
+
+  try {
+    const range = typeof req.headers.range === "string" ? req.headers.range : undefined;
+    const upstream = await radio.openStream(range, controller.signal);
+    if (!upstream.ok && upstream.status !== 206) {
+      sendJson(res, 502, { error: "radio upstream unavailable" });
+      return;
+    }
+
+    const headers: Record<string, string> = {
+      ...SECURITY_HEADERS,
+      "cache-control": "private, no-store",
+    };
+    for (const name of ["content-type", "content-length", "content-range", "accept-ranges"]) {
+      const value = upstream.headers.get(name);
+      if (value) headers[name] = value;
+    }
+
+    res.writeHead(upstream.status, headers);
+    if (!upstream.body) {
+      res.end();
+      return;
+    }
+
+    const reader = upstream.body.getReader();
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done || controller.signal.aborted) break;
+      if (!res.write(value)) {
+        await new Promise<void>((resolve) => {
+          const finish = () => {
+            res.off("drain", finish);
+            res.off("close", finish);
+            resolve();
+          };
+          res.once("drain", finish);
+          res.once("close", finish);
+        });
+      }
+    }
+    if (!res.destroyed) res.end();
+  } catch {
+    if (controller.signal.aborted) return;
+    if (!res.headersSent) sendJson(res, 503, { error: "radio unavailable" });
+    else res.destroy();
+  } finally {
+    res.off("close", close);
+  }
+}
+
 export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: ServerResponse) => void; readyz: () => Promise<{ radar: string; recent: "ok" | "down" }> } {
   const here = fileURLToPath(new URL(".", import.meta.url));
   const resolvedCfg: Config = { ...cfg, staticDir: join(here, "..", cfg.staticDir) };
@@ -84,6 +140,13 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
   const hub = new SseHub();
   const radar = new RadarFeed(resolvedCfg, (events) => hub.sendEvents(events), (totals, rps) => {
     hub.sendRate(totals, rps);
+  });
+  const radio = new NavidromeRadio({
+    url: resolvedCfg.navidromeUrl,
+    user: resolvedCfg.navidromeUser,
+    password: resolvedCfg.navidromePassword,
+    playlist: resolvedCfg.navidromePlaylist,
+    maxBitrate: resolvedCfg.navidromeMaxBitrate,
   });
 
   async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
@@ -133,6 +196,14 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       } catch {
         sendJson(res, 200, { configured: true, status: "down" });
       }
+      return;
+    }
+    if (url.pathname === "/api/radar/music/status" && req.method === "GET") {
+      sendJson(res, 200, await radio.status());
+      return;
+    }
+    if (url.pathname === "/radar/music/stream" && req.method === "GET") {
+      await proxyRadio(req, res, radio);
       return;
     }
     if (url.pathname === "/api/recent-documents") {

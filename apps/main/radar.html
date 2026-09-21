@@ -21,7 +21,7 @@
       <a class="si-topbar__brand" href="/" aria-label="StarIntel home" data-wordmark></a>
       <nav class="si-topbar__nav" aria-label="Primary">
         <a href="/" data-active="home">home</a>
-        <a href="https://auto-research.starintel.actor/" target="_blank" rel="noopener">research</a>
+        <a href="/research">research</a>
         <a href="/radar" aria-current="page">radar</a>
         <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">blog</a>
         <a href="https://git.starintel.actor/starintel-labs" target="_blank" rel="noopener">code</a>
@@ -65,13 +65,49 @@
             </div>
             <div id="radar-sizes" style="display: flex; gap: 0.4rem; flex-wrap: wrap"></div>
           </div>
+          <div class="si-panel" id="radar-music-panel">
+            <div class="faint mono" style="font-size: 0.72rem; letter-spacing: 0.12em">
+              DARK SYNTHWAVE
+            </div>
+            <div
+              id="radar-music-state"
+              class="mono"
+              style="font-size: 0.82rem; margin: 0.65rem 0 0.75rem"
+              aria-live="polite"
+            >
+              checking navidrome…
+            </div>
+            <audio id="radar-music" preload="none"></audio>
+            <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap">
+              <button id="radar-music-toggle" class="si-btn si-btn--ghost" type="button" disabled>
+                play
+              </button>
+              <label class="faint mono" for="radar-music-volume" style="font-size: 0.7rem">
+                volume
+              </label>
+              <input
+                id="radar-music-volume"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.22"
+                aria-label="Radar music volume"
+                style="min-width: 7.5rem; flex: 1"
+              />
+            </div>
+            <div class="faint mono" style="font-size: 0.68rem; margin-top: 0.7rem">
+              private navidrome · same-origin stream · ssh tunnel
+            </div>
+          </div>
         </div>
       </div>
       <p class="faint" style="font-size: 0.82rem; max-width: 60rem">
         The browser receives only aggregate, allowlisted fields: timestamps, event family, public
         document type, payload-size bucket, and counts. The projector processing the full event
         stream fails closed on anything it does not recognize. Raw messages never leave the
-        private network.
+        private network. Radar audio is proxied by the website server; Navidrome credentials and
+        tunnel details are never sent to the browser.
       </p>
     </main>
 

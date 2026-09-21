@@ -33,6 +33,12 @@ interface RadarRate {
   sizes: Record<string, number>;
 }
 
+interface RadioStatus {
+  configured: boolean;
+  status: "off" | "ready" | "down";
+  playlist: string;
+}
+
 type RadarFrame = RadarEvent | RadarRate;
 
 const FAMILY_COLORS: Record<string, string> = {
@@ -216,4 +222,103 @@ function connect(): void {
   };
 }
 
+const music = document.getElementById("radar-music") as HTMLAudioElement | null;
+const musicToggle = document.getElementById("radar-music-toggle") as HTMLButtonElement | null;
+const musicState = document.getElementById("radar-music-state");
+const musicVolume = document.getElementById("radar-music-volume") as HTMLInputElement | null;
+let musicSequence = 0;
+let manualPause = false;
+let retryTimer: number | undefined;
+
+function setMusicState(label: string): void {
+  if (musicState) musicState.textContent = label;
+}
+
+function queueNextTrack(): void {
+  if (!music) return;
+  musicSequence += 1;
+  music.src = `/radar/music/stream?n=${Date.now()}-${musicSequence}`;
+  music.load();
+}
+
+function setMusicButton(playing: boolean): void {
+  if (musicToggle) musicToggle.textContent = playing ? "pause" : "play";
+}
+
+async function playMusic(autoplayAttempt = false): Promise<void> {
+  if (!music || !musicToggle) return;
+  manualPause = false;
+  if (!music.hasAttribute("src")) queueNextTrack();
+  try {
+    await music.play();
+    setMusicButton(true);
+    setMusicState("playing · dark synthwave");
+  } catch {
+    setMusicButton(false);
+    setMusicState(autoplayAttempt ? "ready · press play" : "playback blocked");
+  }
+}
+
+async function initMusic(): Promise<void> {
+  if (!music || !musicToggle || !musicVolume) return;
+  music.volume = Number(musicVolume.value);
+
+  try {
+    const response = await fetch("/api/radar/music/status", {
+      headers: { accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!response.ok) throw new Error(String(response.status));
+    const status = (await response.json()) as RadioStatus;
+    if (!status.configured) {
+      setMusicState("off · navidrome not configured");
+      return;
+    }
+    if (status.status !== "ready") {
+      setMusicState("down · navidrome unavailable");
+      return;
+    }
+
+    musicToggle.disabled = false;
+    queueNextTrack();
+    await playMusic(true);
+  } catch {
+    setMusicState("down · radio status unavailable");
+  }
+}
+
+musicToggle?.addEventListener("click", () => {
+  if (!music) return;
+  if (music.paused) {
+    void playMusic(false);
+  } else {
+    manualPause = true;
+    music.pause();
+    setMusicButton(false);
+    setMusicState("paused · dark synthwave");
+  }
+});
+
+musicVolume?.addEventListener("input", () => {
+  if (music) music.volume = Number(musicVolume.value);
+});
+
+music?.addEventListener("ended", () => {
+  if (manualPause) return;
+  queueNextTrack();
+  void playMusic(false);
+});
+
+music?.addEventListener("error", () => {
+  if (manualPause) return;
+  setMusicButton(false);
+  setMusicState("stream interrupted · retrying");
+  if (retryTimer !== undefined) window.clearTimeout(retryTimer);
+  retryTimer = window.setTimeout(() => {
+    queueNextTrack();
+    void playMusic(false);
+  }, 5000);
+});
+
 connect();
+void initMusic();
