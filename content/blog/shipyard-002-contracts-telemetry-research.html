@@ -1,0 +1,58 @@
+<p>A distributed system gets dangerous when its components share assumptions instead of contracts.</p>
+<p>Recent StarIntel work is mostly about deleting those assumptions.</p>
+<h2 id="source-actors-and-targets-now-have-an-explicit-protocol">Source Actors and Targets now have an explicit protocol</h2>
+<p>The StarIntel server's current head adds documentation defining the Source Actor and Target protocols.</p>
+<p>Source: <a href="https://github.com/lost-rob0t/starintel-server/commit/f899612d6e5924ffcc81432d78541b6616311892">starintel-server f899612d</a></p>
+<p>That sounds less exciting than another scraper.</p>
+<p>It is more important.</p>
+<p>Actors need a stable answer to questions such as:</p>
+<ul><li>What exactly am I receiving?</li><li>What identity does this target carry?</li><li>What may I emit?</li><li>Which pieces are source data versus derived data?</li><li>Which protocol owns dispatch?</li><li>Where does provenance survive the transition?</li></ul>
+<p>Writing these contracts down is part of making actors replaceable. A YouTube collector, domain actor, court-record actor, or future StarLang runtime should not need private knowledge of whoever wrote the router.</p>
+<h2 id="hosted-observability-became-explicit">Hosted observability became explicit</h2>
+<p>The server also landed a run of observability work around hosted telemetry:</p>
+<ul><li>explicit telemetry configuration</li><li>audited search-query behavior</li><li>explicit gate and sidecar endpoint wiring</li><li>idempotent transport installation</li></ul>
+<p>Source: <a href="https://github.com/lost-rob0t/starintel-server/commit/e49c67d88d60dbcc0fcba1b4ba76c1a0a6d6655c">starintel-server e49c67d8</a></p>
+<p>The key word is <strong>explicit</strong>.</p>
+<p>Telemetry that mysteriously appears because some package happens to be loaded is hard to reason about and harder to trust.</p>
+<p>StarIntel is moving toward infrastructure where enabling the observation path is itself visible configuration.</p>
+<h2 id="auto-research-reached-the-website">Auto Research reached the website</h2>
+<p>The main website now has a first-class <code>/research</code> surface backed by a bounded server-side research-health projection.</p>
+<p>The implementation also tests fail-closed behavior when that integration is not configured.</p>
+<p>Source: <a href="https://github.com/starintel-labs/website/commit/3956fd0473675deece971e0e6932b35c9ad64f37">website 3956fd04</a></p>
+<p>This keeps the public boundary intentionally narrow.</p>
+<p>The website does not become a window directly into private research storage. It gets a projection designed for publication.</p>
+<p>That distinction is the same one used elsewhere in StarIntel:</p>
+<pre class="src src-text">internal state
+     ↓
+policy / projection
+     ↓
+bounded public representation</pre>
+<h2 id="business-automation-is-getting-symbolic-policy-too">Business automation is getting symbolic policy too</h2>
+<p>On the business side, <code>starintel-biz</code> merged an autonomous opportunity board and OSINT target pack.</p>
+<p>The slice includes a Prolog policy layer, tests, structured targets, research notes, and a prototype lead board.</p>
+<p>Source: <a href="https://github.com/starintel-labs/starintel-biz/commit/da88ad4728d48284860668f36070c81915a8a604">starintel-biz da88ad47</a></p>
+<p>That is a pattern worth keeping: business automation should still be inspectable as rules and structured data instead of disappearing inside one giant prompt.</p>
+<h2 id="what-is-still-design-not-runtime">What is still design, not runtime</h2>
+<p>The infrastructure repository also gained the hosted Zara paid multi-tenant platform design.</p>
+<p>That commit is documentation.</p>
+<p>It is not evidence that the hosted platform is production-ready, and Shipyard is going to keep saying that kind of thing out loud.</p>
+<p>Source: <a href="https://github.com/starintel-labs/starintel-infra/commit/e2f047afedc1f43d7585ca1eae1ca259eb1aa0b0">starintel-infra e2f047af</a></p>
+<p>Design landing in Git is still progress: it gives implementation something concrete to satisfy.</p>
+<p>It just is not the same progress as a running service.</p>
+<h2 id="the-direction">The direction</h2>
+<p>Taken together, these changes point at a fairly consistent architecture:</p>
+<pre class="src src-text">contracts
+   ↓
+actors
+   ↓
+typed state
+   ↓
+symbolic policy
+   ↓
+bounded projections
+   ↓
+operator / public interfaces</pre>
+<p>StarIntel does not need every component to be intelligent.</p>
+<p>It needs every component to be legible.</p>
+<p>That is the stuff leaving the Shipyard this week.</p>
+<blockquote><p>AI provenance: drafted from repository state available on 2026-09-20. Merged implementation, documentation, and planned work are intentionally described as separate states.</p></blockquote>
