@@ -82,7 +82,7 @@ function serveStatic(res: ServerResponse, cfg: Config, urlPath: string): void {
 async function proxyRadio(req: IncomingMessage, res: ServerResponse, radio: NavidromeRadio): Promise<void> {
   const controller = new AbortController();
   const close = () => controller.abort();
-  req.once("close", close);
+  res.once("close", close);
 
   try {
     const range = typeof req.headers.range === "string" ? req.headers.range : undefined;
@@ -129,7 +129,7 @@ async function proxyRadio(req: IncomingMessage, res: ServerResponse, radio: Navi
     if (!res.headersSent) sendJson(res, 503, { error: "radio unavailable" });
     else res.destroy();
   } finally {
-    req.off("close", close);
+    res.off("close", close);
   }
 }
 
