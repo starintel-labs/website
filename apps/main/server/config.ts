@@ -40,6 +40,11 @@ function optional(env: NodeJS.ProcessEnv, name: string): string | null {
   return value ? value : null;
 }
 
+function secret(env: NodeJS.ProcessEnv, name: string): string | null {
+  const value = env[name];
+  return value !== undefined && value !== "" ? value : null;
+}
+
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   return {
     port: int(env, "PORT", 8787),
@@ -54,7 +59,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     autoResearchUrl: optional(env, "AUTO_RESEARCH_URL"),
     navidromeUrl: optional(env, "NAVIDROME_URL"),
     navidromeUser: optional(env, "NAVIDROME_USER"),
-    navidromePassword: optional(env, "NAVIDROME_PASSWORD"),
+    navidromePassword: secret(env, "NAVIDROME_PASSWORD"),
     navidromePlaylist: env.NAVIDROME_PLAYLIST?.trim() || "Dark Synthwave",
     navidromeMaxBitrate: Math.min(int(env, "NAVIDROME_MAX_BITRATE", 192), 320),
     recentWindow: Math.min(int(env, "RECENT_WINDOW", 100), 100),
