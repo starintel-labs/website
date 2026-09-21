@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en" data-si-theme="obsidian-gold">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#090807" />
+    <meta
+      name="description"
+      content="StarIntel Store preview: hosted intelligence plans, software, private source access, support, and provenance-gated datasets."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://starintel.actor/store" />
+    <meta property="og:title" content="StarIntel Store" />
+    <meta
+      property="og:description"
+      content="Flexible StarIntel software, service subscriptions, source access, support, and datasets."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://starintel.actor/store" />
+    <title>Store — StarIntel</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "OfferCatalog",
+        "name": "StarIntel Store",
+        "url": "https://starintel.actor/store",
+        "description": "Preview catalog for StarIntel software, hosted services, private source access, support, and datasets."
+      }
+    </script>
+    <style>
+      .store-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.35rem 0.65rem;
+        border: 1px solid var(--si-border);
+        border-radius: 999px;
+        font-family: var(--si-font-mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .store-price {
+        display: flex;
+        align-items: baseline;
+        gap: 0.35rem;
+        margin: 0.8rem 0;
+      }
+      .store-price strong {
+        color: var(--si-text-bright);
+        font-family: var(--si-font-mono);
+        font-size: clamp(1.6rem, 4vw, 2.35rem);
+        font-weight: 600;
+      }
+      .store-price span {
+        color: var(--si-text-muted);
+        font-family: var(--si-font-mono);
+        font-size: 0.78rem;
+      }
+      .store-card {
+        display: flex;
+        min-height: 100%;
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+      .store-card__body {
+        flex: 1;
+      }
+      .store-list {
+        margin: 0.65rem 0 0;
+        padding-left: 1.1rem;
+        color: var(--si-text-secondary);
+        font-size: 0.84rem;
+      }
+      .store-list li {
+        margin: 0.35rem 0;
+      }
+      .store-status {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        gap: 0.35rem;
+        font-family: var(--si-font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .store-status::before {
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: var(--si-accent);
+        content: "";
+      }
+      .store-status--planned::before {
+        background: var(--si-text-muted);
+      }
+      .store-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-top: 0.7rem;
+      }
+      .store-note {
+        border-left: 2px solid var(--si-accent);
+        padding: 0.9rem 1rem;
+        background: color-mix(in srgb, var(--si-accent) 4%, transparent);
+        color: var(--si-text-secondary);
+      }
+      .store-table-wrap {
+        overflow-x: auto;
+      }
+      .store-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+      .store-table th,
+      .store-table td {
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--si-border);
+        text-align: left;
+        vertical-align: top;
+      }
+      .store-table th {
+        color: var(--si-text-bright);
+        font-family: var(--si-font-mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .store-table td:nth-child(2),
+      .store-table td:nth-child(3) {
+        white-space: nowrap;
+        font-family: var(--si-font-mono);
+      }
+      .store-cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="si-skip-link" href="#main">skip to content</a>
+
+    <header class="si-topbar">
+      <a class="si-topbar__brand" href="/" aria-label="StarIntel home" data-wordmark></a>
+      <nav class="si-topbar__nav" aria-label="Primary">
+        <a href="/">home</a>
+        <a href="/research">research</a>
+        <a href="/radar">radar</a>
+        <a href="/store" aria-current="page">store</a>
+        <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">blog</a>
+        <a href="https://quasar.starintel.actor/" target="_blank" rel="noopener">quasar</a>
+        <a href="https://git.starintel.actor/starintel-labs" target="_blank" rel="noopener">code</a>
+      </nav>
+    </header>
+
+    <main id="main" class="si-scanlines">
+      <section class="si-shell si-hero">
+        <div class="si-hero__grid">
+          <div>
+            <span class="store-kicker">store preview · flexible plans · provenance first</span>
+            <h1 class="si-hero__title">Software, services, source, and data.</h1>
+            <p class="si-hero__lede">
+              StarIntel is building one storefront for hosted intelligence services, operator
+              software, private source access, support, and provenance-gated datasets. Start small,
+              buy only the layer you need, and move up without changing platforms.
+            </p>
+            <div class="si-hero__actions">
+              <a class="si-btn si-btn--primary" href="#plans">compare plans</a>
+              <a class="si-btn" href="#datasets">browse datasets</a>
+            </div>
+            <p class="faint mono" style="margin-top:1rem;font-size:0.76rem">
+              Preview catalog. Checkout and fulfillment activate only after billing, license, EULA,
+              and dataset-rights gates are live.
+            </p>
+          </div>
+          <div class="si-panel">
+            <div class="faint mono" style="font-size:0.72rem;letter-spacing:0.12em">STORE MODEL</div>
+            <pre class="si-terminal__body" style="padding:0;margin-top:0.8rem;white-space:pre-wrap">plan
+ ├─ seats + hosted usage
+ ├─ optional datasets
+ ├─ optional support
+ └─ optional source license
+
+purchase
+ └─ quote → terms → payment → entitlement → delivery</pre>
+            <div class="store-meta">
+              <span class="si-chip">monthly</span>
+              <span class="si-chip">annual</span>
+              <span class="si-chip">one-time</span>
+              <span class="si-chip">dataset refresh</span>
+              <span class="si-chip">crypto checkout planned</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="si-band" id="plans">
+        <div class="si-shell si-section">
+          <div class="si-section__head">
+            <div>
+              <div class="faint mono" style="font-size:0.72rem">LAUNCH PRICING DRAFT</div>
+              <h2 class="si-section__title">Plans that scale from curious to serious</h2>
+            </div>
+          </div>
+          <div class="si-grid si-grid--trio">
+            <article class="si-card store-card">
+              <div class="store-card__body">
+                <span class="store-status">preview</span>
+                <span class="si-card__title">Explorer</span>
+                <div class="store-price"><strong>$0</strong><span>forever</span></div>
+                <span class="si-card__desc">Learn the platform, explore public data, and join the community.</span>
+                <ul class="store-list">
+                  <li>public software surfaces</li>
+                  <li>public dataset samples</li>
+                  <li>community forum</li>
+                  <li>no official support entitlement</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="si-card store-card">
+              <div class="store-card__body">
+                <span class="store-status">preview</span>
+                <span class="si-card__title">Solo</span>
+                <div class="store-price"><strong>$29</strong><span>/ month · draft</span></div>
+                <span class="si-card__desc">A low-friction commercial seat for independent builders and small projects.</span>
+                <ul class="store-list">
+                  <li>1 named seat</li>
+                  <li>hosted API / ingest allowance</li>
+                  <li>purchased dataset entitlements</li>
+                  <li>support sold separately</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="si-card store-card">
+              <div class="store-card__body">
+                <span class="store-status">preview</span>
+                <span class="si-card__title">Investigator</span>
+                <div class="store-price"><strong>$79</strong><span>/ month · draft</span></div>
+                <span class="si-card__desc">For working investigators, researchers, journalists, and consultancies.</span>
+                <ul class="store-list">
+                  <li>1 named seat</li>
+                  <li>larger ingest / API allowance</li>
+                  <li>investigation workspace entitlement when production-ready</li>
+                  <li>dataset subscription support</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="si-card store-card">
+              <div class="store-card__body">
+                <span class="store-status">preview</span>
+                <span class="si-card__title">Team</span>
+                <div class="store-price"><strong>$249</strong><span>/ month · draft</span></div>
+                <span class="si-card__desc">Shared StarIntel for small professional teams.</span>
+                <ul class="store-list">
+                  <li>target 5 named seats</li>
+                  <li>shared workspaces</li>
+                  <li>pooled hosted usage</li>
+                  <li>shared purchased datasets</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="si-card store-card">
+              <div class="store-card__body">
+                <span class="store-status store-status--planned">planned</span>
+                <span class="si-card__title">Business</span>
+                <div class="store-price"><strong>flex</strong><span>usage + seats</span></div>
+                <span class="si-card__desc">Higher-capacity plans configured around actual usage and team size.</span>
+                <ul class="store-list">
+                  <li>larger seat pools</li>
+                  <li>higher ingest / API envelopes</li>
+                  <li>private integrations</li>
+                  <li>optional paid support</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="si-card store-card">
+              <div class="store-card__body">
+                <span class="store-status store-status--planned">planned</span>
+                <span class="si-card__title">Enterprise</span>
+                <div class="store-price"><strong>custom</strong><span>contract</span></div>
+                <span class="si-card__desc">For custom deployment, procurement, reseller/OEM, and specialized data rights.</span>
+                <ul class="store-list">
+                  <li>custom capacity and deployment</li>
+                  <li>custom dataset/data-feed terms</li>
+                  <li>reseller/OEM grants where approved</li>
+                  <li>support and services quoted separately</li>
+                </ul>
+              </div>
+            </article>
+          </div>
+          <p class="store-note" style="margin-top:1rem">
+            Prices shown above are launch hypotheses while the checkout/catalog system is being
+            built. Final live pricing will be versioned product data. No plan silently includes
+            private source or official support.
+          </p>
+        </div>
+      </section>
+
+      <section class="si-band" id="software">
+        <div class="si-shell si-section">
+          <div class="si-section__head">
+            <h2 class="si-section__title">Software & service store</h2>
+          </div>
+          <div class="si-grid si-grid--trio">
+            <article class="si-card store-card">
+              <span class="si-card__dtype">hosted service</span>
+              <span class="si-card__title">StarIntel Ingest + API</span>
+              <span class="si-card__desc">
+                Hosted ingest, typed StarIntel documents, provenance, actor execution, and query
+                access. Subscription and usage entitlement are separate from source rights.
+              </span>
+              <span class="si-card__meta"><span class="si-badge si-badge--dev">store wiring in progress</span></span>
+            </article>
+
+            <article class="si-card store-card">
+              <span class="si-card__dtype">operator workspace</span>
+              <span class="si-card__title">Quasar</span>
+              <span class="si-card__desc">
+                Graph-first operator workspace for typed investigations, relations, and evidence.
+                Commercial packaging activates only as features reach production gates.
+              </span>
+              <span class="si-card__meta"><span class="si-badge si-badge--dev">in development</span></span>
+            </article>
+
+            <article class="si-card store-card">
+              <span class="si-card__dtype">search</span>
+              <span class="si-card__title">StarIntel Search</span>
+              <span class="si-card__desc">
+                Search across web and StarIntel-derived corpora with source/provenance-aware
+                results. Candidate standalone or bundled service.
+              </span>
+              <span class="si-card__meta"><span class="si-badge si-badge--dev">planned</span></span>
+            </article>
+
+            <article class="si-card store-card">
+              <span class="si-card__dtype">private source</span>
+              <span class="si-card__title">Private Source License</span>
+              <div class="store-price"><strong>$5,000</strong><span>one-time license</span></div>
+              <span class="si-card__desc">
+                Authorized private-source inspection and development. Every human viewer requires
+                NDA coverage and explicit authorization.
+              </span>
+              <ul class="store-list">
+                <li>3 years of source updates included</li>
+                <li>$1,000/year for new source versions after year 3</li>
+                <li>private source may not be redistributed</li>
+                <li>support not included</li>
+              </ul>
+              <span class="si-card__meta"><span class="si-badge si-badge--dev">delivery system in progress</span></span>
+            </article>
+
+            <article class="si-card store-card">
+              <span class="si-card__dtype">extensions</span>
+              <span class="si-card__title">Actor & Connector Packs</span>
+              <span class="si-card__desc">
+                Prebuilt binary actors, source adapters, and vertical integration packs with
+                explicit commercial/runtime entitlements.
+              </span>
+              <span class="si-card__meta"><span class="si-badge si-badge--dev">planned</span></span>
+            </article>
+
+            <article class="si-card store-card">
+              <span class="si-card__dtype">custom systems</span>
+              <span class="si-card__title">StarIntel + Prolog Solutions</span>
+              <span class="si-card__desc">
+                Productized custom ingest, ontology/KB, deterministic rules, APIs, and auditable
+                workflow automation for organizations with specific business logic.
+              </span>
+              <span class="si-card__meta"><span class="si-badge">quoted engagement</span></span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="si-band" id="datasets">
+        <div class="si-shell si-section">
+          <div class="si-section__head">
+            <div>
+              <div class="faint mono" style="font-size:0.72rem">PROPRIETARY DATA PRODUCTS · PLANNED</div>
+              <h2 class="si-section__title">Dataset store</h2>
+            </div>
+          </div>
+          <p class="store-note">
+            A dataset becomes purchasable only after provenance, source terms, resale rights,
+            PII/sensitivity, and jurisdiction review pass. Public accessibility alone does not
+            establish resale rights.
+          </p>
+          <div class="store-table-wrap" style="margin-top:1rem">
+            <table class="store-table">
+              <thead>
+                <tr>
+                  <th>Dataset</th>
+                  <th>Snapshot</th>
+                  <th>Refresh</th>
+                  <th>What it contains</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>OSINT Source Registry</td>
+                  <td>$99</td>
+                  <td>$19/mo</td>
+                  <td>Curated public sources, capabilities, geography, status, and access metadata.</td>
+                </tr>
+                <tr>
+                  <td>Ohio Government Open Data Index</td>
+                  <td>$149</td>
+                  <td>$39/mo</td>
+                  <td>Normalized catalog of agencies, portals, feeds, APIs, and open-data endpoints.</td>
+                </tr>
+                <tr>
+                  <td>US Public Agency Directory</td>
+                  <td>$249</td>
+                  <td>$59/mo</td>
+                  <td>Public agency endpoints and normalized catalog/contact metadata.</td>
+                </tr>
+                <tr>
+                  <td>Professional License & Registry Index</td>
+                  <td>$299</td>
+                  <td>$79/mo</td>
+                  <td>Official licensing registries and normalized jurisdiction/schema metadata.</td>
+                </tr>
+                <tr>
+                  <td>Public Infrastructure / Facility Directory</td>
+                  <td>$399</td>
+                  <td>$99/mo</td>
+                  <td>Public facility and agency-infrastructure metadata with provenance.</td>
+                </tr>
+                <tr>
+                  <td>Court Calendar & Public Docket Metadata Pack</td>
+                  <td>$499</td>
+                  <td>$129/mo</td>
+                  <td>Only where source-specific resale and usage rights explicitly permit sale.</td>
+                </tr>
+                <tr>
+                  <td>Public Organization & Company Footprint Graph</td>
+                  <td>$599</td>
+                  <td>$149/mo</td>
+                  <td>Sourced public organization/company relationships and graph-ready identifiers.</td>
+                </tr>
+                <tr>
+                  <td>Custom jurisdiction / agency data build</td>
+                  <td>$1,500+</td>
+                  <td>quoted</td>
+                  <td>Fixed-scope acquisition, normalization, provenance, and delivery.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="store-meta">
+            <span class="si-chip">JSON</span>
+            <span class="si-chip">JSONL</span>
+            <span class="si-chip">CSV</span>
+            <span class="si-chip">Parquet</span>
+            <span class="si-chip">StarIntel JSON-LD</span>
+            <span class="si-chip">API where available</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="si-band" id="support">
+        <div class="si-shell si-section">
+          <div class="si-section__head">
+            <h2 class="si-section__title">Community and support are different products</h2>
+          </div>
+          <div class="si-grid si-grid--trio">
+            <article class="si-card store-card">
+              <span class="si-card__dtype">community</span>
+              <span class="si-card__title">StarIntel Forum</span>
+              <div class="store-price"><strong>$0</strong><span>community</span></div>
+              <span class="si-card__desc">
+                Discussion for software, research, actors, datasets, integrations, and community help.
+                Responses are best-effort and create no support obligation.
+              </span>
+              <span class="si-card__meta"><span class="si-badge si-badge--dev">planned</span></span>
+            </article>
+
+            <article class="si-card store-card">
+              <span class="si-card__dtype">official support</span>
+              <span class="si-card__title">Paid Support</span>
+              <div class="store-price"><strong>$149</strong><span>/ month · starting hypothesis</span></div>
+              <span class="si-card__desc">
+                Official support queue/forum access for customers with a separately purchased support
+                entitlement. Scope and response objectives live in the support agreement.
+              </span>
+              <span class="si-card__meta"><span class="si-badge si-badge--dev">planned</span></span>
+            </article>
+
+            <article class="si-card store-card">
+              <span class="si-card__dtype">payments</span>
+              <span class="si-card__title">Card + crypto checkout</span>
+              <span class="si-card__desc">
+                Provider-neutral billing with non-custodial crypto invoices planned through a
+                self-hosted payment adapter. Settlement, not browser redirects, grants entitlements.
+              </span>
+              <span class="si-card__meta"><span class="si-badge si-badge--dev">wiring in progress</span></span>
+            </article>
+          </div>
+          <div class="store-cta-row">
+            <a class="si-btn si-btn--primary" href="https://discord.gg/R3VY8wr86Y" target="_blank" rel="noopener">join the community</a>
+            <a class="si-btn" href="https://git.starintel.actor/starintel-labs" target="_blank" rel="noopener">follow development</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="si-footer">
+      <div class="si-shell">
+        <span><span data-wordmark-sm></span> <span class="muted">— buy the layer you need.</span></span>
+        <span>
+          <a href="/">Home</a> ·
+          <a href="/research">Research</a> ·
+          <a href="/radar">Radar</a> ·
+          <a href="/store">Store</a> ·
+          <a href="https://git.starintel.actor/starintel-labs" target="_blank" rel="noopener">Code</a>
+        </span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/store.ts"></script>
+  </body>
+</html>
