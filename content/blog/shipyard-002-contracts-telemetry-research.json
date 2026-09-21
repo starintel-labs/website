@@ -1,0 +1,35 @@
+{
+  "slug": "shipyard-002-contracts-telemetry-research",
+  "title": "Shipyard #002 — Contracts, Telemetry, and Research Surfaces",
+  "date": "[2026-09-20 Sun]",
+  "author": "nsaspy",
+  "description": "StarIntel Shipyard #002: actor protocols, explicit telemetry, Auto Research on the website, and the line between shipped infrastructure and design.",
+  "excerpt": "A distributed system gets dangerous when its components share assumptions instead of contracts.",
+  "tags": [
+    "starintel",
+    "shipyard",
+    "server",
+    "observability",
+    "research",
+    "website"
+  ],
+  "filetags": null,
+  "id": "blog-shipyard-002",
+  "status": "POST",
+  "anchors": [
+    "source-actors-and-targets-now-have-an-explicit-protocol",
+    "hosted-observability-became-explicit",
+    "auto-research-reached-the-website",
+    "business-automation-is-getting-symbolic-policy-too",
+    "what-is-still-design-not-runtime",
+    "the-direction"
+  ],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+    "path": "blog/posts/2026-09-20-shipyard-002-contracts-telemetry-research.org",
+    "commit": "eaccba5737a9748f0a645d12fbaa74f11f950611",
+    "blob": "eaccba5737a9748f0a645d12fbaa74f11f950611",
+    "content_sha256": "6b43de43c5c46df6c3e4fbd3098ecfdc6549520ff656a852bee21590a5a4c2b3"
+  }
+}
