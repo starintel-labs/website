@@ -11,6 +11,9 @@ async function withServer(run: (base: string) => Promise<void>): Promise<void> {
     STATIC_DIR: "dist",
     AUTO_RESEARCH_URL: "",
     RABBIT_URL: "",
+    NAVIDROME_URL: "",
+    NAVIDROME_USER: "",
+    NAVIDROME_PASSWORD: "",
   });
   const app = createApp(cfg);
   const server = createServer(app.handle);
@@ -46,5 +49,21 @@ test("research health projection is GET-only and fails closed when unconfigured"
 
     const post = await fetch(`${base}/api/research/status`, { method: "POST" });
     assert.equal(post.status, 405);
+  });
+});
+
+
+test("radar music fails closed when Navidrome is unconfigured", async () => {
+  await withServer(async (base) => {
+    const status = await fetch(`${base}/api/radar/music/status`);
+    assert.equal(status.status, 200);
+    assert.deepEqual(await status.json(), {
+      configured: false,
+      status: "off",
+      playlist: "Dark Synthwave",
+    });
+
+    const stream = await fetch(`${base}/radar/music/stream`);
+    assert.equal(stream.status, 503);
   });
 });
