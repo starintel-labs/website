@@ -49,14 +49,13 @@ function normalizeBase(url: string): string {
  * password, token, or SSH tunnel details.
  */
 export class NavidromeRadio {
+  private readonly cfg: NavidromeRadioConfig;
   private readonly fetchImpl: FetchLike;
   private cache: { expiresAt: number; tracks: Track[] } | null = null;
   private cursor = 0;
 
-  constructor(
-    private readonly cfg: NavidromeRadioConfig,
-    fetchImpl: FetchLike = fetch,
-  ) {
+  constructor(cfg: NavidromeRadioConfig, fetchImpl: FetchLike = fetch) {
+    this.cfg = cfg;
     this.fetchImpl = fetchImpl;
   }
 
