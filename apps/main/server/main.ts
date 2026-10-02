@@ -98,10 +98,25 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
   const resolvedCfg: Config = { ...cfg, staticDir: join(here, "..", cfg.staticDir) };
   const recent = new RecentDocumentsService(resolvedCfg);
   const wardrive = new WardriveService(resolvedCfg);
+  const wardriveImportRate = new Map<string, { count: number; resetAt: number }>();
   const hub = new SseHub();
   const radar = new RadarFeed(resolvedCfg, (events) => hub.sendEvents(events), (totals, rps) => {
     hub.sendRate(totals, rps);
   });
+
+  function allowWardriveImport(req: IncomingMessage): boolean {
+    const forwarded = String(req.headers["cf-connecting-ip"] ?? req.headers["x-forwarded-for"] ?? "");
+    const key = (forwarded.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown").slice(0, 128);
+    const now = Date.now();
+    const current = wardriveImportRate.get(key);
+    if (!current || current.resetAt <= now) {
+      wardriveImportRate.set(key, { count: 1, resetAt: now + 10 * 60_000 });
+      return true;
+    }
+    if (current.count >= 5) return false;
+    current.count += 1;
+    return true;
+  }
 
   async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const host = (req.headers.host ?? "").split(":")[0]!;
@@ -166,10 +181,10 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       }
       return;
     }
-    if (isWardriveHost && url.pathname.startsWith("/api/wardrive/player/") && req.method === "GET") {
-      const playerId = decodeURIComponent(url.pathname.slice("/api/wardrive/player/".length));
+    if (isWardriveHost && url.pathname === "/api/wardrive/player/me" && req.method === "GET") {
       try {
-        sendJson(res, 200, await wardrive.player(playerId));
+        const playerToken = String(req.headers["x-wardrive-player-token"] ?? "");
+        sendJson(res, 200, await wardrive.playerFromToken(playerToken));
       } catch (error) {
         sendJson(res, wardrive.enabled ? 400 : 503, {
           error: error instanceof Error ? error.message : "wardrive player lookup failed",
@@ -182,8 +197,12 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
         sendJson(res, 503, { error: "wardrive persistence is not configured" });
         return;
       }
+      if (!allowWardriveImport(req)) {
+        sendJson(res, 429, { error: "capture import rate limit exceeded" });
+        return;
+      }
       try {
-        const playerId = String(req.headers["x-wardrive-player"] ?? "");
+        const playerToken = String(req.headers["x-wardrive-player-token"] ?? "");
         const displayName = String(req.headers["x-wardrive-handle"] ?? "anon");
         const filename = String(req.headers["x-wardrive-filename"] ?? "capture.dat");
         const sourceHint = req.headers["x-wardrive-source"];
@@ -192,7 +211,7 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
           body,
           filename,
           sourceHint: typeof sourceHint === "string" ? sourceHint : null,
-          playerId,
+          playerToken,
           displayName,
         });
         sendJson(res, result.duplicate ? 200 : 201, result);
