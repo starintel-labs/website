@@ -11,7 +11,7 @@ import { loadConfig, type Config } from "./config.ts";
 import { RecentDocumentsService } from "./recent.ts";
 import { RadarFeed } from "./radar-feed.ts";
 import { SseHub } from "./sse.ts";
-import { WardriveService } from "./wardrive.ts";
+import { decodeCaptureBundle, WardriveService } from "./wardrive.ts";
 
 const MIME: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -219,10 +219,22 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
         filename = filename.slice(0, 256);
         const sourceHint = req.headers["x-wardrive-source"];
         const body = await readRawBody(req, resolvedCfg.wardriveMaxCaptureBytes);
+        const contentType = String(req.headers["content-type"] ?? "")
+          .split(";", 1)[0]
+          ?.trim()
+          .toLowerCase();
+        const captures =
+          contentType === "application/x-starintel-capture-bundle"
+            ? decodeCaptureBundle(body)
+            : [
+                {
+                  body,
+                  filename,
+                  sourceHint: typeof sourceHint === "string" ? sourceHint : null,
+                },
+              ];
         const result = await wardrive.importRun({
-          body,
-          filename,
-          sourceHint: typeof sourceHint === "string" ? sourceHint : null,
+          captures,
           playerToken,
           displayName,
         });
