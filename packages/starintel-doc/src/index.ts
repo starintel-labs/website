@@ -1,10 +1,9 @@
 /**
- * StarIntel v0.9 document validation and public-safe projection.
+ * StarIntel document validation and public-safe projection.
  *
- * The canonical schema authority is `lost-rob0t/starintel-gpt-auto-dig`
- * (`schemas/starintel-doc-v0.9.0.schema.json`); a pinned copy lives in
- * `schemas/` and is kept in sync by `scripts/sync-v09-schema.mjs` in the
- * repository root. Validation fails closed.
+ * The canonical schema authority is `lost-rob0t/starintel-gpt-auto-dig`.
+ * Exact v0.9 and v0.10.1 artifacts are vendored under `schemas/`; validation
+ * fails closed and current emitters must write v0.10.1.
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -22,6 +21,7 @@ const addFormats = addFormatsModule as unknown as (
 export * from "./public.ts";
 
 export const STARINTEL_V09_SCHEMA_VERSION = "0.9.0";
+export const STARINTEL_V0101_SCHEMA_VERSION = "0.10.1";
 
 /** Required envelope fields per StarIntel v0.9. */
 export const V09_REQUIRED_FIELDS = [
@@ -116,4 +116,65 @@ export function validateV09Line(line: string): StarIntelV09Doc {
     throw new V09ValidationError("<unparseable>", [`invalid JSON: ${(e as Error).message}`]);
   }
   return validateV09(parsed);
+}
+
+
+export interface StarIntelV0101Doc extends Omit<StarIntelV09Doc, "schema_version"> {
+  schema_version: "0.10.1";
+}
+
+export class V0101ValidationError extends Error {
+  readonly issues: string[];
+  constructor(docId: string, issues: string[]) {
+    super(`StarIntel v0.10.1 validation failed for ${docId}: ${issues.join("; ")}`);
+    this.name = "V0101ValidationError";
+    this.issues = issues;
+  }
+}
+
+let cachedV0101Validator: ValidateFunction<StarIntelV0101Doc> | undefined;
+
+function schemaPathV0101(): string {
+  const here = dirname(fileURLToPath(import.meta.url));
+  return (
+    process.env.STARINTEL_V0101_SCHEMA ??
+    join(here, "..", "schemas", "starintel-doc-v0.10.1.schema.json")
+  );
+}
+
+function loadV0101Validator(): ValidateFunction<StarIntelV0101Doc> {
+  if (cachedV0101Validator) return cachedV0101Validator;
+  const raw = readFileSync(schemaPathV0101(), "utf8");
+  const schema = JSON.parse(raw) as object;
+  const ajv = new Ajv2020({ allErrors: true, strict: false, allowUnionTypes: true });
+  addFormats(ajv, { date: true, "date-time": true });
+  cachedV0101Validator = ajv.compile<StarIntelV0101Doc>(schema);
+  if (!cachedV0101Validator) {
+    throw new Error("failed to compile StarIntel v0.10.1 schema validator");
+  }
+  return cachedV0101Validator;
+}
+
+/** Validate a newly-emitted document against the pinned StarIntel v0.10.1 schema. */
+export function validateV0101(doc: unknown): StarIntelV0101Doc {
+  const d = doc as StarIntelV0101Doc;
+  const issues: string[] = [];
+  for (const field of V09_REQUIRED_FIELDS) {
+    if (d?.[field] === undefined) issues.push(`missing required field ${field}`);
+  }
+  if (d?.schema_version !== undefined && d.schema_version !== STARINTEL_V0101_SCHEMA_VERSION) {
+    issues.push(
+      `schema_version ${String(d.schema_version)} is not emitted version ${STARINTEL_V0101_SCHEMA_VERSION}`,
+    );
+  }
+  const validate = loadV0101Validator();
+  if (!validate(doc)) {
+    for (const err of validate.errors ?? []) {
+      issues.push(`${err.instancePath || "/"} ${err.message ?? "invalid"}`);
+    }
+  }
+  if (issues.length > 0) {
+    throw new V0101ValidationError(d?._id ?? "<unknown>", issues);
+  }
+  return d;
 }
