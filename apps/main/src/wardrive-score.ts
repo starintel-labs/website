@@ -89,10 +89,11 @@ export function scoreRun(input: RunInputs): RunScore {
     logScale(input.packetCount, 250000, 70) +
     linear(input.sourceCount, 2, 20);
 
-  const km = Math.max(finite(input.distanceKm), 0.5);
+  const distanceKm = finite(input.distanceKm);
   const minutes = Math.max(finite(input.durationMinutes), 1);
+  const geographicDensity = distanceKm > 0 ? logScale(newRadios / distanceKm, 150, 60) : 0;
   const density =
-    logScale(newRadios / km, 150, 60) +
+    geographicDensity +
     logScale(finite(input.packetCount) / minutes, 1000, 40);
 
   const novelty = linear(noveltyPct, 100, 75);
@@ -120,7 +121,7 @@ export function scoreRun(input: RunInputs): RunScore {
   if (wifiNew >= 1000) achievements.push("Urban Archaeologist");
   if (input.bands >= 3) achievements.push("Spectrum Tourist");
   if (input.gpsCoveragePct >= 95) achievements.push("No Stone Unturned");
-  if (newRadios / km >= 500) achievements.push("RF Rainforest");
+  if (distanceKm > 0 && newRadios / distanceKm >= 500) achievements.push("RF Rainforest");
   if (noveltyPct >= 90 && totalRadios >= 25) achievements.push("Fresh Ground");
   if (input.sourceCount >= 2) achievements.push("Dual Wield");
   if (input.distanceKm >= 15) achievements.push("Long Haul");
