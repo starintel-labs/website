@@ -448,7 +448,6 @@ function applyImport(summary: ImportSummary, source: "WiGLE" | "Kismet"): void {
     saveButtonEl.disabled = !persistenceConfigured || !selectedFile || summary.rows < 1;
   }
   render();
-void loadPersistenceState();
 }
 
 type PublicRun = {
@@ -715,3 +714,4 @@ fileEl?.addEventListener("change", async () => {
 });
 
 render();
+void loadPersistenceState();
