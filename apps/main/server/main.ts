@@ -11,6 +11,7 @@ import { loadConfig, type Config } from "./config.ts";
 import { RecentDocumentsService } from "./recent.ts";
 import { RadarFeed } from "./radar-feed.ts";
 import { SseHub } from "./sse.ts";
+import { decodeCaptureBundle, WardriveService } from "./wardrive.ts";
 
 const MIME: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -47,6 +48,21 @@ function sendJson(res: ServerResponse, status: number, value: unknown): void {
   send(res, status, JSON.stringify(value));
 }
 
+
+async function readRawBody(req: IncomingMessage, maxBytes: number): Promise<Buffer> {
+  const declared = Number(req.headers["content-length"] ?? 0);
+  if (Number.isFinite(declared) && declared > maxBytes) throw new Error("request body too large");
+  const chunks: Buffer[] = [];
+  let total = 0;
+  for await (const chunk of req) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    total += buffer.byteLength;
+    if (total > maxBytes) throw new Error("request body too large");
+    chunks.push(buffer);
+  }
+  return Buffer.concat(chunks, total);
+}
+
 function serveStatic(res: ServerResponse, cfg: Config, urlPath: string): void {
   const rel = normalize(decodeURIComponent(urlPath)).replace(/^(\.\.[/\\])+/, "");
   let file = join(cfg.staticDir, rel);
@@ -81,14 +97,31 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
   const here = fileURLToPath(new URL(".", import.meta.url));
   const resolvedCfg: Config = { ...cfg, staticDir: join(here, "..", cfg.staticDir) };
   const recent = new RecentDocumentsService(resolvedCfg);
+  const wardrive = new WardriveService(resolvedCfg);
+  const wardriveImportRate = new Map<string, { count: number; resetAt: number }>();
   const hub = new SseHub();
   const radar = new RadarFeed(resolvedCfg, (events) => hub.sendEvents(events), (totals, rps) => {
     hub.sendRate(totals, rps);
   });
 
+  function allowWardriveImport(req: IncomingMessage): boolean {
+    const forwarded = String(req.headers["cf-connecting-ip"] ?? req.headers["x-forwarded-for"] ?? "");
+    const key = (forwarded.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown").slice(0, 128);
+    const now = Date.now();
+    const current = wardriveImportRate.get(key);
+    if (!current || current.resetAt <= now) {
+      wardriveImportRate.set(key, { count: 1, resetAt: now + 10 * 60_000 });
+      return true;
+    }
+    if (current.count >= 5) return false;
+    current.count += 1;
+    return true;
+  }
+
   async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const host = (req.headers.host ?? "").split(":")[0]!;
     const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
+    const isWardriveHost = host === cfg.wardriveHost || host === cfg.wardriveStagingHost;
 
     // Canonicalize www -> apex.
     if (host === cfg.wwwHost && host !== cfg.apexHost) {
@@ -135,6 +168,85 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       }
       return;
     }
+    if (isWardriveHost && url.pathname === "/api/wardrive/status" && req.method === "GET") {
+      const storage = wardrive.enabled ? ((await wardrive.health()) ? "ok" : "down") : "off";
+      sendJson(res, 200, {
+        configured: wardrive.enabled,
+        storage,
+        profile: "srr/0.2",
+      });
+      return;
+    }
+    if (isWardriveHost && url.pathname === "/api/wardrive/leaderboard" && req.method === "GET") {
+      const limit = Number(url.searchParams.get("limit") ?? "20");
+      try {
+        sendJson(res, 200, await wardrive.leaderboard(Number.isFinite(limit) ? limit : 20));
+      } catch {
+        sendJson(res, 503, { generated_at: new Date().toISOString(), players: [], error: "wardrive store unavailable" });
+      }
+      return;
+    }
+    if (isWardriveHost && url.pathname === "/api/wardrive/player/me" && req.method === "GET") {
+      try {
+        const playerToken = String(req.headers["x-wardrive-player-token"] ?? "");
+        sendJson(res, 200, await wardrive.playerFromToken(playerToken));
+      } catch (error) {
+        sendJson(res, wardrive.enabled ? 400 : 503, {
+          error: error instanceof Error ? error.message : "wardrive player lookup failed",
+        });
+      }
+      return;
+    }
+    if (isWardriveHost && url.pathname === "/api/wardrive/runs/import" && req.method === "POST") {
+      if (!wardrive.enabled) {
+        sendJson(res, 503, { error: "wardrive persistence is not configured" });
+        return;
+      }
+      if (!allowWardriveImport(req)) {
+        sendJson(res, 429, { error: "capture import rate limit exceeded" });
+        return;
+      }
+      try {
+        const playerToken = String(req.headers["x-wardrive-player-token"] ?? "");
+        const displayName = String(req.headers["x-wardrive-handle"] ?? "anon");
+        const encodedFilename = String(req.headers["x-wardrive-filename"] ?? "capture.dat");
+        let filename = encodedFilename.slice(0, 768);
+        try {
+          filename = decodeURIComponent(filename);
+        } catch {
+          // Keep the bounded literal header value when percent-decoding fails.
+        }
+        filename = filename.slice(0, 256);
+        const sourceHint = req.headers["x-wardrive-source"];
+        const body = await readRawBody(req, resolvedCfg.wardriveMaxCaptureBytes);
+        const contentType = String(req.headers["content-type"] ?? "")
+          .split(";", 1)[0]
+          ?.trim()
+          .toLowerCase();
+        const captures =
+          contentType === "application/x-starintel-capture-bundle"
+            ? decodeCaptureBundle(body)
+            : [
+                {
+                  body,
+                  filename,
+                  sourceHint: typeof sourceHint === "string" ? sourceHint : null,
+                },
+              ];
+        const result = await wardrive.importRun({
+          captures,
+          playerToken,
+          displayName,
+        });
+        sendJson(res, result.duplicate ? 200 : 201, result);
+      } catch (error) {
+        sendJson(res, 422, {
+          error: error instanceof Error ? error.message : "capture import failed",
+        });
+      }
+      return;
+    }
+
     if (url.pathname === "/api/recent-documents") {
       const sampleSize = Number(url.searchParams.get("sample") ?? "12");
       try {
@@ -171,7 +283,8 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       sendJson(res, 405, { error: "method not allowed" });
       return;
     }
-    serveStatic(res, resolvedCfg, url.pathname);
+    const staticPath = isWardriveHost && url.pathname === "/" ? "/wardrive" : url.pathname;
+    serveStatic(res, resolvedCfg, staticPath);
   }
 
   return {

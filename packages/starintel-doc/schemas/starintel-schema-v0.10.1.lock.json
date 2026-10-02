@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.10.1",
+  "release_version": "0.10.1",
+  "profile_version": "0.10.1",
+  "schema_revision": "0.10.1+fields.20260919.1",
+  "dtype_count": 58,
+  "canonical_repository": "lost-rob0t/starintel-gpt-auto-dig",
+  "canonical_commit": "cb258634bf413b9f3620c229dfd821270e8d5377",
+  "canonical_pull_request": 2737,
+  "schema_path": "schemas/starintel-doc-v0.10.1.schema.json",
+  "schema_blob_sha": "60d63a048191d292e825a33c7a2901341e42dcf8",
+  "manifest_path": "schemas/starintel-doc-v0.10.1.manifest.json",
+  "manifest_blob_sha": "75446d40c77ff1d29ee2006b72a7b520b33a46ac",
+  "emitted_schema_version": "0.10.1",
+  "accepted_schema_versions": [
+    "0.9.0",
+    "0.10.1"
+  ]
+}

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "StarIntel v0.9 document helpers: schema validation and public-safe projections",
+  "description": "StarIntel document helpers: pinned v0.9/v0.10.1 schema validation and public-safe projections",
   "exports": {
     ".": "./src/index.ts"
   },
