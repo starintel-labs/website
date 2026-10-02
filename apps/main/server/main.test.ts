@@ -35,6 +35,10 @@ test("clean MPA routes resolve generated HTML", async () => {
     const radar = await fetch(`${base}/radar`);
     assert.equal(radar.status, 200);
     assert.match(await radar.text(), /radar/i);
+
+    const wardrive = await fetch(`${base}/wardrive`);
+    assert.equal(wardrive.status, 200);
+    assert.match(await wardrive.text(), /Score the run/i);
   });
 });
 
