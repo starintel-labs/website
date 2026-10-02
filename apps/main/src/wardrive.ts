@@ -652,7 +652,7 @@ async function saveSelectedRun(): Promise<void> {
         "content-type": "application/octet-stream",
         "x-wardrive-player-token": playerToken(),
         "x-wardrive-handle": currentHandle(),
-        "x-wardrive-filename": selectedFile.name,
+        "x-wardrive-filename": encodeURIComponent(selectedFile.name),
         ...(source ? { "x-wardrive-source": source } : {}),
       },
       body: selectedFile,
