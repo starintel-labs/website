@@ -1,6 +1,7 @@
 import { createHash, createHmac } from "node:crypto";
 import { gunzipSync } from "node:zlib";
 import type { Config } from "./config.ts";
+import { validateV0101 } from "@starintel/starintel-doc";
 import { scoreRun, type RunInputs, type RunScore } from "../src/wardrive-score.ts";
 
 export type WardriveSource = "wigle" | "kismet";
@@ -587,6 +588,7 @@ export class WardriveService {
       result,
       now,
     });
+    validateV0101(doc);
     await this.#putRun(doc);
     return { run: projectWardriveRun(doc), duplicate: false };
   }
