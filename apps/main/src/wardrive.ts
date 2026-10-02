@@ -38,17 +38,17 @@ const runHistoryEl = document.querySelector<HTMLElement>("[data-run-history]");
 const leaderboardEl = document.querySelector<HTMLElement>("[data-leaderboard]");
 
 const sources = new Set<string>();
-const PLAYER_ID_KEY = "starintel.wardrive.player-id";
+const PLAYER_TOKEN_KEY = "starintel.wardrive.player-token";
 const HANDLE_KEY = "starintel.wardrive.handle";
 let selectedFile: File | null = null;
 let lastImportRows = 0;
 let persistenceConfigured = false;
 
-function playerId(): string {
-  const existing = localStorage.getItem(PLAYER_ID_KEY);
+function playerToken(): string {
+  const existing = localStorage.getItem(PLAYER_TOKEN_KEY);
   if (existing) return existing;
-  const created = "p_" + crypto.randomUUID();
-  localStorage.setItem(PLAYER_ID_KEY, created);
+  const created = (crypto.randomUUID() + crypto.randomUUID()).replace(/-/g, "");
+  localStorage.setItem(PLAYER_TOKEN_KEY, created);
   return created;
 }
 
@@ -591,8 +591,11 @@ async function refreshCommunity(): Promise<void> {
   if (!persistenceConfigured) return;
   try {
     const [playerRes, boardRes] = await Promise.all([
-      fetch("/api/wardrive/player/" + encodeURIComponent(playerId()), {
-        headers: { accept: "application/json" },
+      fetch("/api/wardrive/player/me", {
+        headers: {
+          accept: "application/json",
+          "x-wardrive-player-token": playerToken(),
+        },
         cache: "no-store",
       }),
       fetch("/api/wardrive/leaderboard?limit=20", {
@@ -647,7 +650,7 @@ async function saveSelectedRun(): Promise<void> {
       method: "POST",
       headers: {
         "content-type": "application/octet-stream",
-        "x-wardrive-player": playerId(),
+        "x-wardrive-player-token": playerToken(),
         "x-wardrive-handle": currentHandle(),
         "x-wardrive-filename": selectedFile.name,
         ...(source ? { "x-wardrive-source": source } : {}),
