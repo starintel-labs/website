@@ -506,7 +506,7 @@ export class WardriveService {
 
   constructor(cfg: Config) {
     this.#cfg = cfg;
-    this.enabled = Boolean(cfg.wardriveIdHashKey);
+    this.enabled = Boolean(cfg.wardriveIdHashKey && cfg.wardriveCouchdbPassword);
   }
 
   async importRun(args: {
@@ -685,11 +685,39 @@ export class WardriveService {
     };
   }
 
+  async health(): Promise<boolean> {
+    if (!this.enabled) return false;
+    try {
+      await this.#ensureDb();
+      const res = await fetch(this.#dbUrl(), {
+        headers: this.#headers(),
+        signal: AbortSignal.timeout(3000),
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  #headers(contentType = false): Record<string, string> {
+    const password = this.#cfg.wardriveCouchdbPassword;
+    if (!password) throw new Error("wardrive CouchDB credentials are not configured");
+    const token = Buffer.from(
+      this.#cfg.wardriveCouchdbUser + ":" + password,
+      "utf8",
+    ).toString("base64");
+    return {
+      accept: "application/json",
+      authorization: "Basic " + token,
+      ...(contentType ? { "content-type": "application/json" } : {}),
+    };
+  }
+
   async #ensureDb(): Promise<void> {
     if (this.#ensured) return;
     const res = await fetch(this.#dbUrl(), {
       method: "PUT",
-      headers: { accept: "application/json" },
+      headers: this.#headers(),
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok && res.status !== 412) {
@@ -705,7 +733,7 @@ export class WardriveService {
 
   async #getRun(id: string): Promise<WardriveRunDoc | null> {
     const res = await fetch(this.#dbUrl("/" + encodeURIComponent(id)), {
-      headers: { accept: "application/json" },
+      headers: this.#headers(),
       signal: AbortSignal.timeout(5000),
     });
     if (res.status === 404) return null;
@@ -716,7 +744,7 @@ export class WardriveService {
   async #putRun(doc: WardriveRunDoc): Promise<void> {
     const res = await fetch(this.#dbUrl("/" + encodeURIComponent(doc._id)), {
       method: "PUT",
-      headers: { "content-type": "application/json", accept: "application/json" },
+      headers: this.#headers(true),
       body: JSON.stringify(doc),
       signal: AbortSignal.timeout(8000),
     });
@@ -736,7 +764,7 @@ export class WardriveService {
       "&limit=" +
       String(Math.max(1, limit));
     const res = await fetch(url, {
-      headers: { accept: "application/json" },
+      headers: this.#headers(),
       signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) throw new Error("wardrive CouchDB scan failed: HTTP " + res.status);
