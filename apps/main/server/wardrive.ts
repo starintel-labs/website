@@ -699,7 +699,7 @@ export class WardriveService {
   }
 
   #dbUrl(path = ""): string {
-    const base = this.#cfg.couchdbUrl.replace(/\/+$/, "");
+    const base = this.#cfg.wardriveCouchdbUrl.replace(/\/+$/, "");
     return base + "/" + encodeURIComponent(this.#cfg.wardriveDb) + path;
   }
 
