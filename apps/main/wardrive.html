@@ -27,6 +27,7 @@
       <nav class="si-topbar__nav" aria-label="Primary">
         <a href="/" aria-current="page">run</a>
         <a href="#score">score</a>
+        <a href="#missions">missions</a>
         <a href="#achievements">achievements</a>
         <a href="https://starintel.actor/" rel="home">starintel</a>
       </nav>
@@ -225,6 +226,14 @@
                 <span class="si-metric__label">unique radios</span>
                 <span class="si-metric__value" data-player-radios>0</span>
               </div>
+              <div class="si-metric">
+                <span class="si-metric__label">personal best</span>
+                <span class="si-metric__value" data-player-best>F · 0</span>
+              </div>
+              <div class="si-metric">
+                <span class="si-metric__label">run streak</span>
+                <span class="si-metric__value" data-player-streak>0d</span>
+              </div>
             </div>
             <div class="wd-run-history" data-run-history>
               <div class="si-empty">
@@ -256,11 +265,27 @@
         </div>
       </section>
 
+      <section class="si-shell si-section" id="missions">
+        <div class="wd-panel-head">
+          <div>
+            <p class="wd-eyebrow">05 // missions</p>
+            <h2>Daily + weekly challenges</h2>
+          </div>
+          <span class="faint mono">derived from saved runs · UTC</span>
+        </div>
+        <div class="wd-challenges" data-challenges>
+          <div class="si-empty">
+            <span class="si-empty__mark">◇</span>
+            <span class="si-empty__title">Save a run to start mission progress.</span>
+          </div>
+        </div>
+      </section>
+
       <section class="si-band" id="achievements">
         <div class="si-shell si-section">
           <div class="wd-panel-head">
             <div>
-              <p class="wd-eyebrow">05 // achievements</p>
+              <p class="wd-eyebrow">06 // achievements</p>
               <h2>Badges earned</h2>
             </div>
             <span class="faint mono">current run</span>
