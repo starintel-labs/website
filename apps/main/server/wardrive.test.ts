@@ -94,3 +94,54 @@ test("public run projection removes private capture identifiers", () => {
   assert.doesNotMatch(json, /private-a/);
   assert.equal(projected.verification, "capture-derived");
 });
+
+
+test("JSON-LD omits unavailable capture timestamps", () => {
+  const inputs = {
+    distanceKm: 0,
+    durationMinutes: 0,
+    gpsCoveragePct: 0,
+    wifiNew: 1,
+    wifiTotal: 1,
+    bluetoothNew: 0,
+    bluetoothTotal: 0,
+    otherNew: 0,
+    packetCount: 0,
+    uniqueChannels: 1,
+    bands: 1,
+    vendors: 1,
+    newGridCells: 0,
+    sourceCount: 1,
+  };
+  const doc = buildWardriveRunDocument({
+    id: "wardrive-run:no-dates",
+    playerId: "player_test_5678",
+    displayName: "test",
+    captureSha256: "cafebabe",
+    captureBytes: 42,
+    parsed: {
+      source: "kismet",
+      rows: 1,
+      wifiIds: ["wifi:a"],
+      bluetoothIds: [],
+      packetCount: 0,
+      uniqueChannels: 1,
+      bands: 1,
+      vendors: 1,
+      newGridCells: 0,
+      gpsCoveragePct: 0,
+      startedAt: null,
+      endedAt: null,
+      durationMinutes: 0,
+    },
+    radioFingerprints: ["private-a"],
+    inputs,
+    result: scoreRun(inputs),
+    now: "2026-10-02T04:21:00.000Z",
+  });
+
+  assert.equal(doc.data.start_at, null);
+  assert.equal(doc.data.end_at, null);
+  assert.equal("startDate" in doc.schema_org, false);
+  assert.equal("endDate" in doc.schema_org, false);
+});
