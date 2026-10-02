@@ -616,14 +616,19 @@ async function loadPersistenceState(): Promise<void> {
       headers: { accept: "application/json" },
       cache: "no-store",
     });
-    const body = (await res.json()) as { configured?: boolean };
-    persistenceConfigured = Boolean(res.ok && body.configured);
+    const body = (await res.json()) as { configured?: boolean; storage?: string };
+    persistenceConfigured = Boolean(res.ok && body.configured && body.storage === "ok");
+    if (persistenceChipEl && body.configured && body.storage === "down") {
+      persistenceChipEl.textContent = "storage down";
+    }
   } catch {
     persistenceConfigured = false;
   }
 
   if (persistenceChipEl) {
-    persistenceChipEl.textContent = persistenceConfigured ? "persistent" : "local-only";
+    if (persistenceChipEl.textContent !== "storage down") {
+      persistenceChipEl.textContent = persistenceConfigured ? "persistent" : "local-only";
+    }
     persistenceChipEl.classList.toggle("si-chip--live", persistenceConfigured);
   }
   if (saveButtonEl) {
