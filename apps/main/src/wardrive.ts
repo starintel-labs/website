@@ -496,7 +496,6 @@ type PlayerResponse = {
 
 type LeaderboardResponse = {
   players: Array<{
-    player_id: string;
     display_name: string;
     total_xp: number;
     level: number;
