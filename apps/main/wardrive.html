@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en" data-si-theme="obsidian-gold">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#090807" />
+    <meta
+      name="description"
+      content="StarIntel Wardrive turns passive wireless survey runs into comparable scores, XP, achievements, and coverage stats."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://wardrive.starintel.actor/" />
+    <meta property="og:title" content="StarIntel Wardrive — score the run" />
+    <meta
+      property="og:description"
+      content="Gamified WiGLE and Kismet run scoring: exploration, discovery, RF diversity, capture quality, density, novelty, and endurance."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://wardrive.starintel.actor/" />
+    <title>StarIntel Wardrive — score the run</title>
+  </head>
+  <body>
+    <a class="si-skip-link" href="#main">skip to content</a>
+
+    <header class="si-topbar">
+      <a class="si-topbar__brand" href="https://starintel.actor/" aria-label="StarIntel home" data-wordmark></a>
+      <nav class="si-topbar__nav" aria-label="Primary">
+        <a href="/" aria-current="page">run</a>
+        <a href="#score">score</a>
+        <a href="#achievements">achievements</a>
+        <a href="https://starintel.actor/" rel="home">starintel</a>
+      </nav>
+    </header>
+
+    <main id="main" class="si-scanlines wd-main">
+      <section class="si-shell wd-hero">
+        <div class="wd-hero__copy">
+          <p class="si-hero__kicker">passive RF survey · run rating · XP</p>
+          <h1 class="wd-title">Score the run.</h1>
+          <p class="wd-lede">
+            Turn a WiGLE or Kismet survey into one comparable rating. New ground matters more than
+            camping a dense hotspot: geography, novelty, RF diversity, and clean collection all count.
+          </p>
+          <div class="wd-grade-legend" aria-label="grade thresholds">
+            <span>S+ 900</span><span>S 800</span><span>A 700</span><span>B 550</span>
+            <span>C 400</span><span>D 250</span><span>F</span>
+          </div>
+        </div>
+
+        <div class="wd-scorecard si-graphframe" id="score" aria-live="polite">
+          <span class="si-graphframe__corner si-graphframe__corner--tl">SRR // live</span>
+          <div class="wd-grade" data-grade>F</div>
+          <div>
+            <div class="wd-scoreline"><strong data-score>0</strong><span>/ 1000</span></div>
+            <div class="wd-xp"><span data-xp>0</span> XP</div>
+          </div>
+          <div class="wd-ring" aria-hidden="true">
+            <svg viewBox="0 0 120 120">
+              <circle class="wd-ring__track" cx="60" cy="60" r="50"></circle>
+              <circle class="wd-ring__value" cx="60" cy="60" r="50" data-ring></circle>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="si-band">
+        <div class="si-shell si-section wd-grid">
+          <article class="si-panel wd-import">
+            <div class="wd-panel-head">
+              <div>
+                <p class="wd-eyebrow">01 // ingest</p>
+                <h2>Import a run</h2>
+              </div>
+              <span class="si-chip si-chip--accent" data-source-chip>manual</span>
+            </div>
+
+            <label class="wd-drop" for="run-file">
+              <strong>WiGLE CSV / CSV.GZ or Kismet JSONL</strong>
+              <span>processed locally in your browser; nothing uploads in this MVP</span>
+              <input
+                id="run-file"
+                type="file"
+                accept=".csv,.gz,.json,.jsonl,application/gzip,text/csv,application/json"
+                data-run-file
+              />
+            </label>
+            <p class="wd-import-status" data-import-status>or enter stats manually below</p>
+
+            <div class="wd-form-grid">
+              <label class="si-field">
+                <span class="si-field__label">distance · km</span>
+                <input class="si-input" type="number" min="0" step="0.1" value="0" data-field="distanceKm" />
+              </label>
+              <label class="si-field">
+                <span class="si-field__label">duration · min</span>
+                <input class="si-input" type="number" min="0" step="1" value="0" data-field="durationMinutes" />
+              </label>
+              <label class="si-field">
+                <span class="si-field__label">gps coverage · %</span>
+                <input class="si-input" type="number" min="0" max="100" step="1" value="0" data-field="gpsCoveragePct" />
+              </label>
+              <label class="si-field">
+                <span class="si-field__label">new grid cells</span>
+                <input class="si-input" type="number" min="0" step="1" value="0" data-field="newGridCells" />
+              </label>
+
+              <label class="si-field">
+                <span class="si-field__label">new Wi-Fi</span>
+                <input class="si-input" type="number" min="0" step="1" value="0" data-field="wifiNew" />
+              </label>
+              <label class="si-field">
+                <span class="si-field__label">Wi-Fi total</span>
+                <input class="si-input" type="number" min="0" step="1" value="0" data-field="wifiTotal" />
+              </label>
+              <label class="si-field">
+                <span class="si-field__label">new Bluetooth</span>
+                <input class="si-input" type="number" min="0" step="1" value="0" data-field="bluetoothNew" />
+              </label>
+              <label class="si-field">
+                <span class="si-field__label">Bluetooth total</span>
+                <input class="si-input" type="number" min="0" step="1" value="0" data-field="bluetoothTotal" />
+              </label>
+
+              <label class="si-field">
+                <span class="si-field__label">packets</span>
+                <input class="si-input" type="number" min="0" step="1" value="0" data-field="packetCount" />
+              </label>
+              <label class="si-field">
+                <span class="si-field__label">channels</span>
+                <input class="si-input" type="number" min="0" step="1" value="0" data-field="uniqueChannels" />
+              </label>
+              <label class="si-field">
+                <span class="si-field__label">bands</span>
+                <input class="si-input" type="number" min="0" max="4" step="1" value="0" data-field="bands" />
+              </label>
+              <label class="si-field">
+                <span class="si-field__label">vendors</span>
+                <input class="si-input" type="number" min="0" step="1" value="0" data-field="vendors" />
+              </label>
+            </div>
+          </article>
+
+          <article class="si-panel wd-breakdown">
+            <div class="wd-panel-head">
+              <div>
+                <p class="wd-eyebrow">02 // rating</p>
+                <h2>Run breakdown</h2>
+              </div>
+              <span class="si-chip">SRR v0.1</span>
+            </div>
+            <div class="wd-bars" data-breakdown></div>
+            <p class="wd-note">
+              Repeat sightings improve capture quality, but cannot brute-force the rating.
+              Discovery and exploration saturate so moving through new territory wins.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="si-shell si-section">
+        <div class="wd-stats" aria-label="run summary">
+          <div class="si-metric">
+            <span class="si-metric__label">novelty</span>
+            <span class="si-metric__value" data-novelty>0%</span>
+          </div>
+          <div class="si-metric">
+            <span class="si-metric__label">new radios</span>
+            <span class="si-metric__value" data-new-radios>0</span>
+          </div>
+          <div class="si-metric">
+            <span class="si-metric__label">radios / km</span>
+            <span class="si-metric__value" data-density>0</span>
+          </div>
+          <div class="si-metric">
+            <span class="si-metric__label">sources</span>
+            <span class="si-metric__value" data-sources>0</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="si-band" id="achievements">
+        <div class="si-shell si-section">
+          <div class="wd-panel-head">
+            <div>
+              <p class="wd-eyebrow">03 // achievements</p>
+              <h2>Badges earned</h2>
+            </div>
+            <span class="faint mono">run-local for now</span>
+          </div>
+          <div class="wd-achievements" data-achievements>
+            <div class="si-empty">
+              <span class="si-empty__mark">◇</span>
+              <span class="si-empty__title">No badges yet.</span>
+              <span>Go find some spectrum.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="si-shell si-section">
+        <div class="si-terminal">
+          <div class="si-terminal__bar">
+            <span class="dot"></span>
+            <span>SRR v0.1 scoring contract</span>
+          </div>
+          <pre class="si-terminal__body">exploration  250  // distance + new grid cells + GPS continuity
+discovery    250  // new Wi-Fi + Bluetooth + other radios
+diversity    150  // bands + channels + manufacturers
+quality      150  // GPS + packet volume + source fusion
+density      100  // useful discoveries per km + packets/min
+novelty       75  // new / total observed radios
+endurance     25  // sustained collection time + distance</pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="si-footer">
+      <div class="si-shell">
+        <span><span data-wordmark-sm></span> <span class="muted">wardrive // passive survey game</span></span>
+        <span class="muted">MVP · local-only imports · no account required</span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/wardrive.ts"></script>
+  </body>
+</html>
