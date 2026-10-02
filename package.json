@@ -14,7 +14,7 @@
     "build:blog": "pnpm --filter @starintel/blog build",
     "build:nsaspy": "pnpm --filter @starintel/nsaspy build",
     "build:admin": "pnpm --filter @starintel/admin build",
-    "test": "node --experimental-strip-types --test 'tests/**/*.test.ts' && pnpm -r --workspace-concurrency=1 test",
+    "test": "node scripts/check-v0101-schema.mjs && node --experimental-strip-types --test 'tests/**/*.test.ts' && pnpm -r --workspace-concurrency=1 test",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
     "format": "prettier --check .",
@@ -22,7 +22,8 @@
     "verify": "swipl -q -s prolog/run.pl -g run:verify_all",
     "plan": "swipl -q -s prolog/run.pl -g run:print_plan",
     "publish": "node scripts/publish.mjs",
-    "verify:ci": "swipl -q -s prolog/run.pl -g run:verify_ci"
+    "verify:ci": "swipl -q -s prolog/run.pl -g run:verify_ci",
+    "schema:0101:check": "node scripts/check-v0101-schema.mjs"
   },
   "devDependencies": {
     "@starintel/content": "workspace:*",
