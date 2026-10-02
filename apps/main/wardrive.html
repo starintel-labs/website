@@ -86,6 +86,26 @@
             </label>
             <p class="wd-import-status" data-import-status>or enter stats manually below</p>
 
+            <div class="wd-savebox">
+              <label class="si-field wd-handle">
+                <span class="si-field__label">player handle</span>
+                <input
+                  class="si-input"
+                  type="text"
+                  maxlength="32"
+                  value="anon"
+                  autocomplete="nickname"
+                  data-player-handle
+                />
+              </label>
+              <button class="si-btn si-btn--primary" type="button" data-save-run disabled>
+                save capture-derived run
+              </button>
+              <span class="wd-save-status" data-save-status>
+                choose a capture to enable persistence
+              </span>
+            </div>
+
             <div class="wd-form-grid">
               <label class="si-field">
                 <span class="si-field__label">distance · km</span>
@@ -178,11 +198,69 @@
         </div>
       </section>
 
+      <section class="si-band" id="community">
+        <div class="si-shell si-section wd-grid">
+          <article class="si-panel">
+            <div class="wd-panel-head">
+              <div>
+                <p class="wd-eyebrow">03 // player</p>
+                <h2>My profile</h2>
+              </div>
+              <span class="si-chip si-chip--live" data-persistence-chip>checking backend</span>
+            </div>
+            <div class="wd-profile-grid">
+              <div class="si-metric">
+                <span class="si-metric__label">level</span>
+                <span class="si-metric__value" data-player-level>1</span>
+              </div>
+              <div class="si-metric">
+                <span class="si-metric__label">lifetime XP</span>
+                <span class="si-metric__value" data-player-xp>0</span>
+              </div>
+              <div class="si-metric">
+                <span class="si-metric__label">saved runs</span>
+                <span class="si-metric__value" data-player-runs>0</span>
+              </div>
+              <div class="si-metric">
+                <span class="si-metric__label">unique radios</span>
+                <span class="si-metric__value" data-player-radios>0</span>
+              </div>
+            </div>
+            <div class="wd-run-history" data-run-history>
+              <div class="si-empty">
+                <span class="si-empty__mark">◇</span>
+                <span class="si-empty__title">No persisted runs yet.</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="si-panel">
+            <div class="wd-panel-head">
+              <div>
+                <p class="wd-eyebrow">04 // leaderboard</p>
+                <h2>Lifetime XP</h2>
+              </div>
+              <span class="si-chip">capture-derived</span>
+            </div>
+            <div class="wd-leaderboard" data-leaderboard>
+              <div class="si-empty">
+                <span class="si-empty__mark">◇</span>
+                <span class="si-empty__title">No ranked players yet.</span>
+              </div>
+            </div>
+            <p class="wd-note">
+              “Capture-derived” means the server parsed the submitted WiGLE/Kismet file itself.
+              It does not claim the capture is impossible to fabricate.
+            </p>
+          </article>
+        </div>
+      </section>
+
       <section class="si-band" id="achievements">
         <div class="si-shell si-section">
           <div class="wd-panel-head">
             <div>
-              <p class="wd-eyebrow">03 // achievements</p>
+              <p class="wd-eyebrow">05 // achievements</p>
               <h2>Badges earned</h2>
             </div>
             <span class="faint mono">run-local for now</span>
