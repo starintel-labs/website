@@ -89,6 +89,19 @@ export interface WardrivePlayerSummary {
   best_grade: RunScore["grade"];
   total_distance_km: number;
   unique_radios_seen: number;
+  current_streak_days: number;
+  longest_streak_days: number;
+}
+
+export interface WardriveChallenge {
+  id: string;
+  period: "daily" | "weekly";
+  title: string;
+  description: string;
+  progress: number;
+  target: number;
+  unit: "radios" | "cells" | "xp" | "runs" | "bands";
+  complete: boolean;
 }
 
 export interface WardriveLeaderboard {
@@ -386,6 +399,129 @@ function levelForXp(xp: number): number {
   return 1 + Math.floor(Math.sqrt(Math.max(0, xp) / 1200));
 }
 
+
+function runTime(run: PublicWardriveRun): number {
+  const value = run.started_at ?? run.created_at;
+  const ms = Date.parse(value);
+  return Number.isFinite(ms) ? ms : 0;
+}
+
+function utcDayKey(ms: number): string {
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
+function streaksFor(runs: PublicWardriveRun[], now = Date.now()): {
+  current: number;
+  longest: number;
+} {
+  const days = [...new Set(runs.map((run) => utcDayKey(runTime(run))).filter(Boolean))]
+    .map((day) => Date.parse(day + "T00:00:00.000Z"))
+    .filter(Number.isFinite)
+    .sort((a, b) => a - b);
+  if (days.length === 0) return { current: 0, longest: 0 };
+
+  const oneDay = 86_400_000;
+  let longest = 1;
+  let chain = 1;
+  for (let i = 1; i < days.length; i += 1) {
+    if (days[i]! - days[i - 1]! === oneDay) {
+      chain += 1;
+      longest = Math.max(longest, chain);
+    } else {
+      chain = 1;
+    }
+  }
+
+  const today = Date.parse(utcDayKey(now) + "T00:00:00.000Z");
+  const latest = days[days.length - 1]!;
+  if (today - latest > oneDay) return { current: 0, longest };
+
+  let current = 1;
+  for (let i = days.length - 1; i > 0; i -= 1) {
+    if (days[i]! - days[i - 1]! !== oneDay) break;
+    current += 1;
+  }
+  return { current, longest };
+}
+
+function challengesFor(runs: PublicWardriveRun[], now = Date.now()): WardriveChallenge[] {
+  const dayStart = Date.parse(utcDayKey(now) + "T00:00:00.000Z");
+  const nowDate = new Date(now);
+  const weekday = (nowDate.getUTCDay() + 6) % 7;
+  const weekStart = dayStart - weekday * 86_400_000;
+  const daily = runs.filter((run) => runTime(run) >= dayStart);
+  const weekly = runs.filter((run) => runTime(run) >= weekStart);
+  const radios = (run: PublicWardriveRun) =>
+    run.inputs.wifiNew + run.inputs.bluetoothNew + run.inputs.otherNew;
+
+  const challenge = (
+    id: string,
+    period: "daily" | "weekly",
+    title: string,
+    description: string,
+    progress: number,
+    target: number,
+    unit: WardriveChallenge["unit"],
+  ): WardriveChallenge => ({
+    id,
+    period,
+    title,
+    description,
+    progress: Math.min(progress, target),
+    target,
+    unit,
+    complete: progress >= target,
+  });
+
+  return [
+    challenge(
+      "daily-discovery-250",
+      "daily",
+      "Signal Sweep",
+      "Discover 250 new radios today.",
+      daily.reduce((sum, run) => sum + radios(run), 0),
+      250,
+      "radios",
+    ),
+    challenge(
+      "daily-cells-30",
+      "daily",
+      "Fresh Blocks",
+      "Cover 30 new survey cells today.",
+      daily.reduce((sum, run) => sum + run.inputs.newGridCells, 0),
+      30,
+      "cells",
+    ),
+    challenge(
+      "weekly-xp-5000",
+      "weekly",
+      "XP Grinder",
+      "Earn 5,000 run XP this week.",
+      weekly.reduce((sum, run) => sum + run.xp, 0),
+      5000,
+      "xp",
+    ),
+    challenge(
+      "weekly-runs-3",
+      "weekly",
+      "Three Runs Deep",
+      "Save three capture-derived runs this week.",
+      weekly.length,
+      3,
+      "runs",
+    ),
+    challenge(
+      "weekly-spectrum-3",
+      "weekly",
+      "Full Spectrum",
+      "Log a run covering three RF bands this week.",
+      weekly.some((run) => run.inputs.bands >= 3) ? 3 : 0,
+      3,
+      "bands",
+    ),
+  ];
+}
+
 function fingerprint(secret: string, radioId: string): string {
   return createHmac("sha256", secret).update(radioId).digest("hex");
 }
@@ -611,6 +747,8 @@ export class WardriveService {
         best_grade: "F" as RunScore["grade"],
         total_distance_km: 0,
         unique_radios_seen: 0,
+        current_streak_days: 0,
+        longest_streak_days: 0,
       };
       current.display_name = ext.display_name;
       current.total_xp += ext.xp;
@@ -625,7 +763,15 @@ export class WardriveService {
     }
 
     const output = [...players.values()];
-    for (const player of output) player.level = levelForXp(player.total_xp);
+    for (const player of output) {
+      player.level = levelForXp(player.total_xp);
+      const playerRuns = docs
+        .filter((doc) => extensionOf(doc).player_id === player.player_id)
+        .map(projectWardriveRun);
+      const streaks = streaksFor(playerRuns);
+      player.current_streak_days = streaks.current;
+      player.longest_streak_days = streaks.longest;
+    }
     output.sort(
       (a, b) =>
         b.total_xp - a.total_xp ||
@@ -643,6 +789,7 @@ export class WardriveService {
   async playerFromToken(playerTokenRaw: string): Promise<{
     player: WardrivePlayerSummary;
     runs: PublicWardriveRun[];
+    challenges: WardriveChallenge[];
   }> {
     if (!this.enabled) throw new Error("wardrive persistence is not configured");
     const secret = this.#cfg.wardriveIdHashKey!;
@@ -653,6 +800,7 @@ export class WardriveService {
   async player(playerIdRaw: string): Promise<{
     player: WardrivePlayerSummary;
     runs: PublicWardriveRun[];
+    challenges: WardriveChallenge[];
   }> {
     if (!this.enabled) throw new Error("wardrive persistence is not configured");
     const playerId = sanitizePlayerId(playerIdRaw);
@@ -671,6 +819,7 @@ export class WardriveService {
     const unique = new Set<string>();
     for (const doc of docs) for (const fp of extensionOf(doc).radio_fingerprints ?? []) unique.add(fp);
 
+    const streaks = streaksFor(runs);
     return {
       player: {
         player_id: playerId,
@@ -682,8 +831,11 @@ export class WardriveService {
         best_grade: best?.grade ?? "F",
         total_distance_km: runs.reduce((sum, run) => sum + run.inputs.distanceKm, 0),
         unique_radios_seen: unique.size,
+        current_streak_days: streaks.current,
+        longest_streak_days: streaks.longest,
       },
       runs,
+      challenges: challengesFor(runs),
     };
   }
 
