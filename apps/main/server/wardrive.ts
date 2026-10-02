@@ -5,9 +5,10 @@ import { validateV0101 } from "@starintel/starintel-doc";
 import { scoreRun, type RunInputs, type RunScore } from "../src/wardrive-score.ts";
 
 export type WardriveSource = "wigle" | "kismet";
+export type WardriveRunSource = WardriveSource | "combined";
 
 export interface ParsedWardriveCapture {
-  source: WardriveSource;
+  source: WardriveRunSource;
   rows: number;
   wifiIds: string[];
   bluetoothIds: string[];
@@ -16,6 +17,10 @@ export interface ParsedWardriveCapture {
   bands: number;
   vendors: number;
   newGridCells: number;
+  channelIds: string[];
+  bandIds: string[];
+  vendorIds: string[];
+  gridCells: string[];
   gpsCoveragePct: number;
   startedAt: string | null;
   endedAt: string | null;
@@ -27,7 +32,8 @@ interface WardriveExtension {
   player_id: string;
   display_name: string;
   verification: "capture-derived";
-  source_format: WardriveSource;
+  source_format: WardriveRunSource;
+  source_formats: WardriveSource[];
   capture_sha256: string;
   capture_bytes: number;
   radio_fingerprints: string[];
@@ -68,7 +74,8 @@ export interface PublicWardriveRun {
   created_at: string;
   started_at: string | null;
   ended_at: string | null;
-  source_format: WardriveSource;
+  source_format: WardriveRunSource;
+  source_formats: WardriveSource[];
   verification: "capture-derived";
   score: number;
   grade: RunScore["grade"];
@@ -232,6 +239,10 @@ export function parseWigleCapture(text: string): ParsedWardriveCapture {
     bands: bands.size,
     vendors: vendors.size,
     newGridCells: cells.size,
+    channelIds: [...channels],
+    bandIds: [...bands],
+    vendorIds: [...vendors],
+    gridCells: [...cells],
     gpsCoveragePct: rows > 0 ? (gpsRows / rows) * 100 : 0,
     startedAt: iso(startedMs),
     endedAt: iso(endedMs),
@@ -334,6 +345,10 @@ export function parseKismetCapture(text: string): ParsedWardriveCapture {
     bands: bands.size,
     vendors: vendors.size,
     newGridCells: 0,
+    channelIds: [...channels],
+    bandIds: [...bands],
+    vendorIds: [...vendors],
+    gridCells: [],
     gpsCoveragePct: 0,
     startedAt: iso(startedMs),
     endedAt: iso(endedMs),
@@ -341,6 +356,67 @@ export function parseKismetCapture(text: string): ParsedWardriveCapture {
       startedMs !== null && endedMs !== null && endedMs >= startedMs
         ? (endedMs - startedMs) / 60_000
         : 0,
+  };
+}
+
+export function mergeParsedCaptures(captures: ParsedWardriveCapture[]): ParsedWardriveCapture {
+  if (captures.length < 1) throw new Error("capture bundle is empty");
+  const sourceSet = new Set<WardriveSource>();
+  const wifiIds = new Set<string>();
+  const bluetoothIds = new Set<string>();
+  const channels = new Set<string>();
+  const bands = new Set<string>();
+  const vendors = new Set<string>();
+  const cells = new Set<string>();
+  let rows = 0;
+  let packetCount = 0;
+  let gpsCoveragePct = 0;
+  let startedMs: number | null = null;
+  let endedMs: number | null = null;
+  let fallbackDuration = 0;
+
+  for (const capture of captures) {
+    if (capture.source !== "combined") sourceSet.add(capture.source);
+    for (const value of capture.wifiIds) wifiIds.add(value);
+    for (const value of capture.bluetoothIds) bluetoothIds.add(value);
+    for (const value of capture.channelIds) channels.add(value);
+    for (const value of capture.bandIds) bands.add(value);
+    for (const value of capture.vendorIds) vendors.add(value);
+    for (const value of capture.gridCells) cells.add(value);
+    rows += capture.rows;
+    packetCount += capture.packetCount;
+    gpsCoveragePct = Math.max(gpsCoveragePct, capture.gpsCoveragePct);
+    fallbackDuration = Math.max(fallbackDuration, capture.durationMinutes);
+    const start = capture.startedAt ? Date.parse(capture.startedAt) : NaN;
+    const end = capture.endedAt ? Date.parse(capture.endedAt) : NaN;
+    if (Number.isFinite(start)) startedMs = startedMs === null ? start : Math.min(startedMs, start);
+    if (Number.isFinite(end)) endedMs = endedMs === null ? end : Math.max(endedMs, end);
+  }
+
+  const durationMinutes =
+    startedMs !== null && endedMs !== null && endedMs >= startedMs
+      ? (endedMs - startedMs) / 60_000
+      : fallbackDuration;
+  const sources = [...sourceSet];
+
+  return {
+    source: sources.length > 1 ? "combined" : (sources[0] ?? captures[0]!.source),
+    rows,
+    wifiIds: [...wifiIds],
+    bluetoothIds: [...bluetoothIds],
+    packetCount,
+    uniqueChannels: channels.size,
+    bands: bands.size,
+    vendors: vendors.size,
+    newGridCells: cells.size,
+    channelIds: [...channels],
+    bandIds: [...bands],
+    vendorIds: [...vendors],
+    gridCells: [...cells],
+    gpsCoveragePct,
+    startedAt: iso(startedMs),
+    endedAt: iso(endedMs),
+    durationMinutes,
   };
 }
 
@@ -545,6 +621,7 @@ export function projectWardriveRun(doc: WardriveRunDoc): PublicWardriveRun {
     started_at: typeof data.start_at === "string" ? data.start_at : null,
     ended_at: typeof data.end_at === "string" ? data.end_at : null,
     source_format: ext.source_format,
+    source_formats: ext.source_formats,
     verification: ext.verification,
     score: ext.score,
     grade: ext.grade,
