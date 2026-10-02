@@ -106,6 +106,7 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
   async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const host = (req.headers.host ?? "").split(":")[0]!;
     const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
+    const isWardriveHost = host === cfg.wardriveHost || host === cfg.wardriveStagingHost;
 
     // Canonicalize www -> apex.
     if (host === cfg.wwwHost && host !== cfg.apexHost) {
@@ -152,11 +153,11 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       }
       return;
     }
-    if (url.pathname === "/api/wardrive/status" && req.method === "GET") {
+    if (isWardriveHost && url.pathname === "/api/wardrive/status" && req.method === "GET") {
       sendJson(res, 200, { configured: wardrive.enabled, profile: "srr/0.2" });
       return;
     }
-    if (url.pathname === "/api/wardrive/leaderboard" && req.method === "GET") {
+    if (isWardriveHost && url.pathname === "/api/wardrive/leaderboard" && req.method === "GET") {
       const limit = Number(url.searchParams.get("limit") ?? "20");
       try {
         sendJson(res, 200, await wardrive.leaderboard(Number.isFinite(limit) ? limit : 20));
@@ -165,7 +166,7 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       }
       return;
     }
-    if (url.pathname.startsWith("/api/wardrive/player/") && req.method === "GET") {
+    if (isWardriveHost && url.pathname.startsWith("/api/wardrive/player/") && req.method === "GET") {
       const playerId = decodeURIComponent(url.pathname.slice("/api/wardrive/player/".length));
       try {
         sendJson(res, 200, await wardrive.player(playerId));
@@ -176,7 +177,7 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       }
       return;
     }
-    if (url.pathname === "/api/wardrive/runs/import" && req.method === "POST") {
+    if (isWardriveHost && url.pathname === "/api/wardrive/runs/import" && req.method === "POST") {
       if (!wardrive.enabled) {
         sendJson(res, 503, { error: "wardrive persistence is not configured" });
         return;
@@ -239,7 +240,6 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       sendJson(res, 405, { error: "method not allowed" });
       return;
     }
-    const isWardriveHost = host === cfg.wardriveHost || host === cfg.wardriveStagingHost;
     const staticPath = isWardriveHost && url.pathname === "/" ? "/wardrive" : url.pathname;
     serveStatic(res, resolvedCfg, staticPath);
   }
