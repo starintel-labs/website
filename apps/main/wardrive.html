@@ -76,12 +76,13 @@
             </div>
 
             <label class="wd-drop" for="run-file">
-              <strong>WiGLE CSV / CSV.GZ or Kismet JSONL</strong>
-              <span>previewed locally; the capture uploads only when you explicitly save a capture-derived run</span>
+              <strong>WiGLE CSV / CSV.GZ + Kismet JSON/JSONL</strong>
+              <span>select up to four captures; preview stays local until you explicitly save the fused run</span>
               <input
                 id="run-file"
                 type="file"
                 accept=".csv,.gz,.json,.jsonl,application/gzip,text/csv,application/json"
+                multiple
                 data-run-file
               />
             </label>
