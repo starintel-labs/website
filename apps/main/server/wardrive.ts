@@ -461,8 +461,8 @@ export function buildWardriveRunDocument(args: {
       "@id": "https://wardrive.starintel.actor/runs/" + encodeURIComponent(args.id),
       additionalType: "https://spec.starintel.actor/ontology/WirelessSurveyRun",
       name: "StarIntel wireless survey run",
-      startDate: parsed.startedAt,
-      endDate: parsed.endedAt,
+      ...(parsed.startedAt ? { startDate: parsed.startedAt } : {}),
+      ...(parsed.endedAt ? { endDate: parsed.endedAt } : {}),
     },
     data: {
       event_kind: "wireless-survey-run",
