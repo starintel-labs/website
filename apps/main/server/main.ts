@@ -171,7 +171,8 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       sendJson(res, 405, { error: "method not allowed" });
       return;
     }
-    serveStatic(res, resolvedCfg, url.pathname);
+    const staticPath = host === cfg.wardriveHost && url.pathname === "/" ? "/wardrive" : url.pathname;
+    serveStatic(res, resolvedCfg, staticPath);
   }
 
   return {
