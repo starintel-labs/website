@@ -26,8 +26,41 @@ const sourcesEl = document.querySelector<HTMLElement>("[data-sources]");
 const fileEl = document.querySelector<HTMLInputElement>("[data-run-file]");
 const importStatusEl = document.querySelector<HTMLElement>("[data-import-status]");
 const sourceChipEl = document.querySelector<HTMLElement>("[data-source-chip]");
+const saveButtonEl = document.querySelector<HTMLButtonElement>("[data-save-run]");
+const saveStatusEl = document.querySelector<HTMLElement>("[data-save-status]");
+const handleEl = document.querySelector<HTMLInputElement>("[data-player-handle]");
+const persistenceChipEl = document.querySelector<HTMLElement>("[data-persistence-chip]");
+const playerLevelEl = document.querySelector<HTMLElement>("[data-player-level]");
+const playerXpEl = document.querySelector<HTMLElement>("[data-player-xp]");
+const playerRunsEl = document.querySelector<HTMLElement>("[data-player-runs]");
+const playerRadiosEl = document.querySelector<HTMLElement>("[data-player-radios]");
+const runHistoryEl = document.querySelector<HTMLElement>("[data-run-history]");
+const leaderboardEl = document.querySelector<HTMLElement>("[data-leaderboard]");
 
 const sources = new Set<string>();
+const PLAYER_ID_KEY = "starintel.wardrive.player-id";
+const HANDLE_KEY = "starintel.wardrive.handle";
+let selectedFile: File | null = null;
+let lastImportRows = 0;
+let persistenceConfigured = false;
+
+function playerId(): string {
+  const existing = localStorage.getItem(PLAYER_ID_KEY);
+  if (existing) return existing;
+  const created = "p_" + crypto.randomUUID();
+  localStorage.setItem(PLAYER_ID_KEY, created);
+  return created;
+}
+
+function currentHandle(): string {
+  const raw = handleEl?.value ?? localStorage.getItem(HANDLE_KEY) ?? "anon";
+  const clean = raw.replace(/[^A-Za-z0-9_. -]/g, "").trim().slice(0, 32) || "anon";
+  if (handleEl && handleEl.value !== clean) handleEl.value = clean;
+  localStorage.setItem(HANDLE_KEY, clean);
+  return clean;
+}
+
+if (handleEl) handleEl.value = localStorage.getItem(HANDLE_KEY) ?? "anon";
 
 const categoryCaps = {
   exploration: 250,
@@ -373,6 +406,7 @@ function importKismet(text: string): ImportSummary {
 
 function applyImport(summary: ImportSummary, source: "WiGLE" | "Kismet"): void {
   sources.add(source);
+  lastImportRows = summary.rows;
 
   if (source === "WiGLE") {
     setValue("wifiTotal", summary.wifi);
@@ -410,14 +444,260 @@ function applyImport(summary: ImportSummary, source: "WiGLE" | "Kismet"): void {
     }
   }
 
+  if (saveButtonEl) {
+    saveButtonEl.disabled = !persistenceConfigured || !selectedFile || summary.rows < 1;
+  }
+  render();
+void loadPersistenceState();
+}
+
+type PublicRun = {
+  id: string;
+  player_id: string;
+  display_name: string;
+  created_at: string;
+  source_format: "wigle" | "kismet";
+  verification: "capture-derived";
+  score: number;
+  grade: string;
+  xp: number;
+  novelty_pct: number;
+  inputs: RunInputs;
+  achievements: string[];
+};
+
+type PlayerResponse = {
+  player: {
+    player_id: string;
+    display_name: string;
+    total_xp: number;
+    level: number;
+    runs: number;
+    best_score: number;
+    best_grade: string;
+    total_distance_km: number;
+    unique_radios_seen: number;
+  };
+  runs: PublicRun[];
+};
+
+type LeaderboardResponse = {
+  players: Array<{
+    player_id: string;
+    display_name: string;
+    total_xp: number;
+    level: number;
+    runs: number;
+    best_score: number;
+    best_grade: string;
+    unique_radios_seen: number;
+  }>;
+};
+
+function applyAuthoritativeRun(run: PublicRun): void {
+  const input = run.inputs;
+  setValue("distanceKm", input.distanceKm);
+  setValue("durationMinutes", input.durationMinutes);
+  setValue("gpsCoveragePct", input.gpsCoveragePct);
+  setValue("wifiNew", input.wifiNew);
+  setValue("wifiTotal", input.wifiTotal);
+  setValue("bluetoothNew", input.bluetoothNew);
+  setValue("bluetoothTotal", input.bluetoothTotal);
+  setValue("packetCount", input.packetCount);
+  setValue("uniqueChannels", input.uniqueChannels);
+  setValue("bands", input.bands);
+  setValue("vendors", input.vendors);
+  setValue("newGridCells", input.newGridCells);
+  sources.clear();
+  sources.add(run.source_format === "wigle" ? "WiGLE" : "Kismet");
   render();
 }
 
+function renderPlayer(data: PlayerResponse): void {
+  if (playerLevelEl) playerLevelEl.textContent = data.player.level.toLocaleString();
+  if (playerXpEl) playerXpEl.textContent = data.player.total_xp.toLocaleString();
+  if (playerRunsEl) playerRunsEl.textContent = data.player.runs.toLocaleString();
+  if (playerRadiosEl) playerRadiosEl.textContent = data.player.unique_radios_seen.toLocaleString();
+  if (!runHistoryEl) return;
+  runHistoryEl.replaceChildren();
+  if (data.runs.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "si-empty";
+    empty.innerHTML =
+      '<span class="si-empty__mark">◇</span><span class="si-empty__title">No persisted runs yet.</span>';
+    runHistoryEl.append(empty);
+    return;
+  }
+  for (const run of data.runs.slice(0, 8)) {
+    const row = document.createElement("div");
+    row.className = "wd-run-row";
+    const grade = document.createElement("span");
+    grade.className = "wd-run-grade";
+    grade.textContent = run.grade;
+    const main = document.createElement("span");
+    main.className = "wd-run-main";
+    const title = document.createElement("strong");
+    title.textContent = run.source_format.toUpperCase() + " · " + run.novelty_pct + "% new";
+    const date = document.createElement("span");
+    date.textContent = new Date(run.created_at).toLocaleString();
+    main.append(title, date);
+    const score = document.createElement("span");
+    score.className = "wd-run-score";
+    score.textContent = run.score + " SRR";
+    const xp = document.createElement("span");
+    xp.className = "wd-run-score";
+    xp.textContent = "+" + run.xp.toLocaleString() + " XP";
+    row.append(grade, main, score, xp);
+    runHistoryEl.append(row);
+  }
+}
+
+function renderLeaderboard(data: LeaderboardResponse): void {
+  if (!leaderboardEl) return;
+  leaderboardEl.replaceChildren();
+  if (data.players.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "si-empty";
+    empty.innerHTML =
+      '<span class="si-empty__mark">◇</span><span class="si-empty__title">No ranked players yet.</span>';
+    leaderboardEl.append(empty);
+    return;
+  }
+  data.players.forEach((player, index) => {
+    const row = document.createElement("div");
+    row.className = "wd-leader-row";
+    const rank = document.createElement("span");
+    rank.className = "wd-leader-rank";
+    rank.textContent = "#" + (index + 1);
+    const main = document.createElement("span");
+    main.className = "wd-leader-main";
+    const name = document.createElement("strong");
+    name.textContent = player.display_name;
+    const meta = document.createElement("span");
+    meta.textContent =
+      "LV " + player.level + " · " + player.runs + " runs · best " + player.best_grade + " " + player.best_score;
+    main.append(name, meta);
+    const xp = document.createElement("span");
+    xp.className = "wd-leader-xp";
+    xp.textContent = player.total_xp.toLocaleString() + " XP";
+    const radios = document.createElement("span");
+    radios.className = "wd-leader-xp";
+    radios.textContent = player.unique_radios_seen.toLocaleString() + " new radios";
+    row.append(rank, main, xp, radios);
+    leaderboardEl.append(row);
+  });
+}
+
+async function refreshCommunity(): Promise<void> {
+  if (!persistenceConfigured) return;
+  try {
+    const [playerRes, boardRes] = await Promise.all([
+      fetch("/api/wardrive/player/" + encodeURIComponent(playerId()), {
+        headers: { accept: "application/json" },
+        cache: "no-store",
+      }),
+      fetch("/api/wardrive/leaderboard?limit=20", {
+        headers: { accept: "application/json" },
+        cache: "no-store",
+      }),
+    ]);
+    if (playerRes.ok) renderPlayer((await playerRes.json()) as PlayerResponse);
+    if (boardRes.ok) renderLeaderboard((await boardRes.json()) as LeaderboardResponse);
+  } catch {
+    if (persistenceChipEl) persistenceChipEl.textContent = "backend unavailable";
+  }
+}
+
+async function loadPersistenceState(): Promise<void> {
+  try {
+    const res = await fetch("/api/wardrive/status", {
+      headers: { accept: "application/json" },
+      cache: "no-store",
+    });
+    const body = (await res.json()) as { configured?: boolean };
+    persistenceConfigured = Boolean(res.ok && body.configured);
+  } catch {
+    persistenceConfigured = false;
+  }
+
+  if (persistenceChipEl) {
+    persistenceChipEl.textContent = persistenceConfigured ? "persistent" : "local-only";
+    persistenceChipEl.classList.toggle("si-chip--live", persistenceConfigured);
+  }
+  if (saveButtonEl) {
+    saveButtonEl.disabled = !persistenceConfigured || !selectedFile || lastImportRows < 1;
+  }
+  if (saveStatusEl && !persistenceConfigured) {
+    saveStatusEl.textContent = "server persistence is not configured on this deployment";
+  }
+  if (persistenceConfigured) await refreshCommunity();
+}
+
+async function saveSelectedRun(): Promise<void> {
+  if (!selectedFile || !persistenceConfigured) return;
+  if (saveButtonEl) saveButtonEl.disabled = true;
+  if (saveStatusEl) saveStatusEl.textContent = "server is parsing and deduplicating the capture…";
+  try {
+    const source =
+      sources.size === 1
+        ? Array.from(sources)[0] === "WiGLE"
+          ? "wigle"
+          : "kismet"
+        : "";
+    const res = await fetch("/api/wardrive/runs/import", {
+      method: "POST",
+      headers: {
+        "content-type": "application/octet-stream",
+        "x-wardrive-player": playerId(),
+        "x-wardrive-handle": currentHandle(),
+        "x-wardrive-filename": selectedFile.name,
+        ...(source ? { "x-wardrive-source": source } : {}),
+      },
+      body: selectedFile,
+    });
+    const body = (await res.json()) as {
+      run?: PublicRun;
+      duplicate?: boolean;
+      error?: string;
+    };
+    if (!res.ok || !body.run) throw new Error(body.error ?? "run save failed");
+    applyAuthoritativeRun(body.run);
+    if (saveStatusEl) {
+      saveStatusEl.textContent =
+        (body.duplicate ? "already saved · " : "saved · ") +
+        body.run.grade +
+        " " +
+        body.run.score +
+        " · +" +
+        body.run.xp.toLocaleString() +
+        " XP";
+    }
+    await refreshCommunity();
+  } catch (error) {
+    if (saveStatusEl) {
+      saveStatusEl.textContent = error instanceof Error ? error.message : "run save failed";
+    }
+  } finally {
+    if (saveButtonEl) {
+      saveButtonEl.disabled = !persistenceConfigured || !selectedFile || lastImportRows < 1;
+    }
+  }
+}
+
 for (const input of fields.values()) input.addEventListener("input", render);
+handleEl?.addEventListener("change", () => {
+  currentHandle();
+});
+saveButtonEl?.addEventListener("click", () => {
+  void saveSelectedRun();
+});
 
 fileEl?.addEventListener("change", async () => {
   const file = fileEl.files?.[0];
   if (!file) return;
+  selectedFile = file;
+  lastImportRows = 0;
+  if (saveButtonEl) saveButtonEl.disabled = true;
   if (importStatusEl) importStatusEl.textContent = "reading " + file.name + "…";
 
   try {
