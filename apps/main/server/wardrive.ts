@@ -93,7 +93,7 @@ export interface WardrivePlayerSummary {
 
 export interface WardriveLeaderboard {
   generated_at: string;
-  players: WardrivePlayerSummary[];
+  players: Array<Omit<WardrivePlayerSummary, "player_id">>;
 }
 
 const GRADE_ORDER: RunScore["grade"][] = ["F", "D", "C", "B", "A", "S", "S+"];
@@ -379,7 +379,7 @@ function playerIdFromToken(secret: string, token: string): string {
 function sanitizeDisplayName(value: string): string {
   const v = value.trim().replace(/\s+/g, " ").slice(0, 32);
   if (v.length < 1) return "anon";
-  return v.replace(/[^\p{L}\p{N} _.\-]/gu, "");
+  return v.replace(/[^\p{L}\p{N} _.\-]/gu, "") || "anon";
 }
 
 function levelForXp(xp: number): number {
@@ -634,7 +634,9 @@ export class WardriveService {
     );
     return {
       generated_at: new Date().toISOString(),
-      players: output.slice(0, Math.max(1, Math.min(limit, 100))),
+      players: output
+        .slice(0, Math.max(1, Math.min(limit, 100)))
+        .map(({ player_id: _playerId, ...publicPlayer }) => publicPlayer),
     };
   }
 
