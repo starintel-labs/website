@@ -237,7 +237,7 @@ function importWigle(text: string): ImportSummary {
   if (headerIndex < 0) throw new Error("WiGLE header not found.");
 
   const header = parseCsvLine(lines[headerIndex]!);
-  const index = new Map(header.map((name, i) => [name, i]));
+  const index = new Map<string, number>(header.map((name, i) => [name, i] as const));
   const wifi = new Set<string>();
   const bluetooth = new Set<string>();
   const channels = new Set<string>();
