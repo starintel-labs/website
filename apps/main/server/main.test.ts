@@ -63,6 +63,10 @@ test("Wardrive API is scoped to Wardrive hostnames", async () => {
       headers: { host: "wardrive.starintel.actor" },
     });
     assert.equal(wardrive.status, 200);
-    assert.deepEqual(await wardrive.json(), { configured: false, profile: "srr/0.2" });
+    assert.deepEqual(await wardrive.json(), {
+      configured: false,
+      storage: "off",
+      profile: "srr/0.2",
+    });
   });
 });
