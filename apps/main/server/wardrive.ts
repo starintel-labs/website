@@ -365,6 +365,16 @@ function sanitizePlayerId(value: string): string {
   return v;
 }
 
+function sanitizePlayerToken(value: string): string {
+  const v = value.trim();
+  if (!/^[A-Za-z0-9_-]{32,200}$/.test(v)) throw new Error("invalid player token");
+  return v;
+}
+
+function playerIdFromToken(secret: string, token: string): string {
+  return "p_" + createHmac("sha256", secret).update(token).digest("hex").slice(0, 32);
+}
+
 function sanitizeDisplayName(value: string): string {
   const v = value.trim().replace(/\s+/g, " ").slice(0, 32);
   if (v.length < 1) return "anon";
@@ -502,7 +512,7 @@ export class WardriveService {
     body: Buffer;
     filename: string;
     sourceHint: string | null;
-    playerId: string;
+    playerToken: string;
     displayName: string;
   }): Promise<{ run: PublicWardriveRun; duplicate: boolean }> {
     if (!this.enabled) throw new Error("wardrive persistence is not configured");
@@ -512,7 +522,8 @@ export class WardriveService {
     }
 
     const secret = this.#cfg.wardriveIdHashKey!;
-    const playerId = sanitizePlayerId(args.playerId);
+    const playerToken = sanitizePlayerToken(args.playerToken);
+    const playerId = playerIdFromToken(secret, playerToken);
     const displayName = sanitizeDisplayName(args.displayName);
     const captureSha256 = createHash("sha256").update(args.body).digest("hex");
     const id = runId(secret, captureSha256);
@@ -623,6 +634,16 @@ export class WardriveService {
       generated_at: new Date().toISOString(),
       players: output.slice(0, Math.max(1, Math.min(limit, 100))),
     };
+  }
+
+  async playerFromToken(playerTokenRaw: string): Promise<{
+    player: WardrivePlayerSummary;
+    runs: PublicWardriveRun[];
+  }> {
+    if (!this.enabled) throw new Error("wardrive persistence is not configured");
+    const secret = this.#cfg.wardriveIdHashKey!;
+    const token = sanitizePlayerToken(playerTokenRaw);
+    return this.player(playerIdFromToken(secret, token));
   }
 
   async player(playerIdRaw: string): Promise<{
