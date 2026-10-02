@@ -34,7 +34,10 @@ const playerLevelEl = document.querySelector<HTMLElement>("[data-player-level]")
 const playerXpEl = document.querySelector<HTMLElement>("[data-player-xp]");
 const playerRunsEl = document.querySelector<HTMLElement>("[data-player-runs]");
 const playerRadiosEl = document.querySelector<HTMLElement>("[data-player-radios]");
+const playerBestEl = document.querySelector<HTMLElement>("[data-player-best]");
+const playerStreakEl = document.querySelector<HTMLElement>("[data-player-streak]");
 const runHistoryEl = document.querySelector<HTMLElement>("[data-run-history]");
+const challengesEl = document.querySelector<HTMLElement>("[data-challenges]");
 const leaderboardEl = document.querySelector<HTMLElement>("[data-leaderboard]");
 
 const sources = new Set<string>();
@@ -467,7 +470,6 @@ type PublicRun = {
 
 type PlayerResponse = {
   player: {
-    player_id: string;
     display_name: string;
     total_xp: number;
     level: number;
@@ -476,8 +478,20 @@ type PlayerResponse = {
     best_grade: string;
     total_distance_km: number;
     unique_radios_seen: number;
+    current_streak_days: number;
+    longest_streak_days: number;
   };
   runs: PublicRun[];
+  challenges: Array<{
+    id: string;
+    period: "daily" | "weekly";
+    title: string;
+    description: string;
+    progress: number;
+    target: number;
+    unit: "radios" | "cells" | "xp" | "runs" | "bands";
+    complete: boolean;
+  }>;
 };
 
 type LeaderboardResponse = {
@@ -517,6 +531,16 @@ function renderPlayer(data: PlayerResponse): void {
   if (playerXpEl) playerXpEl.textContent = data.player.total_xp.toLocaleString();
   if (playerRunsEl) playerRunsEl.textContent = data.player.runs.toLocaleString();
   if (playerRadiosEl) playerRadiosEl.textContent = data.player.unique_radios_seen.toLocaleString();
+  if (playerBestEl) {
+    playerBestEl.textContent = data.player.best_grade + " · " + data.player.best_score;
+  }
+  if (playerStreakEl) {
+    playerStreakEl.textContent =
+      data.player.current_streak_days + "d";
+    playerStreakEl.title =
+      "Longest streak: " + data.player.longest_streak_days + " days";
+  }
+  renderChallenges(data.challenges);
   if (!runHistoryEl) return;
   runHistoryEl.replaceChildren();
   if (data.runs.length === 0) {
@@ -548,6 +572,57 @@ function renderPlayer(data: PlayerResponse): void {
     xp.textContent = "+" + run.xp.toLocaleString() + " XP";
     row.append(grade, main, score, xp);
     runHistoryEl.append(row);
+  }
+}
+
+function renderChallenges(challenges: PlayerResponse["challenges"]): void {
+  if (!challengesEl) return;
+  challengesEl.replaceChildren();
+  if (challenges.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "si-empty";
+    empty.innerHTML =
+      '<span class="si-empty__mark">◇</span><span class="si-empty__title">No active missions.</span>';
+    challengesEl.append(empty);
+    return;
+  }
+
+  for (const challenge of challenges) {
+    const card = document.createElement("article");
+    card.className =
+      "wd-challenge" + (challenge.complete ? " wd-challenge--complete" : "");
+
+    const copy = document.createElement("div");
+    const period = document.createElement("span");
+    period.className = "wd-challenge__period";
+    period.textContent = challenge.complete
+      ? challenge.period + " · complete"
+      : challenge.period;
+    const title = document.createElement("h3");
+    title.textContent = challenge.title;
+    const desc = document.createElement("p");
+    desc.textContent = challenge.description;
+    copy.append(period, title, desc);
+
+    const progress = document.createElement("div");
+    progress.className = "wd-challenge__progress";
+    const line = document.createElement("div");
+    line.className = "wd-challenge__progress-line";
+    const value = document.createElement("span");
+    value.style.width =
+      Math.min(100, (challenge.progress / Math.max(challenge.target, 1)) * 100) + "%";
+    line.append(value);
+    const label = document.createElement("div");
+    label.className = "wd-challenge__progress-label";
+    const current = document.createElement("span");
+    current.textContent = challenge.progress.toLocaleString() + " " + challenge.unit;
+    const target = document.createElement("span");
+    target.textContent = challenge.target.toLocaleString();
+    label.append(current, target);
+    progress.append(line, label);
+
+    card.append(copy, progress);
+    challengesEl.append(card);
   }
 }
 
