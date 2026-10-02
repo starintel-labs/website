@@ -11,6 +11,8 @@ export interface Config {
   wardriveHost: string;
   wardriveStagingHost: string;
   wardriveCouchdbUrl: string;
+  wardriveCouchdbUser: string;
+  wardriveCouchdbPassword: string | null;
   wardriveDb: string;
   wardriveIdHashKey: string | null;
   wardriveMaxCaptureBytes: number;
@@ -48,6 +50,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     wardriveHost: env.WARDRIVE_HOST ?? "wardrive.starintel.actor",
     wardriveStagingHost: env.WARDRIVE_STAGING_HOST ?? "wardrive-staging.starintel.actor",
     wardriveCouchdbUrl: env.WARDRIVE_COUCHDB_URL ?? "http://127.0.0.1:15985",
+    wardriveCouchdbUser: env.WARDRIVE_COUCHDB_USER ?? "wardrive",
+    wardriveCouchdbPassword: env.WARDRIVE_COUCHDB_PASSWORD ?? null,
     wardriveDb: env.WARDRIVE_DB ?? "starintel-wardrive",
     wardriveIdHashKey: env.WARDRIVE_ID_HASH_KEY ?? null,
     wardriveMaxCaptureBytes: int(env, "WARDRIVE_MAX_CAPTURE_BYTES", 32 * 1024 * 1024),
