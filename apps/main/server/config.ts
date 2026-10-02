@@ -9,6 +9,7 @@ export interface Config {
   wwwHost: string;
   /** Public host for the wardrive run-rating surface. */
   wardriveHost: string;
+  wardriveStagingHost: string;
   /** Private StarIntel infrastructure (never exposed to browsers). */
   couchdbUrl: string;
   couchdbDb: string;
@@ -39,6 +40,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     apexHost: env.APEX_HOST ?? "starintel.actor",
     wwwHost: env.WWW_HOST ?? "www.starintel.actor",
     wardriveHost: env.WARDRIVE_HOST ?? "wardrive.starintel.actor",
+    wardriveStagingHost: env.WARDRIVE_STAGING_HOST ?? "wardrive-staging.starintel.actor",
     couchdbUrl: env.COUCHDB_URL ?? "http://127.0.0.1:5984",
     couchdbDb: env.COUCHDB_DB ?? "starintel",
     rabbitUrl: env.RABBIT_URL ?? null,
