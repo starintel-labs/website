@@ -693,6 +693,8 @@ export function buildWardriveRunDocument(args: {
         display_name: args.displayName,
         verification: "capture-derived",
         source_format: parsed.source,
+        source_formats:
+          parsed.source === "combined" ? ["wigle", "kismet"] : [parsed.source],
         capture_sha256: args.captureSha256,
         capture_bytes: args.captureBytes,
         radio_fingerprints: args.radioFingerprints,
@@ -723,34 +725,51 @@ export class WardriveService {
   }
 
   async importRun(args: {
-    body: Buffer;
-    filename: string;
-    sourceHint: string | null;
+    captures: Array<{
+      body: Buffer;
+      filename: string;
+      sourceHint: string | null;
+    }>;
     playerToken: string;
     displayName: string;
   }): Promise<{ run: PublicWardriveRun; duplicate: boolean }> {
     if (!this.enabled) throw new Error("wardrive persistence is not configured");
-    if (args.body.byteLength < 1) throw new Error("empty capture");
-    if (args.body.byteLength > this.#cfg.wardriveMaxCaptureBytes) {
-      throw new Error("capture exceeds the configured upload limit");
+    if (args.captures.length < 1 || args.captures.length > 4) {
+      throw new Error("a run must contain between one and four capture files");
+    }
+    const captureBytes = args.captures.reduce((sum, capture) => sum + capture.body.byteLength, 0);
+    if (args.captures.some((capture) => capture.body.byteLength < 1)) {
+      throw new Error("empty capture");
+    }
+    if (captureBytes > this.#cfg.wardriveMaxCaptureBytes) {
+      throw new Error("capture bundle exceeds the configured upload limit");
     }
 
     const secret = this.#cfg.wardriveIdHashKey!;
     const playerToken = sanitizePlayerToken(args.playerToken);
     const playerId = playerIdFromToken(secret, playerToken);
     const displayName = sanitizeDisplayName(args.displayName);
-    const captureSha256 = createHash("sha256").update(args.body).digest("hex");
+    const captureDigests = args.captures
+      .map((capture) => createHash("sha256").update(capture.body).digest("hex"))
+      .sort();
+    const captureSha256 = createHash("sha256")
+      .update(JSON.stringify(captureDigests))
+      .digest("hex");
     const id = runId(secret, captureSha256);
 
     await this.#ensureDb();
     const existing = await this.#getRun(id);
     if (existing) return { run: projectWardriveRun(existing), duplicate: true };
 
-    const parsed = parseCaptureBytes(
-      args.body,
-      args.filename,
-      args.sourceHint,
-      this.#cfg.wardriveMaxInflatedBytes,
+    const parsed = mergeParsedCaptures(
+      args.captures.map((capture) =>
+        parseCaptureBytes(
+          capture.body,
+          capture.filename,
+          capture.sourceHint,
+          this.#cfg.wardriveMaxInflatedBytes,
+        ),
+      ),
     );
     if (parsed.rows < 1) throw new Error("capture has zero observations");
 
@@ -785,7 +804,7 @@ export class WardriveService {
       bands: parsed.bands,
       vendors: parsed.vendors,
       newGridCells: parsed.newGridCells,
-      sourceCount: 1,
+      sourceCount: parsed.source === "combined" ? 2 : 1,
     };
     const result = scoreRun(inputs);
     const now = new Date().toISOString();
@@ -794,7 +813,7 @@ export class WardriveService {
       playerId,
       displayName,
       captureSha256,
-      captureBytes: args.body.byteLength,
+      captureBytes,
       parsed,
       radioFingerprints,
       inputs,
