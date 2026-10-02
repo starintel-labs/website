@@ -43,7 +43,8 @@ const leaderboardEl = document.querySelector<HTMLElement>("[data-leaderboard]");
 const sources = new Set<string>();
 const PLAYER_TOKEN_KEY = "starintel.wardrive.player-token";
 const HANDLE_KEY = "starintel.wardrive.handle";
-let selectedFile: File | null = null;
+let selectedFiles: File[] = [];
+const fileSourceHints = new Map<File, "wigle" | "kismet">();
 let lastImportRows = 0;
 let persistenceConfigured = false;
 
@@ -409,22 +410,15 @@ function importKismet(text: string): ImportSummary {
 
 function applyImport(summary: ImportSummary, source: "WiGLE" | "Kismet"): void {
   sources.add(source);
-  lastImportRows = summary.rows;
+  lastImportRows += summary.rows;
 
-  if (source === "WiGLE") {
-    setValue("wifiTotal", summary.wifi);
-    setValue("wifiNew", summary.wifi);
-    setValue("bluetoothTotal", summary.bluetooth);
-    setValue("bluetoothNew", summary.bluetooth);
-    setValue("gpsCoveragePct", summary.gpsCoveragePct);
-    setValue("newGridCells", summary.gridCells);
-  } else {
-    setValue("wifiTotal", Math.max(value("wifiTotal"), summary.wifi));
-    setValue("wifiNew", Math.max(value("wifiNew"), summary.wifi));
-    setValue("bluetoothTotal", Math.max(value("bluetoothTotal"), summary.bluetooth));
-    setValue("bluetoothNew", Math.max(value("bluetoothNew"), summary.bluetooth));
-    setValue("packetCount", Math.max(value("packetCount"), summary.packets));
-  }
+  setValue("wifiTotal", Math.max(value("wifiTotal"), summary.wifi));
+  setValue("wifiNew", Math.max(value("wifiNew"), summary.wifi));
+  setValue("bluetoothTotal", Math.max(value("bluetoothTotal"), summary.bluetooth));
+  setValue("bluetoothNew", Math.max(value("bluetoothNew"), summary.bluetooth));
+  setValue("gpsCoveragePct", Math.max(value("gpsCoveragePct"), summary.gpsCoveragePct));
+  setValue("newGridCells", Math.max(value("newGridCells"), summary.gridCells));
+  setValue("packetCount", value("packetCount") + summary.packets);
 
   setValue("uniqueChannels", Math.max(value("uniqueChannels"), summary.channels));
   setValue("bands", Math.max(value("bands"), summary.bands));
@@ -448,7 +442,7 @@ function applyImport(summary: ImportSummary, source: "WiGLE" | "Kismet"): void {
   }
 
   if (saveButtonEl) {
-    saveButtonEl.disabled = !persistenceConfigured || !selectedFile || summary.rows < 1;
+    saveButtonEl.disabled = !persistenceConfigured || selectedFiles.length < 1 || summary.rows < 1;
   }
   render();
 }
@@ -458,7 +452,8 @@ type PublicRun = {
   player_id: string;
   display_name: string;
   created_at: string;
-  source_format: "wigle" | "kismet";
+  source_format: "wigle" | "kismet" | "combined";
+  source_formats: Array<"wigle" | "kismet">;
   verification: "capture-derived";
   score: number;
   grade: string;
@@ -521,7 +516,9 @@ function applyAuthoritativeRun(run: PublicRun): void {
   setValue("vendors", input.vendors);
   setValue("newGridCells", input.newGridCells);
   sources.clear();
-  sources.add(run.source_format === "wigle" ? "WiGLE" : "Kismet");
+  for (const source of run.source_formats) {
+    sources.add(source === "wigle" ? "WiGLE" : "Kismet");
+  }
   render();
 }
 
@@ -706,7 +703,7 @@ async function loadPersistenceState(): Promise<void> {
     persistenceChipEl.classList.toggle("si-chip--live", persistenceConfigured);
   }
   if (saveButtonEl) {
-    saveButtonEl.disabled = !persistenceConfigured || !selectedFile || lastImportRows < 1;
+    saveButtonEl.disabled = !persistenceConfigured || selectedFiles.length < 1 || lastImportRows < 1;
   }
   if (saveStatusEl && !persistenceConfigured) {
     saveStatusEl.textContent = "server persistence is not configured on this deployment";
@@ -714,27 +711,78 @@ async function loadPersistenceState(): Promise<void> {
   if (persistenceConfigured) await refreshCommunity();
 }
 
+function resetImportedFields(): void {
+  for (const name of [
+    "durationMinutes",
+    "gpsCoveragePct",
+    "wifiNew",
+    "wifiTotal",
+    "bluetoothNew",
+    "bluetoothTotal",
+    "packetCount",
+    "uniqueChannels",
+    "bands",
+    "vendors",
+    "newGridCells",
+  ]) {
+    setValue(name, 0);
+  }
+}
+
+async function buildCapturePayload(): Promise<{
+  body: BodyInit;
+  contentType: string;
+  filename: string;
+  source: string;
+}> {
+  if (selectedFiles.length === 1) {
+    const file = selectedFiles[0]!;
+    return {
+      body: file,
+      contentType: "application/octet-stream",
+      filename: encodeURIComponent(file.name),
+      source: fileSourceHints.get(file) ?? "",
+    };
+  }
+
+  const buffers = await Promise.all(selectedFiles.map((file) => file.arrayBuffer()));
+  const header = {
+    version: 1,
+    files: selectedFiles.map((file, index) => ({
+      name: file.name,
+      source: fileSourceHints.get(file) ?? null,
+      length: buffers[index]!.byteLength,
+    })),
+  };
+  const headerBytes = new TextEncoder().encode(JSON.stringify(header));
+  const prefix = new Uint8Array(4);
+  new DataView(prefix.buffer).setUint32(0, headerBytes.byteLength, false);
+  return {
+    body: new Blob([prefix, headerBytes, ...buffers], {
+      type: "application/x-starintel-capture-bundle",
+    }),
+    contentType: "application/x-starintel-capture-bundle",
+    filename: "wardrive-bundle.swrb",
+    source: "",
+  };
+}
+
 async function saveSelectedRun(): Promise<void> {
-  if (!selectedFile || !persistenceConfigured) return;
+  if (selectedFiles.length < 1 || !persistenceConfigured) return;
   if (saveButtonEl) saveButtonEl.disabled = true;
-  if (saveStatusEl) saveStatusEl.textContent = "server is parsing and deduplicating the capture…";
+  if (saveStatusEl) saveStatusEl.textContent = "server is parsing, fusing, and deduplicating the captures…";
   try {
-    const source =
-      sources.size === 1
-        ? Array.from(sources)[0] === "WiGLE"
-          ? "wigle"
-          : "kismet"
-        : "";
+    const payload = await buildCapturePayload();
     const res = await fetch("/api/wardrive/runs/import", {
       method: "POST",
       headers: {
-        "content-type": "application/octet-stream",
+        "content-type": payload.contentType,
         "x-wardrive-player-token": playerToken(),
         "x-wardrive-handle": currentHandle(),
-        "x-wardrive-filename": encodeURIComponent(selectedFile.name),
-        ...(source ? { "x-wardrive-source": source } : {}),
+        "x-wardrive-filename": payload.filename,
+        ...(payload.source ? { "x-wardrive-source": payload.source } : {}),
       },
-      body: selectedFile,
+      body: payload.body,
     });
     const body = (await res.json()) as {
       run?: PublicRun;
@@ -760,7 +808,7 @@ async function saveSelectedRun(): Promise<void> {
     }
   } finally {
     if (saveButtonEl) {
-      saveButtonEl.disabled = !persistenceConfigured || !selectedFile || lastImportRows < 1;
+      saveButtonEl.disabled = !persistenceConfigured || selectedFiles.length < 1 || lastImportRows < 1;
     }
   }
 }
@@ -774,20 +822,58 @@ saveButtonEl?.addEventListener("click", () => {
 });
 
 fileEl?.addEventListener("change", async () => {
-  const file = fileEl.files?.[0];
-  if (!file) return;
-  selectedFile = file;
+  const files = Array.from(fileEl.files ?? []);
+  if (files.length < 1) return;
+  if (files.length > 4) {
+    selectedFiles = [];
+    if (saveButtonEl) saveButtonEl.disabled = true;
+    if (importStatusEl) importStatusEl.textContent = "A run can contain at most four capture files.";
+    return;
+  }
+
+  selectedFiles = files;
+  fileSourceHints.clear();
+  sources.clear();
   lastImportRows = 0;
+  resetImportedFields();
   if (saveButtonEl) saveButtonEl.disabled = true;
-  if (importStatusEl) importStatusEl.textContent = "reading " + file.name + "…";
 
   try {
-    const text = await readText(file);
-    const lower = file.name.toLowerCase();
-    const isWigle = text.startsWith("WigleWifi-") || lower.endsWith(".csv") || lower.endsWith(".csv.gz");
-    if (isWigle) applyImport(importWigle(text), "WiGLE");
-    else applyImport(importKismet(text), "Kismet");
+    for (const file of selectedFiles) {
+      if (importStatusEl) importStatusEl.textContent = "reading " + file.name + "…";
+      const text = await readText(file);
+      const lower = file.name.toLowerCase();
+      const isWigle =
+        text.startsWith("WigleWifi-") ||
+        lower.endsWith(".csv") ||
+        lower.endsWith(".csv.gz");
+      const source = isWigle ? "wigle" : "kismet";
+      fileSourceHints.set(file, source);
+      applyImport(
+        isWigle ? importWigle(text) : importKismet(text),
+        isWigle ? "WiGLE" : "Kismet",
+      );
+    }
+
+    if (importStatusEl) {
+      importStatusEl.textContent =
+        selectedFiles.length.toLocaleString() +
+        " capture" +
+        (selectedFiles.length === 1 ? "" : "s") +
+        " loaded · " +
+        Array.from(sources).join(" + ") +
+        " · " +
+        lastImportRows.toLocaleString() +
+        " observations";
+    }
+    if (saveButtonEl) {
+      saveButtonEl.disabled =
+        !persistenceConfigured || selectedFiles.length < 1 || lastImportRows < 1;
+    }
   } catch (error) {
+    selectedFiles = [];
+    fileSourceHints.clear();
+    if (saveButtonEl) saveButtonEl.disabled = true;
     if (importStatusEl) {
       importStatusEl.textContent =
         error instanceof Error ? error.message : "Could not parse this capture.";
