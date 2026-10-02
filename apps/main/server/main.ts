@@ -169,7 +169,12 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       return;
     }
     if (isWardriveHost && url.pathname === "/api/wardrive/status" && req.method === "GET") {
-      sendJson(res, 200, { configured: wardrive.enabled, profile: "srr/0.2" });
+      const storage = wardrive.enabled ? ((await wardrive.health()) ? "ok" : "down") : "off";
+      sendJson(res, 200, {
+        configured: wardrive.enabled,
+        storage,
+        profile: "srr/0.2",
+      });
       return;
     }
     if (isWardriveHost && url.pathname === "/api/wardrive/leaderboard" && req.method === "GET") {
