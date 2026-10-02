@@ -10,6 +10,7 @@ export interface Config {
   /** Public host for the wardrive run-rating surface. */
   wardriveHost: string;
   wardriveStagingHost: string;
+  wardriveCouchdbUrl: string;
   wardriveDb: string;
   wardriveIdHashKey: string | null;
   wardriveMaxCaptureBytes: number;
@@ -46,6 +47,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     wwwHost: env.WWW_HOST ?? "www.starintel.actor",
     wardriveHost: env.WARDRIVE_HOST ?? "wardrive.starintel.actor",
     wardriveStagingHost: env.WARDRIVE_STAGING_HOST ?? "wardrive-staging.starintel.actor",
+    wardriveCouchdbUrl: env.WARDRIVE_COUCHDB_URL ?? "http://127.0.0.1:15985",
     wardriveDb: env.WARDRIVE_DB ?? "starintel-wardrive",
     wardriveIdHashKey: env.WARDRIVE_ID_HASH_KEY ?? null,
     wardriveMaxCaptureBytes: int(env, "WARDRIVE_MAX_CAPTURE_BYTES", 32 * 1024 * 1024),
