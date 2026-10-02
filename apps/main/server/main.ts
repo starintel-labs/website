@@ -204,7 +204,14 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       try {
         const playerToken = String(req.headers["x-wardrive-player-token"] ?? "");
         const displayName = String(req.headers["x-wardrive-handle"] ?? "anon");
-        const filename = String(req.headers["x-wardrive-filename"] ?? "capture.dat");
+        const encodedFilename = String(req.headers["x-wardrive-filename"] ?? "capture.dat");
+        let filename = encodedFilename.slice(0, 768);
+        try {
+          filename = decodeURIComponent(filename);
+        } catch {
+          // Keep the bounded literal header value when percent-decoding fails.
+        }
+        filename = filename.slice(0, 256);
         const sourceHint = req.headers["x-wardrive-source"];
         const body = await readRawBody(req, resolvedCfg.wardriveMaxCaptureBytes);
         const result = await wardrive.importRun({
