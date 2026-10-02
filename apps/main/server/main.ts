@@ -11,6 +11,7 @@ import { loadConfig, type Config } from "./config.ts";
 import { RecentDocumentsService } from "./recent.ts";
 import { RadarFeed } from "./radar-feed.ts";
 import { SseHub } from "./sse.ts";
+import { WardriveService } from "./wardrive.ts";
 
 const MIME: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -47,6 +48,21 @@ function sendJson(res: ServerResponse, status: number, value: unknown): void {
   send(res, status, JSON.stringify(value));
 }
 
+
+async function readRawBody(req: IncomingMessage, maxBytes: number): Promise<Buffer> {
+  const declared = Number(req.headers["content-length"] ?? 0);
+  if (Number.isFinite(declared) && declared > maxBytes) throw new Error("request body too large");
+  const chunks: Buffer[] = [];
+  let total = 0;
+  for await (const chunk of req) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    total += buffer.byteLength;
+    if (total > maxBytes) throw new Error("request body too large");
+    chunks.push(buffer);
+  }
+  return Buffer.concat(chunks, total);
+}
+
 function serveStatic(res: ServerResponse, cfg: Config, urlPath: string): void {
   const rel = normalize(decodeURIComponent(urlPath)).replace(/^(\.\.[/\\])+/, "");
   let file = join(cfg.staticDir, rel);
@@ -81,6 +97,7 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
   const here = fileURLToPath(new URL(".", import.meta.url));
   const resolvedCfg: Config = { ...cfg, staticDir: join(here, "..", cfg.staticDir) };
   const recent = new RecentDocumentsService(resolvedCfg);
+  const wardrive = new WardriveService(resolvedCfg);
   const hub = new SseHub();
   const radar = new RadarFeed(resolvedCfg, (events) => hub.sendEvents(events), (totals, rps) => {
     hub.sendRate(totals, rps);
@@ -135,6 +152,57 @@ export function createApp(cfg: Config): { handle: (req: IncomingMessage, res: Se
       }
       return;
     }
+    if (url.pathname === "/api/wardrive/status" && req.method === "GET") {
+      sendJson(res, 200, { configured: wardrive.enabled, profile: "srr/0.2" });
+      return;
+    }
+    if (url.pathname === "/api/wardrive/leaderboard" && req.method === "GET") {
+      const limit = Number(url.searchParams.get("limit") ?? "20");
+      try {
+        sendJson(res, 200, await wardrive.leaderboard(Number.isFinite(limit) ? limit : 20));
+      } catch {
+        sendJson(res, 503, { generated_at: new Date().toISOString(), players: [], error: "wardrive store unavailable" });
+      }
+      return;
+    }
+    if (url.pathname.startsWith("/api/wardrive/player/") && req.method === "GET") {
+      const playerId = decodeURIComponent(url.pathname.slice("/api/wardrive/player/".length));
+      try {
+        sendJson(res, 200, await wardrive.player(playerId));
+      } catch (error) {
+        sendJson(res, wardrive.enabled ? 400 : 503, {
+          error: error instanceof Error ? error.message : "wardrive player lookup failed",
+        });
+      }
+      return;
+    }
+    if (url.pathname === "/api/wardrive/runs/import" && req.method === "POST") {
+      if (!wardrive.enabled) {
+        sendJson(res, 503, { error: "wardrive persistence is not configured" });
+        return;
+      }
+      try {
+        const playerId = String(req.headers["x-wardrive-player"] ?? "");
+        const displayName = String(req.headers["x-wardrive-handle"] ?? "anon");
+        const filename = String(req.headers["x-wardrive-filename"] ?? "capture.dat");
+        const sourceHint = req.headers["x-wardrive-source"];
+        const body = await readRawBody(req, resolvedCfg.wardriveMaxCaptureBytes);
+        const result = await wardrive.importRun({
+          body,
+          filename,
+          sourceHint: typeof sourceHint === "string" ? sourceHint : null,
+          playerId,
+          displayName,
+        });
+        sendJson(res, result.duplicate ? 200 : 201, result);
+      } catch (error) {
+        sendJson(res, 422, {
+          error: error instanceof Error ? error.message : "capture import failed",
+        });
+      }
+      return;
+    }
+
     if (url.pathname === "/api/recent-documents") {
       const sampleSize = Number(url.searchParams.get("sample") ?? "12");
       try {
