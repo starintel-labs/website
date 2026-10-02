@@ -449,6 +449,65 @@ export function parseCaptureBytes(
   return source === "wigle" ? parseWigleCapture(text) : parseKismetCapture(text);
 }
 
+export function decodeCaptureBundle(body: Buffer): Array<{
+  body: Buffer;
+  filename: string;
+  sourceHint: WardriveSource | null;
+}> {
+  if (body.byteLength < 5) throw new Error("capture bundle is truncated");
+  const headerLength = body.readUInt32BE(0);
+  if (headerLength < 2 || headerLength > 65_536 || 4 + headerLength > body.byteLength) {
+    throw new Error("capture bundle header is invalid");
+  }
+
+  let header: unknown;
+  try {
+    header = JSON.parse(body.subarray(4, 4 + headerLength).toString("utf8"));
+  } catch {
+    throw new Error("capture bundle header is not valid JSON");
+  }
+  if (!header || typeof header !== "object" || Array.isArray(header)) {
+    throw new Error("capture bundle header must be an object");
+  }
+
+  const version = (header as { version?: unknown }).version;
+  const files = (header as { files?: unknown }).files;
+  if (version !== 1 || !Array.isArray(files) || files.length < 1 || files.length > 4) {
+    throw new Error("capture bundle version or file count is invalid");
+  }
+
+  let offset = 4 + headerLength;
+  const captures: Array<{
+    body: Buffer;
+    filename: string;
+    sourceHint: WardriveSource | null;
+  }> = [];
+
+  for (const entry of files) {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new Error("capture bundle file entry is invalid");
+    }
+    const rawName = String((entry as { name?: unknown }).name ?? "capture.dat");
+    const filename = rawName.replace(/[\r\n\0]/g, "").slice(0, 256) || "capture.dat";
+    const rawSource = (entry as { source?: unknown }).source;
+    const sourceHint: WardriveSource | null =
+      rawSource === "wigle" || rawSource === "kismet" ? rawSource : null;
+    const length = Number((entry as { length?: unknown }).length);
+    if (!Number.isSafeInteger(length) || length < 1 || offset + length > body.byteLength) {
+      throw new Error("capture bundle file length is invalid");
+    }
+    captures.push({
+      body: body.subarray(offset, offset + length),
+      filename,
+      sourceHint,
+    });
+    offset += length;
+  }
+
+  if (offset !== body.byteLength) throw new Error("capture bundle has trailing bytes");
+  return captures;
+}
+
 function sanitizePlayerId(value: string): string {
   const v = value.trim();
   if (!/^[A-Za-z0-9_-]{8,80}$/.test(v)) throw new Error("invalid player id");
