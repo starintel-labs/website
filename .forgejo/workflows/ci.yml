@@ -36,8 +36,10 @@ jobs:
         run: pnpm test
       - name: typecheck
         run: pnpm typecheck
-      - name: v0.9 schema pin check
-        run: node scripts/sync-v09-schema.mjs --check
+      - name: canonical 0.10.1 and historical compatibility pin checks
+        run: |
+          node scripts/check-starintel-schema.mjs
+          node scripts/sync-v09-schema.mjs --check
       - name: org export test
         run: bash tests/run-org-export-test.sh
       - name: prolog facts
@@ -46,3 +48,4 @@ jobs:
         run: pnpm "verify:ci"
       - name: ci hygiene
         run: node scripts/ci-hygiene.mjs
+

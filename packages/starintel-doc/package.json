@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "StarIntel v0.9 document helpers: schema validation and public-safe projections",
+  "description": "StarLang 0.10.1 validation and public-safe projections with explicit historical compatibility",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./legacy": "./src/legacy.ts"
   },
   "scripts": {
     "build": "true",
@@ -15,7 +16,8 @@
   },
   "dependencies": {
     "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1"
+    "ajv-formats": "^3.0.1",
+    "starintel_doc": "github:lost-rob0t/starintel_doc.js#c60efa271f2d441290171e24f7b1dba2cfffa575"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

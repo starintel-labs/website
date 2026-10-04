@@ -6,11 +6,12 @@
  * never sees the browser.
  */
 import {
-  validateV09,
+  fromCouchDocument,
+  parseJson,
   isPublicEligible,
   projectPublicDocument,
   assertNoInternalDomains,
-  type StarIntelV09Doc,
+  type StarIntelDocument,
 } from "@starintel/starintel-doc";
 import type { Config } from "./config.ts";
 
@@ -27,20 +28,28 @@ interface TimelineRow {
 }
 
 /** Fetch full docs from the private CouchDB timeline view (newest first). */
-export async function fetchNewestPublic(cfg: Config, fetchImpl: typeof fetch = fetch): Promise<StarIntelV09Doc[]> {
+export async function fetchNewestPublic(
+  cfg: Config,
+  fetchImpl: typeof fetch = fetch,
+): Promise<StarIntelDocument[]> {
   const url = `${cfg.couchdbUrl}/${encodeURIComponent(cfg.couchdbDb)}/_design/time/_view/timeline`;
-  const q = new URLSearchParams({ descending: "true", limit: String(cfg.recentWindow * 3), include_docs: "true" });
+  const q = new URLSearchParams({
+    descending: "true",
+    limit: String(cfg.recentWindow * 3),
+    include_docs: "true",
+  });
   const res = await fetchImpl(`${url}?${q}`, {
     headers: { accept: "application/json" },
     signal: AbortSignal.timeout(5000),
   });
-  if (!res.ok) throw new Error(`couchdb timeline view failed: HTTP ${res.status}`);
-  const body = (await res.json()) as { rows?: TimelineRow[] };
+  if (!res.ok)
+    throw new Error(`couchdb timeline view failed: HTTP ${res.status}`);
+  const body = parseJson(await res.text()) as { rows?: TimelineRow[] };
   const rows = body.rows ?? [];
-  const out: StarIntelV09Doc[] = [];
+  const out: StarIntelDocument[] = [];
   for (const row of rows) {
     if (!row.doc) continue;
-    const doc = validateV09(row.doc); // throws on invalid: fail closed
+    const doc = fromCouchDocument(row.doc); // throws on invalid: fail closed
     if (isPublicEligible(doc)) out.push(doc);
     if (out.length >= cfg.recentWindow) break;
   }
@@ -67,7 +76,10 @@ export class RecentDocumentsService {
     this.#cfg = cfg;
   }
 
-  async get(sampleSize: number, fetchImpl: typeof fetch = fetch): Promise<RecentDocuments> {
+  async get(
+    sampleSize: number,
+    fetchImpl: typeof fetch = fetch,
+  ): Promise<RecentDocuments> {
     const now = Date.now();
     if (this.#cache && now - this.#cache.at < this.#cfg.recentCacheMs) {
       return this.#withSample(this.#cache.value, sampleSize);
@@ -81,7 +93,8 @@ export class RecentDocumentsService {
             eligible: docs.length,
             generated_at: new Date().toISOString(),
           };
-          for (const d of value.documents) assertNoInternalDomains(JSON.stringify(d));
+          for (const d of value.documents)
+            assertNoInternalDomains(JSON.stringify(d));
           this.#cache = { at: Date.now(), value };
           return value;
         })

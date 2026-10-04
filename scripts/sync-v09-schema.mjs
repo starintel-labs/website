@@ -1,20 +1,15 @@
 #!/usr/bin/env node
 /**
- * Sync the vendored StarIntel v0.9 wire schema from the exact canonical
- * StarIntel release recorded in packages/starintel-doc/schemas/starintel-schema.lock.json.
+ * Sync the vendored StarIntel v0.9 wire schema from the historical compatibility
+ * StarIntel release recorded in packages/starintel-doc/schemas/legacy-schema.lock.json.
  *
  *   node scripts/sync-v09-schema.mjs           # copy exact locked artifacts
  *   node scripts/sync-v09-schema.mjs --check   # fail closed on any drift
  *
- * STARINTEL_AUTO_DIG may point at a canonical checkout. When present, its
+ * STARINTEL_AUTO_DIG may point at a historical checkout. When present, its
  * Git HEAD MUST equal the locked canonical commit before it can be trusted.
  */
-import {
-  copyFileSync,
-  existsSync,
-  readFileSync,
-  writeFileSync,
-} from "node:fs";
+import { copyFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,7 +17,7 @@ import { spawnSync } from "node:child_process";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const schemaDir = join(root, "packages", "starintel-doc", "schemas");
-const lockPath = join(schemaDir, "starintel-schema.lock.json");
+const lockPath = join(schemaDir, "legacy-schema.lock.json");
 const lock = JSON.parse(readFileSync(lockPath, "utf8"));
 const check = process.argv.includes("--check");
 
@@ -54,11 +49,16 @@ function sameBytes(a, b) {
 
 for (const [key, value] of Object.entries(expectedLock)) {
   if (lock[key] !== value) {
-    die(`lock ${key}=${JSON.stringify(lock[key])}; expected ${JSON.stringify(value)}`);
+    die(
+      `lock ${key}=${JSON.stringify(lock[key])}; expected ${JSON.stringify(value)}`,
+    );
   }
 }
 for (const dtype of ["research-node", "operation"]) {
-  if (!Array.isArray(lock.required_dtypes) || !lock.required_dtypes.includes(dtype)) {
+  if (
+    !Array.isArray(lock.required_dtypes) ||
+    !lock.required_dtypes.includes(dtype)
+  ) {
     die(`lock required_dtypes is missing ${dtype}`);
   }
 }
@@ -87,7 +87,9 @@ function verifyVendored() {
     "dtype_count",
   ]) {
     if (manifest[key] !== lock[key]) {
-      die(`manifest ${key}=${JSON.stringify(manifest[key])}; expected ${JSON.stringify(lock[key])}`);
+      die(
+        `manifest ${key}=${JSON.stringify(manifest[key])}; expected ${JSON.stringify(lock[key])}`,
+      );
     }
   }
 
@@ -98,25 +100,35 @@ function verifyVendored() {
       .filter((dtype) => typeof dtype === "string"),
   );
   if (dtypes.size !== lock.dtype_count) {
-    die(`vendored schema has ${dtypes.size} dtypes; expected ${lock.dtype_count}`);
+    die(
+      `vendored schema has ${dtypes.size} dtypes; expected ${lock.dtype_count}`,
+    );
   }
   for (const dtype of lock.required_dtypes) {
-    if (!dtypes.has(dtype)) die(`vendored schema is missing required dtype ${dtype}`);
+    if (!dtypes.has(dtype))
+      die(`vendored schema is missing required dtype ${dtype}`);
   }
 }
 
-const autoDig = process.env.STARINTEL_AUTO_DIG ?? join(root, "..", "starintel-gpt-auto-dig");
+const autoDig =
+  process.env.STARINTEL_AUTO_DIG ?? join(root, "..", "starintel-gpt-auto-dig");
 const canonicalSchema = join(autoDig, lock.schema_path);
 const canonicalManifest = join(autoDig, lock.manifest_path);
-const canonicalAvailable = existsSync(canonicalSchema) && existsSync(canonicalManifest);
+const canonicalAvailable =
+  existsSync(canonicalSchema) && existsSync(canonicalManifest);
 
 function verifyCanonicalCheckout() {
   if (!canonicalAvailable) return false;
-  const rev = spawnSync("git", ["-C", autoDig, "rev-parse", "HEAD"], { encoding: "utf8" });
-  if (rev.status !== 0) die(`cannot identify canonical checkout HEAD at ${autoDig}`);
+  const rev = spawnSync("git", ["-C", autoDig, "rev-parse", "HEAD"], {
+    encoding: "utf8",
+  });
+  if (rev.status !== 0)
+    die(`cannot identify historical checkout HEAD at ${autoDig}`);
   const head = rev.stdout.trim();
   if (head !== lock.canonical_commit) {
-    die(`canonical checkout HEAD ${head} is not locked commit ${lock.canonical_commit}`);
+    die(
+      `historical checkout HEAD ${head} is not locked commit ${lock.canonical_commit}`,
+    );
   }
   return true;
 }
@@ -125,24 +137,34 @@ if (check) {
   verifyVendored();
   if (verifyCanonicalCheckout()) {
     if (!sameBytes(canonicalSchema, vendoredSchema)) {
-      die("vendored schema differs byte-for-byte from locked canonical schema");
+      die(
+        "vendored schema differs byte-for-byte from locked historical schema",
+      );
     }
     if (!sameBytes(canonicalManifest, vendoredManifest)) {
-      die("vendored manifest differs byte-for-byte from locked canonical manifest");
+      die(
+        "vendored manifest differs byte-for-byte from locked canonical manifest",
+      );
     }
-    console.log(`StarIntel 0.9.1 artifacts match canonical ${lock.canonical_commit}`);
+    console.log(
+      `StarIntel 0.9.1 artifacts match historical ${lock.canonical_commit}`,
+    );
   } else {
     console.log(
-      `StarIntel 0.9.1 local lock/hash/manifest checks pass for canonical ${lock.canonical_commit}`,
+      `StarIntel 0.9.1 local lock/hash/manifest checks pass for historical ${lock.canonical_commit}`,
     );
   }
 } else {
   if (!verifyCanonicalCheckout()) {
-    die(`canonical checkout unavailable at ${autoDig}; refusing an unverified sync`);
+    die(
+      `historical checkout unavailable at ${autoDig}; refusing an unverified sync`,
+    );
   }
   copyFileSync(canonicalSchema, vendoredSchema);
   copyFileSync(canonicalManifest, vendoredManifest);
   writeFileSync(schemaPin, `${sha256(vendoredSchema)}\n`);
   verifyVendored();
-  console.log(`synced exact StarIntel 0.9.1 canonical artifacts from ${lock.canonical_commit}`);
+  console.log(
+    `synced exact StarIntel 0.9.1 historical artifacts from ${lock.canonical_commit}`,
+  );
 }

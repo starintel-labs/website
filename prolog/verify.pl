@@ -72,10 +72,9 @@ inv_radar_safe :-
     facts:radar_fails_closed(true),
     facts:radar_no_payload_forwarding(true).
 
-%% StarIntel v0.9 validation authority is pinned and complete.
-inv_v09_pinned :-
-    facts:v09_required_fields_complete(true),
-    facts:v09_schema_pinned(true).
+%% StarLang 0.10.1 generated validation authority is pinned and complete.
+inv_canonical_pinned :-
+    facts:canonical_schema_pinned(true).
 
 %% Auto Dig tooling exists (checked when the sibling checkout is available;
 %% an isolated CI checkout of this repository skips it - the tooling is
@@ -123,7 +122,7 @@ all_checks([
     research_approval_gated-inv_research_approval_gated,
     daily_dates_match-inv_daily_dates_match,
     radar_safe-inv_radar_safe,
-    v09_pinned-inv_v09_pinned,
+    canonical_pinned-inv_canonical_pinned,
     auto_dig_tooling-inv_auto_dig_tooling,
     opencode_harness-inv_opencode_harness,
     publishing_config-inv_publishing_config,
@@ -161,3 +160,4 @@ verify_ci :-
     verify_steps(false).
 
 name_is_program_complete(Name-_Goal) :- Name == program_complete.
+

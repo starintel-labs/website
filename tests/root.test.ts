@@ -8,7 +8,10 @@ import { parseOrgDate } from "@starintel/content";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
-function script(name: string, args: string[]): { stdout: string; status: number } {
+function script(
+  name: string,
+  args: string[],
+): { stdout: string; status: number } {
   const r = spawnSync("node", [join(root, "scripts", name), ...args], {
     encoding: "utf8",
     cwd: root,
@@ -37,8 +40,8 @@ test("parseOrgDate handles org timestamp forms", () => {
   assert.equal(parseOrgDate(null), null);
 });
 
-test("v0.9 schema pin check passes", () => {
-  const { status } = script("sync-v09-schema.mjs", ["--check"]);
+test("canonical schema pin check passes", () => {
+  const { status } = script("check-starintel-schema.mjs", []);
   assert.equal(status, 0);
 });
 
@@ -47,10 +50,27 @@ test("ci hygiene passes", () => {
   assert.equal(status, 0);
 });
 
-test("public projection rejects restricted handling", async () => {
+test("public projection requires explicit public visibility and sensitivity", async () => {
   const { isPublicEligible } = await import("@starintel/starintel-doc");
-  assert.equal(isPublicEligible({ _id: "x", dtype: "d", dataset: "s", date_added: "a", date_updated: "b", handling: { public: true } }), true);
-  assert.equal(isPublicEligible({ _id: "x", dtype: "d", dataset: "s", date_added: "a", date_updated: "b", handling: {} }), false);
-  assert.equal(isPublicEligible({ _id: "x", dtype: "d", dataset: "s", date_added: "a", date_updated: "b", handling: { public: true, restricted: true } }), false);
-  assert.equal(isPublicEligible({ _id: "x", dtype: "d", dataset: "s", date_added: "a", date_updated: "b" }), false);
+  assert.equal(
+    isPublicEligible({ visibility: "public", sensitivity: "public" }),
+    true,
+  );
+  assert.equal(
+    isPublicEligible({ visibility: "public", sensitivity: "restricted" }),
+    false,
+  );
+  assert.equal(isPublicEligible({ visibility: "public" }), false);
+  assert.equal(
+    isPublicEligible({ visibility: "private", sensitivity: "public" }),
+    false,
+  );
+  assert.equal(
+    isPublicEligible({
+      visibility: "public",
+      sensitivity: "public",
+      extensions: { handling: { restricted: true } },
+    }),
+    false,
+  );
 });

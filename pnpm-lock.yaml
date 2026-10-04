@@ -152,6 +152,9 @@ importers:
       ajv-formats:
         specifier: ^3.0.1
         version: 3.0.1(ajv@8.20.0)
+      starintel_doc:
+        specifier: github:lost-rob0t/starintel_doc.js#c60efa271f2d441290171e24f7b1dba2cfffa575
+        version: https://codeload.github.com/lost-rob0t/starintel_doc.js/tar.gz/c60efa271f2d441290171e24f7b1dba2cfffa575
     devDependencies:
       '@types/node':
         specifier: ^24.0.0
@@ -543,9 +546,18 @@ packages:
     resolution: {integrity: sha512-4zNhdJD/iOjSH0A05ea+Ke6MU5mmpQcbQsSOkgdaUMJ9zTlDTD/GYlwohmIE2u0gaxHYiVHEn1Fw9mZ/ktJWgw==}
     engines: {node: '>=18'}
 
+  charenc@0.0.2:
+    resolution: {integrity: sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==}
+
   check-error@2.1.3:
     resolution: {integrity: sha512-PAJdDJusoxnwm1VwW07VWwUN1sl7smmC3OKggvndJFadxxDRyFJBX/ggnu/KE4kQAB7a3Dp8f/YXC1FlUprWmA==}
     engines: {node: '>= 16'}
+
+  crypt@0.0.2:
+    resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
+
+  dataclass@2.1.1:
+    resolution: {integrity: sha512-UNG2qao2GaHrnVQtarekOjUt1BvU6vt1OUnYSp+3BuFNs+iKjiBmIz2cabXtP2ZjthM8n3ox1lRKrUxp4SKG9A==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -595,11 +607,17 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
+  is-buffer@1.1.6:
+    resolution: {integrity: sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==}
+
   js-tokens@9.0.1:
     resolution: {integrity: sha512-mxa9E9ITFOt0ban3j6L5MpjwegGz6lBQmM1IJkWeBZGcMxto50+eWdjC/52xDbS2vy0k7vIMK0Fe2wfL9OQSpQ==}
 
   json-schema-traverse@1.0.0:
     resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
+
+  lossless-json@4.3.1:
+    resolution: {integrity: sha512-SqD/Bg3ZfltBJ2Z14hJ/BihnvtV553WO4g9/ePtlp4lrnl9jF3AdIJt53A/Wkg/0Li+LMfxaBqgx1MiFZdQlpQ==}
 
   loupe@3.2.1:
     resolution: {integrity: sha512-CdzqowRJCeLU72bHvWqwRBBlLcMEtIvGrlvef74kMnV2AolS9Y8xUv1I0U/MNAWMhBlKIoyuEgoJ0t/bbwHbLQ==}
@@ -611,6 +629,9 @@ packages:
     resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==}
     engines: {node: '>= 18'}
     hasBin: true
+
+  md5@2.3.0:
+    resolution: {integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==}
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -677,6 +698,12 @@ packages:
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
 
+  starintel_doc@https://codeload.github.com/lost-rob0t/starintel_doc.js/tar.gz/c60efa271f2d441290171e24f7b1dba2cfffa575:
+    resolution: {gitHosted: true, integrity: sha512-k9ZXX4mBM2cHvTX6iczw+CMcgJZpOZSiS0DP7PAeSvXUyj+mzkN5Nf0zBwfJ2Ap9cjXdp28+dBCN2TPgEvCSyw==, tarball: https://codeload.github.com/lost-rob0t/starintel_doc.js/tar.gz/c60efa271f2d441290171e24f7b1dba2cfffa575}
+    version: 0.10.1
+    engines: {node: '>=20'}
+    hasBin: true
+
   std-env@3.10.0:
     resolution: {integrity: sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==}
 
@@ -708,6 +735,10 @@ packages:
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
+    hasBin: true
+
+  ulid@2.4.0:
+    resolution: {integrity: sha512-fIRiVTJNcSRmXKPZtGzFQv9WRrZ3M9eoptl/teFJvjOzmpU+/K/JH6HZ8deBfb5vMEpicJcLn7JmvdknlMq7Zg==}
     hasBin: true
 
   undici-types@7.18.2:
@@ -1050,7 +1081,13 @@ snapshots:
       loupe: 3.2.1
       pathval: 2.0.1
 
+  charenc@0.0.2: {}
+
   check-error@2.1.3: {}
+
+  crypt@0.0.2: {}
+
+  dataclass@2.1.1: {}
 
   debug@4.4.3:
     dependencies:
@@ -1106,9 +1143,13 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
+  is-buffer@1.1.6: {}
+
   js-tokens@9.0.1: {}
 
   json-schema-traverse@1.0.0: {}
+
+  lossless-json@4.3.1: {}
 
   loupe@3.2.1: {}
 
@@ -1117,6 +1158,12 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   marked@15.0.12: {}
+
+  md5@2.3.0:
+    dependencies:
+      charenc: 0.0.2
+      crypt: 0.0.2
+      is-buffer: 1.1.6
 
   ms@2.1.3: {}
 
@@ -1186,6 +1233,15 @@ snapshots:
 
   stackback@0.0.2: {}
 
+  starintel_doc@https://codeload.github.com/lost-rob0t/starintel_doc.js/tar.gz/c60efa271f2d441290171e24f7b1dba2cfffa575:
+    dependencies:
+      ajv: 8.20.0
+      ajv-formats: 3.0.1(ajv@8.20.0)
+      dataclass: 2.1.1
+      lossless-json: 4.3.1
+      md5: 2.3.0
+      ulid: 2.4.0
+
   std-env@3.10.0: {}
 
   strip-literal@3.1.0:
@@ -1208,6 +1264,8 @@ snapshots:
   tinyspy@4.0.4: {}
 
   typescript@5.9.3: {}
+
+  ulid@2.4.0: {}
 
   undici-types@7.18.2: {}
 

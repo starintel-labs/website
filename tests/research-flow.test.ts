@@ -8,10 +8,18 @@ import { loadConfig } from "../apps/main/server/config.ts";
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
 test("research page connects public archive and OIDC admin plane", () => {
-  const html = readFileSync(join(root, "apps", "main", "research.html"), "utf8");
+  const html = readFileSync(
+    join(root, "apps", "main", "research.html"),
+    "utf8",
+  );
   assert.match(html, /auto-research\.starintel\.actor/);
   assert.match(html, /admin\.starintel\.actor/);
-  assert.match(html, /\/api\/research\/status/);
+  assert.match(html, /src\/research\.ts/);
+  const client = readFileSync(
+    join(root, "apps", "main", "src", "research.ts"),
+    "utf8",
+  );
+  assert.match(client, /\/api\/research\/status/);
 });
 
 test("Auto Research upstream is explicit and optional", () => {
