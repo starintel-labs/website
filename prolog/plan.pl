@@ -29,7 +29,7 @@ task(autoDigV09Verified,         'Auto Dig documents verify against StarIntel v0
 task(autoDigImporterImplemented, 'Fast streaming v0.9 importer with checkpoints').
 task(autoDigImporterBenchmarked, 'Importer benchmarked against a real StarIntel server').
 task(forgejoCiImplemented,       'Forgejo Actions workflows for website and touched repos').
-task(githubActionsAbsent,        'No GitHub Actions in created/changed CI surfaces').
+task(githubCiMirrorsProlog,      'GitHub Actions mirror workflows run the same Prolog verification').
 task(prologVerificationPassing,  'verify.pl passes all invariants, exits non-zero on failure').
 task(websiteVerified,            'Website build, tests, and verification green').
 
@@ -52,7 +52,7 @@ depends(autoDigV09Verified, autoDigBackendImplemented).
 depends(autoDigImporterImplemented, autoDigV09Verified).
 depends(autoDigImporterBenchmarked, autoDigImporterImplemented).
 depends(forgejoCiImplemented, websiteRepositoryCreated).
-depends(githubActionsAbsent, forgejoCiImplemented).
+depends(githubCiMirrorsProlog, forgejoCiImplemented).
 depends(websiteVerified, symbolicsMainSiteImplemented).
 depends(websiteVerified, blogOrgPipelineImplemented).
 depends(websiteVerified, researchOrgPipelineImplemented).
@@ -61,7 +61,7 @@ depends(websiteVerified, nsaspyPortfolioImplemented).
 depends(websiteVerified, nsaspyDailiesImplemented).
 depends(websiteVerified, recentDocumentsImplemented).
 depends(websiteVerified, radarImplemented).
-depends(websiteVerified, githubActionsAbsent).
+depends(websiteVerified, githubCiMirrorsProlog).
 depends(prologVerificationPassing, websiteVerified).
 
 %% verificationRequired(Task, Check)
@@ -74,5 +74,5 @@ verificationRequired(nsaspyDailiesImplemented, dailyDateMatchesUrl).
 verificationRequired(autoDigV09Verified, v09SchemaValidation).
 verificationRequired(autoDigImporterImplemented, importerResultCategories).
 verificationRequired(forgejoCiImplemented, forgejoWorkflowsExist).
-verificationRequired(githubActionsAbsent, noGithubWorkflows).
+verificationRequired(githubCiMirrorsProlog, githubWorkflowsRunProlog).
 verificationRequired(prologVerificationPassing, verifyPlExitCode).

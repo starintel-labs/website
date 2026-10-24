@@ -42,24 +42,49 @@ const out = [
 ];
 
 // ---- CI facts ----
-const fjDir = join(root, ".forgejo", "workflows");
-const ghDir = join(root, ".github", "workflows");
-const forgejoWorkflows = existsSync(fjDir)
-  ? readdirSync(fjDir).filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"))
-  : [];
-for (const wf of forgejoWorkflows) {
-  emit(`forgejo_workflow('${wf}').`);
-  const text = readFileSync(join(fjDir, wf), "utf8");
-  const selfContained = !/^\s*uses:/m.test(text);
-  const secretsReferencedOnly = !/(?:token|secret|password|api[_-]?key)\s*[:=]\s*["']?[A-Za-z0-9_\-]{16,}/i.test(
-    text.replace(/\$\{\{[^}]*\}\}/g, ""),
-  );
-  const noInternalHosts = !/star\.intel/.test(text);
-  emit(`workflow_self_contained('${wf}', ${selfContained ? "true" : "false"}).`);
-  emit(`workflow_secrets_referenced_only('${wf}', ${secretsReferencedOnly ? "true" : "false"}).`);
-  emit(`workflow_no_internal_hosts('${wf}', ${noInternalHosts ? "true" : "false"}).`);
+// Both CI systems (Forgejo Actions and GitHub Actions) are first-class
+// verification surfaces: every workflow in either system must run the
+// Prolog verification gate. Facts are emitted per-system so verify.pl can
+// hold both to the same contract.
+const CI_SYSTEMS = [
+  ["forgejo", join(root, ".forgejo", "workflows")],
+  ["github", join(root, ".github", "workflows")],
+];
+const ALLOWED_CI_USES = new Set([
+  "actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803",
+]);
+function ciUsesApproved(text) {
+  const uses = [...text.matchAll(/^\s*uses:\s*([^\s#]+).*$/gm)].map((m) => m[1]);
+  return uses.every((action) => ALLOWED_CI_USES.has(action));
 }
-emit(`github_workflows_present(${existsSync(ghDir) && readdirSync(ghDir).length > 0 ? "true" : "false"}).`);
+const ciWorkflowTexts = [];
+for (const [system, dir] of CI_SYSTEMS) {
+  const workflows = existsSync(dir)
+    ? readdirSync(dir).filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"))
+    : [];
+  for (const wf of workflows) {
+    const text = readFileSync(join(dir, wf), "utf8");
+    ciWorkflowTexts.push([system, wf, text]);
+    emit(`ci_workflow('${system}', '${wf}').`);
+    // "Self-contained" means run-only except for the one explicitly audited,
+    // exact-SHA official checkout action required to populate GitHub's job workspace.
+    const selfContained = ciUsesApproved(text);
+    const secretsOk = !/(?:token|secret|password|api[_-]?key)\s*[:=]\s*["']?[A-Za-z0-9_\-]{16,}/i.test(
+      text.replace(/\$\{\{[^}]*\}\}/g, ""),
+    );
+    const noInternalHosts = !/star\.intel/.test(text);
+    const runsProlog = /generate-facts\.mjs/.test(text) && /verify:ci/.test(text);
+    emit(`ci_workflow_self_contained('${system}', '${wf}', ${selfContained ? "true" : "false"}).`);
+    emit(`ci_workflow_secrets_ok('${system}', '${wf}', ${secretsOk ? "true" : "false"}).`);
+    emit(`ci_workflow_no_internal_hosts('${system}', '${wf}', ${noInternalHosts ? "true" : "false"}).`);
+    emit(`ci_workflow_runs_prolog('${system}', '${wf}', ${runsProlog ? "true" : "false"}).`);
+  }
+}
+let docsInCi = false;
+for (const [system, wf, text] of ciWorkflowTexts) {
+  if (/docs\.starintel\.actor/.test(text) || /docs-deploy|deploy-docs/.test(text)) docsInCi = true;
+}
+emit(`docs_deploy_in_ci(${docsInCi ? "true" : "false"}).`);
 
 // ---- www canonicalization (server must redirect www -> apex) ----
 const serverMain = existsSync(join(root, "apps", "main", "server", "main.ts"))
@@ -69,12 +94,6 @@ emit(`www_canonicalization_present(${/wwwHost[\s\S]{0,400}301|canonicalize www/s
 
 // ---- docs deferred ----
 emit(`docs_app_present(${existsSync(join(root, "apps", "docs")) ? "true" : "false"}).`);
-let docsInCi = false;
-for (const wf of forgejoWorkflows) {
-  const text = readFileSync(join(fjDir, wf), "utf8");
-  if (/docs\.starintel\.actor/.test(text) || /docs-deploy|deploy-docs/.test(text)) docsInCi = true;
-}
-emit(`docs_deploy_in_ci(${docsInCi ? "true" : "false"}).`);
 
 // ---- content manifests + provenance ----
 const TARGETS = ["blog", "research", "nsaspy", "symbolics"];
@@ -133,8 +152,10 @@ emit(`v09_required_fields_complete(${requiredFields.every((f) => sdoc.includes(`
 emit(`v09_schema_pinned(${existsSync(join(root, "packages", "starintel-doc", "schemas", "starintel-doc-v0.9.0.schema.json")) ? "true" : "false"}).`);
 
 // ---- importer (optional: only when the auto-dig checkout is adjacent) ----
-const importer = join(root, "..", "starintel-gpt-auto-dig", "scripts", "import_starintel.py");
-emit(`importer_present(${existsSync(importer) ? "true" : "false"}).`);
+// scripts/import-starintel-documents.py is the canonical name; the legacy
+// import_starintel.py name is still accepted for older sibling checkouts.
+const importerNames = ["scripts/import-starintel-documents.py", "scripts/import_starintel.py"];
+emit(`importer_present(${importerNames.some((p) => existsSync(join(root, "..", "starintel-gpt-auto-dig", p))) ? "true" : "false"}).`);
 const backendDir = join(root, "..", "starintel-gpt-auto-dig", "backend");
 emit(`autodig_backend_present(${existsSync(backendDir) ? "true" : "false"}).`);
 

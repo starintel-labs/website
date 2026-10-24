@@ -49,8 +49,8 @@ test("ci hygiene passes", () => {
 
 test("public projection rejects restricted handling", async () => {
   const { isPublicEligible } = await import("@starintel/starintel-doc");
-  assert.equal(isPublicEligible({ _id: "x", dtype: "d", dataset: "s", date_added: "a", date_updated: "b", handling: { public: true } }), true);
+  assert.equal(isPublicEligible({ _id: "x", dtype: "d", dataset: "s", date_added: "a", date_updated: "b", handling: { visibility: "public", pii: false, sensitive: false } }), true);
   assert.equal(isPublicEligible({ _id: "x", dtype: "d", dataset: "s", date_added: "a", date_updated: "b", handling: {} }), false);
-  assert.equal(isPublicEligible({ _id: "x", dtype: "d", dataset: "s", date_added: "a", date_updated: "b", handling: { public: true, restricted: true } }), false);
+  assert.equal(isPublicEligible({ _id: "x", dtype: "d", dataset: "s", date_added: "a", date_updated: "b", handling: { visibility: "public", pii: true, sensitive: false } }), false);
   assert.equal(isPublicEligible({ _id: "x", dtype: "d", dataset: "s", date_added: "a", date_updated: "b" }), false);
 });

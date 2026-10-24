@@ -10,14 +10,11 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import Ajv2020Default from "ajv/dist/2020.js";
-import * as addFormatsModule from "ajv-formats";
+import addFormatsDefault from "ajv-formats";
 import type { Ajv, ValidateFunction } from "ajv";
 
 const Ajv2020 = Ajv2020Default as unknown as new (options?: Record<string, unknown>) => Ajv;
-const addFormats = addFormatsModule as unknown as (
-  ajv: Ajv,
-  formats: Record<string, boolean>,
-) => Ajv;
+const addFormats = addFormatsDefault as unknown as (ajv: Ajv, options: { formats: string[] }) => Ajv;
 
 export * from "./public.ts";
 
@@ -79,7 +76,7 @@ function loadValidator(): ValidateFunction<StarIntelV09Doc> {
   const raw = readFileSync(schemaPath(), "utf8");
   const schema = JSON.parse(raw) as object;
   const ajv = new Ajv2020({ allErrors: true, strict: false, allowUnionTypes: true });
-  addFormats(ajv, { date: true, "date-time": true });
+  addFormats(ajv, { formats: ["date", "date-time"] });
   cachedValidator = ajv.compile<StarIntelV09Doc>(schema);
   if (!cachedValidator) throw new Error("failed to compile StarIntel v0.9 schema validator");
   return cachedValidator;

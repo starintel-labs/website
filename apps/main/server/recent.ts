@@ -7,6 +7,7 @@
  */
 import {
   validateV09,
+  V09ValidationError,
   isPublicEligible,
   projectPublicDocument,
   assertNoInternalDomains,
@@ -29,7 +30,7 @@ interface TimelineRow {
 /** Fetch full docs from the private CouchDB timeline view (newest first). */
 export async function fetchNewestPublic(cfg: Config, fetchImpl: typeof fetch = fetch): Promise<StarIntelV09Doc[]> {
   const url = `${cfg.couchdbUrl}/${encodeURIComponent(cfg.couchdbDb)}/_design/time/_view/timeline`;
-  const q = new URLSearchParams({ descending: "true", limit: String(cfg.recentWindow * 3), include_docs: "true" });
+  const q = new URLSearchParams({ descending: "true", limit: String(cfg.recentWindow * 3), include_docs: "true", reduce: "false" });
   const res = await fetchImpl(`${url}?${q}`, {
     headers: { accept: "application/json" },
     signal: AbortSignal.timeout(5000),
@@ -40,7 +41,13 @@ export async function fetchNewestPublic(cfg: Config, fetchImpl: typeof fetch = f
   const out: StarIntelV09Doc[] = [];
   for (const row of rows) {
     if (!row.doc) continue;
-    const doc = validateV09(row.doc); // throws on invalid: fail closed
+    let doc: StarIntelV09Doc;
+    try {
+      doc = validateV09(row.doc);
+    } catch (error) {
+      if (error instanceof V09ValidationError) continue;
+      throw error;
+    }
     if (isPublicEligible(doc)) out.push(doc);
     if (out.length >= cfg.recentWindow) break;
   }

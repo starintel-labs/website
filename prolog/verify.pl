@@ -24,22 +24,23 @@ check(Name, Goal) :-
 
 %% ---- invariants ----
 
-%% Forgejo is the CI execution authority.
-inv_forgejo_workflows_exist :-
-    facts:forgejo_workflow(_).
+%% Forgejo and GitHub Actions are both CI surfaces, and both run the
+%% Prolog verification gate: Prolog is the CI verification authority.
+inv_ci_systems_present :-
+    facts:ci_workflow(forgejo, _),
+    facts:ci_workflow(github, _).
 
-inv_forgejo_workflows_self_contained :-
-    forall(facts:forgejo_workflow(W), facts:workflow_self_contained(W, true)).
+inv_ci_workflows_self_contained :-
+    forall(facts:ci_workflow(S, W), facts:ci_workflow_self_contained(S, W, true)).
 
-inv_forgejo_secrets_not_embedded :-
-    forall(facts:forgejo_workflow(W), facts:workflow_secrets_referenced_only(W, true)).
+inv_ci_secrets_not_embedded :-
+    forall(facts:ci_workflow(S, W), facts:ci_workflow_secrets_ok(S, W, true)).
 
 inv_no_internal_hosts_in_ci :-
-    forall(facts:forgejo_workflow(W), facts:workflow_no_internal_hosts(W, true)).
+    forall(facts:ci_workflow(S, W), facts:ci_workflow_no_internal_hosts(S, W, true)).
 
-%% No GitHub Actions in this repository.
-inv_github_actions_absent :-
-    facts:github_workflows_present(false).
+inv_ci_runs_prolog :-
+    forall(facts:ci_workflow(S, W), facts:ci_workflow_runs_prolog(S, W, true)).
 
 %% www aliases apex (canonicalization lives in the main app server).
 inv_www_aliases_apex :-
@@ -112,11 +113,11 @@ inv_program_complete :-
 %% ---- runner ----
 
 all_checks([
-    forgejo_workflows_exist-inv_forgejo_workflows_exist,
-    forgejo_workflows_self_contained-inv_forgejo_workflows_self_contained,
-    forgejo_secrets_not_embedded-inv_forgejo_secrets_not_embedded,
+    ci_systems_present-inv_ci_systems_present,
+    ci_workflows_self_contained-inv_ci_workflows_self_contained,
+    ci_secrets_not_embedded-inv_ci_secrets_not_embedded,
     no_internal_hosts_in_ci-inv_no_internal_hosts_in_ci,
-    github_actions_absent-inv_github_actions_absent,
+    ci_runs_prolog-inv_ci_runs_prolog,
     www_aliases_apex-inv_www_aliases_apex,
     docs_deferred-inv_docs_deferred,
     published_docs_have_provenance-inv_published_docs_have_provenance,

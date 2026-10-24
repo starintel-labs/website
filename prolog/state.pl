@@ -43,8 +43,8 @@ done(autoDigImporterBenchmarked).
 note(autoDigImporterBenchmarked, 'real server benchmark: 5,671 docs, 730.9 docs/s inline (batch 10), 912.8 docs/s async-job mode (batch 200); 0 invalid/failed/transient; artifacts in starintel-gpt-auto-dig/reports/import-benchmarks/').
 done(forgejoCiImplemented).
 note(forgejoCiImplemented, '.forgejo/workflows/ci.yml in website + auto-dig + social-presence; website workflow executed end-to-end locally via act (checkout->system deps->pnpm->build->tests->typecheck->schema pin->org export->prolog facts->prolog verify->hygiene, all green); forgejo-side execution pending runner registration (infra-owned)').
-done(githubActionsAbsent).
-note(githubActionsAbsent, 'no .github/workflows in starintel-labs/website; ci-hygiene.mjs asserts no uses: steps, no embedded secrets, no internal hostnames; pre-existing .github collector workflows in sibling repos left untouched (out of scope)').
+done(githubCiMirrorsProlog).
+note(githubCiMirrorsProlog, '.github/workflows/ci.yml mirrors the Forgejo workflow (self-contained, no uses: steps) and runs the same Prolog gate (generate-facts.mjs + verify:ci); operator preference supersedes the earlier GitHub-Actions-absent stance; ci-hygiene.mjs and verify.pl now hold BOTH systems to the Prolog verification contract').
 done(prologVerificationPassing).
 note(prologVerificationPassing, 'verify.pl: 18 tree-derived invariants via run.pl; verify:ci green (repo invariants); full verify gates on program_complete; non-zero exit on failure').
 done(websiteVerified).

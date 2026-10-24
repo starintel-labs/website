@@ -39,7 +39,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     couchdbUrl: env.COUCHDB_URL ?? "http://127.0.0.1:5984",
     couchdbDb: env.COUCHDB_DB ?? "starintel",
     rabbitUrl: env.RABBIT_URL ?? null,
-    rabbitExchange: env.RABBIT_EXCHANGE ?? "starintel",
+    // starintel-server's durable topic exchange is named "documents".
+    rabbitExchange: env.RABBIT_EXCHANGE ?? "documents",
     autoResearchUrl: env.AUTO_RESEARCH_URL ?? null,
     recentWindow: Math.min(int("RECENT_WINDOW", 100), 100),
     recentCacheMs: int("RECENT_CACHE_MS", 60_000),
