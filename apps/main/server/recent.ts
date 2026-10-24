@@ -43,7 +43,11 @@ export async function fetchNewestPublic(cfg: Config, fetchImpl: typeof fetch = f
     if (!row.doc) continue;
     let doc: StarIntelV09Doc;
     try {
-      doc = validateV09(row.doc);
+      // CouchDB carries private storage metadata outside the pinned wire schema.
+      // Validate a copy so the stored row and every other schema rule stay intact.
+      const candidate = { ...row.doc };
+      delete candidate.tenant_id;
+      doc = validateV09(candidate);
     } catch (error) {
       if (error instanceof V09ValidationError) continue;
       throw error;

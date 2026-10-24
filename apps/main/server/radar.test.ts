@@ -21,6 +21,14 @@ test("radar projects document update traffic", () => {
   });
 });
 
+test("radar does not forward tenant metadata from routing keys", () => {
+  for (const key of ["actors.tenant_id", "actors.Tenant_ID", "actors.tenantId", "actors.tenant_ids", "actors.tenantIds", "actors.tenant-ids", "actors.tenant", "documents.new.tenantid"]) {
+    const event = projectDelivery(key, 10);
+    assert.ok(event);
+    assert.equal(JSON.stringify(event).toLowerCase().includes("tenant"), false);
+  }
+});
+
 test("SSE client IDs remain unique after disconnects", () => {
   const hub = new SseHub();
   const writes: string[] = [];
@@ -36,4 +44,16 @@ test("SSE client IDs remain unique after disconnects", () => {
   assert.equal(writes.length, 2);
   assert.ok(writes[0]!.startsWith("second:data:"));
   assert.ok(writes[1]!.startsWith("third:data:"));
+});
+
+test("SSE serializer removes tenant metadata from nested event objects", () => {
+  const hub = new SseHub();
+  const writes: string[] = [];
+  hub.add({ write: (chunk) => writes.push(chunk), close: () => {} });
+  const event = { ...projectDelivery("actors.radar-probe", 10)!, tenant_id: "private-tenant", nested: { tenantId: "private-alias", tenant_ids: ["private-list"], tenant: { id: "private-object" }, description: "tenant_id=private-tenant" } };
+  hub.sendEvents([event]);
+  assert.equal(writes.length, 1);
+  assert.equal(writes[0]!.includes("tenant"), false);
+  assert.equal(writes[0]!.includes("private-tenant"), false);
+  assert.equal(event.tenant_id, "private-tenant");
 });

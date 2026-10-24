@@ -20,6 +20,21 @@ export const PUBLIC_DOCUMENT_FIELDS = [
 
 export type PublicDocumentField = (typeof PUBLIC_DOCUMENT_FIELDS)[number];
 
+/** Tenant metadata is private even when a caller passes an unprojected object. */
+export function isTenantMetadataKey(key: string): boolean {
+  return /^tenant(?:[_-]?ids?)?$/i.test(key);
+}
+
+const TENANT_METADATA_TOKEN_RE = /\btenant[_-]?ids?\b/i;
+
+export function serializePublicJson(value: unknown): string {
+  return JSON.stringify(value, (key, item) => {
+    if (isTenantMetadataKey(key)) return undefined;
+    if (typeof item === "string" && TENANT_METADATA_TOKEN_RE.test(item)) return "[redacted]";
+    return item;
+  });
+}
+
 export interface PublicDocument {
   _id: string;
   dtype: string;
