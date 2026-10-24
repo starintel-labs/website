@@ -2,11 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { loadConfig } from "./config.ts";
 import { projectDelivery } from "./projector.ts";
+import { isPublicRadarDelivery } from "./radar-feed.ts";
 import { SseHub } from "./sse.ts";
 
 test("radar defaults to the StarIntel documents exchange", () => {
   const cfg = loadConfig({});
   assert.equal(cfg.rabbitExchange, "documents");
+  assert.equal(cfg.publicTenantId, "public");
+  assert.throws(() => loadConfig({ PUBLIC_TENANT_ID: "private-tenant" }), /invalid PUBLIC_TENANT_ID/);
 });
 
 test("radar projects document update traffic", () => {
@@ -19,6 +22,24 @@ test("radar projects document update traffic", () => {
     size_bucket: "m",
     count: 1,
   });
+});
+
+test("radar admits only explicitly safe documents in the shared public tenant", () => {
+  const doc = {
+    _id: "test-public-radar", dataset: "public", dtype: "document",
+    schema_version: "0.9.0", version: 1,
+    date_added: "2026-10-24T00:00:00Z", date_updated: "2026-10-24T00:00:00Z",
+    sources: [], evidence: [], data: {},
+  };
+  const body = (tenant_id: unknown, handling: unknown) => Buffer.from(JSON.stringify({ ...doc, tenant_id, handling }));
+  const safe = { visibility: "public", pii: false, sensitive: false };
+  assert.equal(isPublicRadarDelivery(body("public", safe), "public"), true);
+  assert.equal(isPublicRadarDelivery(body("private", safe), "public"), false);
+  assert.equal(isPublicRadarDelivery(body("public", { ...safe, pii: true }), "public"), false);
+  assert.equal(isPublicRadarDelivery(body("public", { ...safe, visibility: "private" }), "public"), false);
+  assert.equal(isPublicRadarDelivery(Buffer.from("not json"), "public"), false);
+  assert.equal(isPublicRadarDelivery(Buffer.from("[]"), "public"), false);
+  assert.equal(isPublicRadarDelivery(Buffer.from(JSON.stringify({ tenant_id: "public", handling: safe })), "public"), false);
 });
 
 test("radar does not forward tenant metadata from routing keys", () => {

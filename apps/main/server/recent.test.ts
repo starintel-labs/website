@@ -64,7 +64,7 @@ test("private storage metadata is removed from a copy before public validation",
     data: {},
     handling: { visibility: "public", pii: false, sensitive: false },
   };
-  const stored = { ...doc, tenant_id: "private-tenant" };
+  const stored = { ...doc, tenant_id: "public" };
   assert.throws(() => validateV09(stored), V09ValidationError);
   const fetchStub = (async () =>
     new Response(JSON.stringify({ rows: [
@@ -74,8 +74,7 @@ test("private storage metadata is removed from a copy before public validation",
   const result = await new RecentDocumentsService(loadConfig({})).get(12, fetchStub);
   assert.deepEqual(result.documents.map((item) => item._id), [doc._id]);
   assert.equal(result.eligible, 1);
-  assert.equal(stored.tenant_id, "private-tenant");
-  assert.equal(JSON.stringify(result).includes("private-tenant"), false);
+  assert.equal(stored.tenant_id, "public");
   assert.equal(JSON.stringify(result).includes("tenant_id"), false);
 });
 
@@ -86,7 +85,7 @@ test("timeline validation leaves the fetched row untouched", async () => {
     date_added: "2026-10-24T00:00:00Z", date_updated: "2026-10-24T00:00:00Z",
     sources: [], evidence: [], data: {},
     handling: { visibility: "public", pii: false, sensitive: false },
-    tenant_id: "private-tenant",
+    tenant_id: "public",
   };
   const fetchStub = (async () => ({
     ok: true,
@@ -95,7 +94,20 @@ test("timeline validation leaves the fetched row untouched", async () => {
   const docs = await fetchNewestPublic(loadConfig({}), fetchStub);
   assert.equal(docs.length, 1);
   assert.equal(Object.hasOwn(docs[0]!, "tenant_id"), false);
-  assert.equal(stored.tenant_id, "private-tenant");
+  assert.equal(stored.tenant_id, "public");
+});
+
+test("recent feed rejects explicitly public documents from a private tenant", async () => {
+  const doc = {
+    _id: "test-private-tenant", dataset: "test", dtype: "document",
+    schema_version: "0.9.0", version: 1,
+    date_added: "2026-10-24T00:00:00Z", date_updated: "2026-10-24T00:00:00Z",
+    sources: [], evidence: [], data: {},
+    handling: { visibility: "public", pii: false, sensitive: false },
+    tenant_id: "private-tenant",
+  };
+  const fetchStub = (async () => new Response(JSON.stringify({ rows: [{ id: doc._id, doc }] }), { status: 200 })) as typeof fetch;
+  assert.deepEqual(await fetchNewestPublic(loadConfig({}), fetchStub), []);
 });
 
 test("case and spelling variants remain invalid under the pinned schema", async () => {

@@ -5,6 +5,22 @@
 import type { ChannelModel } from "amqplib";
 import type { Config } from "./config.ts";
 import { projectDelivery, RadarAggregator, type PublicRadarEvent, type RateTotals } from "./projector.ts";
+import { isPublicEligible, validateV09 } from "@starintel/starintel-doc";
+
+/** Only explicitly public documents in the shared tenant can affect public radar. */
+export function isPublicRadarDelivery(body: Buffer, publicTenantId: string): boolean {
+  try {
+    const doc: unknown = JSON.parse(body.toString("utf8"));
+    if (doc === null || typeof doc !== "object" || Array.isArray(doc)) return false;
+    const candidate = doc as Record<string, unknown>;
+    if (candidate.tenant_id !== publicTenantId) return false;
+    const wire = { ...candidate };
+    delete wire.tenant_id;
+    return isPublicEligible(validateV09(wire));
+  } catch {
+    return false;
+  }
+}
 
 export class RadarFeed {
   #cfg: Config;
@@ -95,7 +111,9 @@ export class RadarFeed {
       this.#state = "live";
       await ch.consume(q.queue, (msg) => {
         if (!msg) return;
-        const event = projectDelivery(msg.fields.routingKey, msg.content.length);
+        const event = isPublicRadarDelivery(msg.content, this.#cfg.publicTenantId)
+          ? projectDelivery(msg.fields.routingKey, msg.content.length)
+          : null;
         if (event) this.#aggregator.add(event);
         ch.ack(msg);
       });
