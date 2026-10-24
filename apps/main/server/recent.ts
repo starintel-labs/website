@@ -29,7 +29,7 @@ interface TimelineRow {
 /** Fetch full docs from the private CouchDB timeline view (newest first). */
 export async function fetchNewestPublic(cfg: Config, fetchImpl: typeof fetch = fetch): Promise<StarIntelV09Doc[]> {
   const url = `${cfg.couchdbUrl}/${encodeURIComponent(cfg.couchdbDb)}/_design/time/_view/timeline`;
-  const q = new URLSearchParams({ descending: "true", limit: String(cfg.recentWindow * 3), include_docs: "true" });
+  const q = new URLSearchParams({ descending: "true", limit: String(cfg.recentWindow * 3), include_docs: "true", reduce: "false" });
   const res = await fetchImpl(`${url}?${q}`, {
     headers: { accept: "application/json" },
     signal: AbortSignal.timeout(5000),
