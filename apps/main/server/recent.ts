@@ -7,6 +7,7 @@
  */
 import {
   validateV09,
+  V09ValidationError,
   isPublicEligible,
   projectPublicDocument,
   assertNoInternalDomains,
@@ -40,7 +41,13 @@ export async function fetchNewestPublic(cfg: Config, fetchImpl: typeof fetch = f
   const out: StarIntelV09Doc[] = [];
   for (const row of rows) {
     if (!row.doc) continue;
-    const doc = validateV09(row.doc); // throws on invalid: fail closed
+    let doc: StarIntelV09Doc;
+    try {
+      doc = validateV09(row.doc);
+    } catch (error) {
+      if (error instanceof V09ValidationError) continue;
+      throw error;
+    }
     if (isPublicEligible(doc)) out.push(doc);
     if (out.length >= cfg.recentWindow) break;
   }

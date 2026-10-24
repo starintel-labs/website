@@ -72,18 +72,17 @@ export interface StarIntelV09DocLike {
 
 /**
  * Eligibility gate for public discovery.
- * Fail closed: a document is public only when handling.public is exactly true
- * and no restricted flag is set.
+ * Require the pinned schema's explicit public visibility and safety flags.
  */
 export function isPublicEligible(doc: StarIntelV09DocLike): boolean {
   const h = doc.handling;
   if (h === null || typeof h !== "object") return false;
   const rec = h as Record<string, unknown>;
-  if (rec.public !== true) return false;
-  if (rec.restricted === true || rec.confidential === true || rec.classified === true) {
-    return false;
-  }
-  return true;
+  return rec.visibility === "public" &&
+    rec.pii === false &&
+    rec.sensitive === false &&
+    (rec.classification === undefined || rec.classification === "public" || rec.classification === "unclassified") &&
+    (rec.embargo_until === undefined || rec.embargo_until === null);
 }
 
 /**
