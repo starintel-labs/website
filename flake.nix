@@ -26,7 +26,7 @@
             inherit pname version;
             src = ./.;
             fetcherVersion = 3;
-            hash = "sha256-Qgj11YjH+F9kYgKE+dwjVbt67ZK6uYG18sIUZPEEtfY=";
+            hash = "sha256-93El85GiyLpWpEkwpOHNHUjtqOrpLORp42zmaQAYwhM=";
           };
 
           # The @starintel/main runtime: the built static site (dist/) plus the
