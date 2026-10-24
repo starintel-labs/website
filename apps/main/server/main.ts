@@ -55,6 +55,10 @@ function serveStatic(res: ServerResponse, cfg: Config, urlPath: string): void {
     return;
   }
   if (existsSync(file) && statSync(file).isDirectory()) file = join(file, "index.html");
+  if (!existsSync(file) && extname(file) === "") {
+    const htmlFile = `${file}.html`;
+    if (existsSync(htmlFile) && statSync(htmlFile).isFile()) file = htmlFile;
+  }
   if (!existsSync(file) || !statSync(file).isFile()) {
     const notFound = join(cfg.staticDir, "404.html");
     if (existsSync(notFound)) {
