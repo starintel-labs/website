@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en" data-si-theme="obsidian-gold">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#090807" />
+    <meta name="description" content="StarIntel Research: public research archive, Auto Research runtime status, and the authenticated operator control plane." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://starintel.actor/research" />
+    <title>StarIntel Research</title>
+  </head>
+  <body>
+    <a class="si-skip-link" href="#main">skip to content</a>
+    <header class="si-topbar">
+      <a class="si-topbar__brand" href="/" aria-label="StarIntel home" data-wordmark></a>
+      <nav class="si-topbar__nav" aria-label="Primary">
+        <a href="/">home</a>
+        <a href="/research" aria-current="page">research</a>
+        <a href="/radar">radar</a>
+        <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">blog</a>
+        <a href="https://quasar.starintel.actor/" target="_blank" rel="noopener">quasar</a>
+        <a href="https://git.starintel.actor/starintel-labs" target="_blank" rel="noopener">code</a>
+      </nav>
+    </header>
+
+    <main id="main" class="si-scanlines">
+      <section class="si-shell si-hero">
+        <div class="si-hero__grid">
+          <div>
+            <p class="si-hero__kicker">research · evidence · provenance · verification</p>
+            <h1 class="si-hero__title">StarIntel Research</h1>
+            <p class="si-hero__lede">
+              The public research surface, the Auto Research harness, and the operator workflow are one pipeline.
+              Public pages remain read-only and approval-gated; authenticated operators control runs, review artifacts,
+              and promote releases through the separate OIDC-protected admin plane.
+            </p>
+            <div class="si-hero__actions">
+              <a class="si-btn si-btn--primary" href="https://auto-research.starintel.actor/" target="_blank" rel="noopener">browse research archive</a>
+              <a class="si-btn" href="https://admin.starintel.actor/" target="_blank" rel="noopener">operator console</a>
+            </div>
+          </div>
+          <div class="si-panel">
+            <div class="faint mono" style="font-size:0.72rem;letter-spacing:0.12em">AUTO RESEARCH RUNTIME</div>
+            <div id="research-runtime" class="mono" style="font-size:1.2rem;margin-top:0.65rem">checking…</div>
+            <p id="research-runtime-detail" class="muted" style="margin:0.7rem 0 0">
+              The public site only receives a bounded health projection. Run control and artifacts stay behind OIDC.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="si-band">
+        <div class="si-shell si-section">
+          <div class="si-section__head">
+            <h2 class="si-section__title">One research flow</h2>
+          </div>
+          <div class="si-grid si-grid--trio">
+            <article class="si-card si-card--open">
+              <span class="si-card__dtype">read</span>
+              <span class="si-card__title">Published archive</span>
+              <span class="si-card__desc">
+                Approved Org research is exported deterministically with provenance and published at the Auto Research archive.
+                Drafts and unapproved artifacts remain absent.
+              </span>
+              <span class="si-card__meta"><a href="https://auto-research.starintel.actor/" target="_blank" rel="noopener">open archive →</a></span>
+            </article>
+            <article class="si-card si-card--open">
+              <span class="si-card__dtype">run</span>
+              <span class="si-card__title">Auto Research harness</span>
+              <span class="si-card__desc">
+                The Common Lisp harness owns projects, research requests, bounded runs, events, candidates, reviews,
+                artifact promotion, and Forgejo-triggered workflows.
+              </span>
+              <span class="si-card__meta"><span class="si-badge si-badge--research">server-side only</span></span>
+            </article>
+            <article class="si-card si-card--open">
+              <span class="si-card__dtype">operate</span>
+              <span class="si-card__title">OIDC admin plane</span>
+              <span class="si-card__desc">
+                Operators get research controls, trusted release/CD actions, and a constrained Nix/infra workspace.
+                No deploy secret, shell, or host credential is ever sent to the browser.
+              </span>
+              <span class="si-card__meta"><a href="https://admin.starintel.actor/" target="_blank" rel="noopener">sign in →</a></span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="si-band">
+        <div class="si-shell si-section">
+          <div class="si-terminal">
+            <div class="si-terminal__bar"><span class="dot"></span><span>research lifecycle</span></div>
+            <pre class="si-terminal__body">question → bounded research run → evidence/candidates → review → approval → promotion → deterministic publish
+                     │                     │                 │
+                     └─ domain events ─────┴─ provenance ────┴─ OIDC operator audit</pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="si-footer">
+      <div class="si-shell">
+        <span><span data-wordmark-sm></span> <span class="muted">research is evidence-bearing state, not chat history.</span></span>
+        <span><a href="/">Home</a> · <a href="https://auto-research.starintel.actor/" target="_blank" rel="noopener">Archive</a> · <a href="https://admin.starintel.actor/" target="_blank" rel="noopener">Admin</a></span>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/research.ts"></script>
+  </body>
+</html>

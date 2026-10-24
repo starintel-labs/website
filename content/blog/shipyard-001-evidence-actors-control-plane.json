@@ -1,0 +1,34 @@
+{
+  "slug": "shipyard-001-evidence-actors-control-plane",
+  "title": "Shipyard #001 — Evidence, Actors, and the Control Plane",
+  "date": "[2026-09-20 Sun]",
+  "author": "nsaspy",
+  "description": "StarIntel Shipyard #001: deterministic evidence promotion, Sento actors, and paid pro actors wired into Quasar.",
+  "excerpt": "StarIntel has enough moving pieces now that a normal changelog does not really explain what is happening.",
+  "tags": [
+    "starintel",
+    "shipyard",
+    "prolog",
+    "actors",
+    "quasar",
+    "lisp"
+  ],
+  "filetags": null,
+  "id": "blog-shipyard-001",
+  "status": "POST",
+  "anchors": [
+    "observations-can-now-become-claims-deterministically",
+    "domain-hunt-moved-into-the-actor-runtime",
+    "quasar-knows-about-paid-pro-actors",
+    "what-this-does-not-mean",
+    "next-out-of-the-yard"
+  ],
+  "approval": null,
+  "source": {
+    "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+    "path": "blog/posts/2026-09-20-shipyard-001-evidence-actors-control-plane.org",
+    "commit": "eaccba5737a9748f0a645d12fbaa74f11f950611",
+    "blob": "eaccba5737a9748f0a645d12fbaa74f11f950611",
+    "content_sha256": "c56090f7cc3602ebaae0c7cb6da0086bb468b5cd030da032615751f14a9b23c1"
+  }
+}

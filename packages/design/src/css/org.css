@@ -1,0 +1,302 @@
+/* StarIntel Org typography: styling for org-export generated HTML bodies. */
+
+.si-org {
+  font-family: var(--si-font-serif);
+  font-size: 1.06rem;
+  line-height: 1.75;
+  color: var(--si-text-primary);
+  max-width: 46rem;
+}
+
+.si-org h1,
+.si-org h2,
+.si-org h3,
+.si-org h4,
+.si-org h5,
+.si-org h6 {
+  font-family: var(--si-font-mono);
+  scroll-margin-top: calc(var(--si-topbar-height) + 1rem);
+}
+
+.si-org h1 {
+  font-size: 1.9rem;
+  margin-top: 2.4rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--si-border);
+}
+
+.si-org h2 {
+  font-size: 1.45rem;
+  margin-top: 2.1rem;
+}
+
+.si-org h3 {
+  font-size: 1.15rem;
+  margin-top: 1.7rem;
+}
+
+.si-org h4 {
+  font-size: 1rem;
+  margin-top: 1.4rem;
+}
+
+.si-org p {
+  margin: 0 0 1.1em;
+}
+
+.si-org a {
+  overflow-wrap: anywhere;
+}
+
+/* Inline code and source blocks */
+.si-org code {
+  background: var(--si-code-bg);
+  border: 1px solid var(--si-code-border);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  color: var(--si-code-function);
+  font-size: 0.86em;
+}
+
+.si-org pre {
+  background: var(--si-terminal-bg);
+  border: 1px solid var(--si-code-border);
+  border-radius: var(--si-radius-md);
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  line-height: 1.55;
+  font-size: 0.86rem;
+  box-shadow: inset 0 0 32px rgba(0, 0, 0, 0.35);
+}
+
+.si-org pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--si-code-text);
+  font-size: 1em;
+}
+
+.si-org .org-src-container {
+  margin: 1.2em 0;
+}
+
+/* htmlize token colors */
+.si-org .org-comment,
+.si-org .org-comment-delimiter {
+  color: var(--si-code-comment);
+  font-style: italic;
+}
+
+.si-org .org-keyword {
+  color: var(--si-code-keyword);
+}
+
+.si-org .org-string {
+  color: var(--si-code-string);
+}
+
+.si-org .org-function-name {
+  color: var(--si-code-function);
+}
+
+.si-org .org-variable-name {
+  color: var(--si-code-variable);
+}
+
+.si-org .org-type,
+.si-org .org-builtin {
+  color: var(--si-code-type);
+}
+
+.si-org .org-constant,
+.si-org .org-number {
+  color: var(--si-code-constant);
+}
+
+.si-org .org-warning,
+.si-org .org-error {
+  color: var(--si-status-danger);
+}
+
+.si-org .org-doc {
+  color: var(--si-text-muted);
+  font-style: italic;
+}
+
+.si-org .org-preprocessor {
+  color: var(--si-status-warning);
+}
+
+/* Tables */
+.si-org table {
+  border-collapse: collapse;
+  margin: 1.4em 0;
+  width: 100%;
+  font-family: var(--si-font-mono);
+  font-size: 0.84rem;
+  display: block;
+  overflow-x: auto;
+}
+
+.si-org table th,
+.si-org table td {
+  border: 1px solid var(--si-border);
+  padding: 0.45rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.si-org table th {
+  background: var(--si-bg-surface);
+  color: var(--si-text-bright);
+  font-weight: 600;
+}
+
+.si-org table tr:hover td {
+  background: var(--si-accent-wash);
+}
+
+/* Lists */
+.si-org ul,
+.si-org ol {
+  padding-left: 1.5em;
+  margin: 0 0 1.1em;
+}
+
+.si-org li {
+  margin-bottom: 0.3em;
+}
+
+.si-org li::marker {
+  color: var(--si-accent-primary);
+}
+
+/* Blockquotes */
+.si-org blockquote {
+  margin: 1.4em 0;
+  padding: 0.4em 1.3em;
+  border-left: 3px solid var(--si-accent-dim);
+  background: var(--si-bg-surface);
+  border-radius: 0 var(--si-radius-md) var(--si-radius-md) 0;
+  color: var(--si-text-secondary);
+}
+
+/* Footnotes */
+.si-org .footnotes,
+.si-org #footnotes {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--si-border);
+  font-size: 0.9rem;
+  color: var(--si-text-muted);
+}
+
+.si-org .footdef {
+  margin-bottom: 0.5em;
+}
+
+.si-org .footref {
+  color: var(--si-accent-secondary);
+}
+
+/* Table of contents */
+.si-org #table-of-contents,
+.si-toc {
+  background: var(--si-bg-surface);
+  border: 1px solid var(--si-border);
+  border-radius: var(--si-radius-lg);
+  padding: 1.1rem 1.4rem;
+  margin: 1.8rem 0;
+  font-family: var(--si-font-sans);
+  font-size: 0.88rem;
+}
+
+.si-org #table-of-contents h2,
+.si-toc h2 {
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--si-accent-primary);
+  margin: 0 0 0.8rem;
+  border: 0;
+  padding: 0;
+}
+
+.si-org #table-of-contents ul,
+.si-toc ul {
+  padding-left: 1.1em;
+  margin: 0;
+  list-style: none;
+}
+
+.si-org #table-of-contents li,
+.si-toc li {
+  margin: 0.25em 0;
+}
+
+.si-org #table-of-contents a,
+.si-toc a {
+  color: var(--si-text-muted);
+}
+
+.si-org #table-of-contents a:hover,
+.si-toc a:hover {
+  color: var(--si-text-bright);
+}
+
+/* Images and captions */
+.si-org figure {
+  margin: 1.8em 0;
+}
+
+.si-org img {
+  border-radius: var(--si-radius-md);
+  border: 1px solid var(--si-border);
+}
+
+.si-org figcaption,
+.si-org .org-figure-number {
+  font-family: var(--si-font-mono);
+  font-size: 0.78rem;
+  color: var(--si-text-faint);
+  margin-top: 0.5rem;
+}
+
+/* Timestamps and property drawers */
+.si-org .timestamp,
+.si-org .org-timestamp {
+  font-family: var(--si-font-mono);
+  font-size: 0.82em;
+  color: var(--si-text-faint);
+}
+
+.si-org .tag,
+.si-org .org-tag {
+  font-family: var(--si-font-mono);
+  font-size: 0.72rem;
+  color: var(--si-accent-secondary);
+  background: rgba(127, 168, 189, 0.07);
+  border: 1px solid var(--si-accent-secondary-dim);
+  border-radius: 999px;
+  padding: 0.08em 0.6em;
+  margin-left: 0.3em;
+  white-space: nowrap;
+}
+
+.si-org .done,
+.si-org .org-done {
+  color: var(--si-status-success);
+}
+
+/* Long-form reading measure on small screens */
+@media (max-width: 640px) {
+  .si-org {
+    font-size: 1rem;
+  }
+
+  .si-org pre {
+    font-size: 0.8rem;
+    padding: 0.85rem 0.95rem;
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "@starintel/design",
+  "version": "0.1.0",
+  "description": "StarIntel shared design system: obsidian-gold theme, symbolic/lambda identity, framework-independent tokens and primitives",
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./theme.css",
+    "./css/tokens.css": "./src/css/tokens.css",
+    "./css/base.css": "./src/css/base.css",
+    "./css/layout.css": "./src/css/layout.css",
+    "./css/components.css": "./src/css/components.css",
+    "./css/org.css": "./src/css/org.css",
+    "./css/motion.css": "./src/css/motion.css",
+    "./tokens": "./src/tokens/tokens.ts",
+    "./brand": "./src/graphics/brand.ts",
+    "./wordmark": "./src/graphics/wordmark.ts",
+    "./components": "./src/components/index.ts",
+    "./assets/*": "./assets/*"
+  },
+  "scripts": {
+    "build": "true",
+    "test": "true",
+    "lint": "true",
+    "typecheck": "true"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "typescript": "^5.7.2"
+  }
+}

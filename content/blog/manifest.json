@@ -1,9 +1,78 @@
 {
   "target": "blog",
-  "generated_at": "2026-08-28T06:20:56.470Z",
-  "source_commit": "617608466cb8cb2e6dc8131150c45bba2d9303f7",
-  "count": 1,
+  "generated_at": "2026-09-21T02:08:00.000Z",
+  "source_commit": "eaccba5737a9748f0a645d12fbaa74f11f950611",
+  "count": 3,
   "documents": [
+    {
+      "slug": "shipyard-001-evidence-actors-control-plane",
+      "title": "Shipyard #001 — Evidence, Actors, and the Control Plane",
+      "date": "[2026-09-20 Sun]",
+      "author": "nsaspy",
+      "description": "StarIntel Shipyard #001: deterministic evidence promotion, Sento actors, and paid pro actors wired into Quasar.",
+      "excerpt": "StarIntel has enough moving pieces now that a normal changelog does not really explain what is happening.",
+      "tags": [
+        "starintel",
+        "shipyard",
+        "prolog",
+        "actors",
+        "quasar",
+        "lisp"
+      ],
+      "filetags": null,
+      "id": "blog-shipyard-001",
+      "status": "POST",
+      "anchors": [
+        "observations-can-now-become-claims-deterministically",
+        "domain-hunt-moved-into-the-actor-runtime",
+        "quasar-knows-about-paid-pro-actors",
+        "what-this-does-not-mean",
+        "next-out-of-the-yard"
+      ],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "blog/posts/2026-09-20-shipyard-001-evidence-actors-control-plane.org",
+        "commit": "eaccba5737a9748f0a645d12fbaa74f11f950611",
+        "blob": "eaccba5737a9748f0a645d12fbaa74f11f950611",
+        "content_sha256": "c56090f7cc3602ebaae0c7cb6da0086bb468b5cd030da032615751f14a9b23c1"
+      }
+    },
+    {
+      "slug": "shipyard-002-contracts-telemetry-research",
+      "title": "Shipyard #002 — Contracts, Telemetry, and Research Surfaces",
+      "date": "[2026-09-20 Sun]",
+      "author": "nsaspy",
+      "description": "StarIntel Shipyard #002: actor protocols, explicit telemetry, Auto Research on the website, and the line between shipped infrastructure and design.",
+      "excerpt": "A distributed system gets dangerous when its components share assumptions instead of contracts.",
+      "tags": [
+        "starintel",
+        "shipyard",
+        "server",
+        "observability",
+        "research",
+        "website"
+      ],
+      "filetags": null,
+      "id": "blog-shipyard-002",
+      "status": "POST",
+      "anchors": [
+        "source-actors-and-targets-now-have-an-explicit-protocol",
+        "hosted-observability-became-explicit",
+        "auto-research-reached-the-website",
+        "business-automation-is-getting-symbolic-policy-too",
+        "what-is-still-design-not-runtime",
+        "the-direction"
+      ],
+      "approval": null,
+      "source": {
+        "repo": "git@github.com:lost-rob0t/starintel-social-presence.git",
+        "path": "blog/posts/2026-09-20-shipyard-002-contracts-telemetry-research.org",
+        "commit": "eaccba5737a9748f0a645d12fbaa74f11f950611",
+        "blob": "eaccba5737a9748f0a645d12fbaa74f11f950611",
+        "content_sha256": "6b43de43c5c46df6c3e4fbd3098ecfdc6549520ff656a852bee21590a5a4c2b3"
+      }
+    },
     {
       "slug": "bootstrapping-the-starintel-web-platform",
       "title": "Bootstrapping the StarIntel web platform",

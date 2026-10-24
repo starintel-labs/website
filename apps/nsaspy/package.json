@@ -13,6 +13,6 @@
   "devDependencies": {
     "@starintel/content": "workspace:*",
     "@starintel/seo": "workspace:*",
-    "@starintel/ui": "workspace:*"
+    "@starintel/design": "workspace:*"
   }
 }

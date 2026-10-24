@@ -24,3 +24,17 @@ When `RABBIT_URL` is unset, radar stays in standby and `/readyz` reports `radar:
 With a valid broker URL it binds `documents.new.#`, `documents.ingest.#`,
 `documents.updated.#`, and `actors.#`; the projector exposes only its small
 allowlisted metadata schema, and `/readyz` reports `radar: "live"` once connected.
+
+## Design system
+
+All apps consume **`@starintel/design`** (default theme: `obsidian-gold`).
+The canonical design repository is `starintel-labs/starintel-design`; the
+workspace package under `packages/design` is a vendored mirror kept in
+lockstep by:
+
+```
+STARINTEL_DESIGN=../starintel-design node scripts/sync-design.mjs   # sync from canonical checkout
+node scripts/sync-design.mjs --check                                # verify pin (used in CI)
+```
+
+Do not hand-edit `packages/design`; change the canonical repo and re-sync.

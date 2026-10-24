@@ -27,3 +27,7 @@ result-*
 
 # Local state
 /var/
+
+# prolog-verify gate artifacts (local)
+.prolog/result.json
+.prolog/.facts.lock

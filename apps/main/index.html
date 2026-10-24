@@ -1,206 +1,301 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-si-theme="obsidian-gold">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#050a11" />
+    <meta name="theme-color" content="#090807" />
     <meta
       name="description"
-      content="StarIntel is a symbolic AI platform: expert systems, Prolog planning and verification, actor orchestration, structured intelligence documents, and statistical models where they earn their place."
+      content="StarIntel is a document-driven intelligence platform: typed v0.9 documents in CouchDB, Sento actors over RabbitMQ, approval-gated research publishing, and Prolog-verified publication pipelines."
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href="https://starintel.actor/" />
-    <meta property="og:title" content="StarIntel — Symbolic AI" />
+    <meta property="og:title" content="StarIntel — symbolic systems, structurally" />
     <meta
       property="og:description"
-      content="Expert systems, Prolog planning, actor orchestration, and structured intelligence. Symbolic AI as a system, not a chatbot."
+      content="Typed intelligence documents, actor orchestration, and approval-gated research publishing. Provenance over vibes."
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://starintel.actor/" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <title>StarIntel — Symbolic AI</title>
+    <meta name="twitter:card" content="summary" />
+    <title>StarIntel — symbolic systems, structurally</title>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "StarIntel",
         "url": "https://starintel.actor/",
-        "description": "Symbolic AI platform: expert systems, Prolog planning and verification, actor orchestration, structured intelligence documents.",
+        "description": "Document-driven intelligence platform: typed v0.9 documents, Sento actor orchestration over RabbitMQ, CouchDB storage, approval-gated research publishing.",
         "slogan": "(symbolics(λx.xx))"
       }
     </script>
   </head>
   <body>
+    <a class="si-skip-link" href="#main">skip to content</a>
+
     <header class="si-topbar">
       <a class="si-topbar__brand" href="/" aria-label="StarIntel home" data-wordmark></a>
       <nav class="si-topbar__nav" aria-label="Primary">
-        <a href="/research/">Research</a>
-        <a href="/radar" data-active="radar">Radar</a>
-        <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">Blog</a>
+        <a href="/" data-active="home">home</a>
+        <a href="/research" data-active="research">research</a>
+        <a href="/radar" data-active="radar">radar</a>
+        <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">blog</a>
         <a href="https://nsaspy.starintel.actor/" target="_blank" rel="noopener">nsaspy</a>
-        <a href="https://quasar.starintel.actor/" target="_blank" rel="noopener">Quasar</a>
+        <a href="https://quasar.starintel.actor/" target="_blank" rel="noopener">quasar</a>
+        <a href="https://git.starintel.actor/starintel-labs" target="_blank" rel="noopener">code</a>
       </nav>
     </header>
 
-    <main class="si-scanlines">
-      <!-- Hero: Symbolic AI front and center -->
+    <main id="main" class="si-scanlines">
+      <!-- Hero: grounded prose left, symbolic network right -->
       <section class="si-shell si-hero">
-        <p class="si-hero__kicker">Symbolic AI · Expert Systems · Verified Reasoning</p>
-        <h1 class="si-hero__title">
-          <span data-wordmark-lg></span>
-        </h1>
-        <p class="si-hero__lede">
-          StarIntel is a local-first, document-driven intelligence platform built the way expert
-          systems were meant to be built: Prolog for planning and verification, actors for
-          deterministic orchestration, structured documents with provenance for everything the
-          system knows — and statistical models exactly where they earn their place. Not a chatbot
-          with a database bolted on.
-        </p>
-        <p style="margin-top: 1.6rem; display: flex; gap: 0.8rem; flex-wrap: wrap">
-          <span class="si-chip si-chip--gold">Prolog</span>
-          <span class="si-chip si-chip--cyan">Actors</span>
-          <span class="si-chip">Expert systems</span>
-          <span class="si-chip">Structured intelligence</span>
-          <span class="si-chip">Common Lisp</span>
-          <span class="si-chip">Nim</span>
-          <span class="si-chip">LLMs where appropriate</span>
-        </p>
-      </section>
-
-      <!-- Statement -->
-      <section class="si-shell si-section">
-        <div class="si-panel si-panel--glow">
-          <p style="margin: 0; font-size: 1.06rem; line-height: 1.7">
-            Most of the industry calls a language model the architecture. StarIntel calls it a
-            component. Knowledge is modeled explicitly, decisions are reasoned over symbolically,
-            and every claim that leaves the system carries
-            <a href="#documents">provenance and evidence</a>. When a model is the right tool —
-            extraction, drafting, enrichment — it runs inside the same typed, verified pipelines as
-            everything else, and its output is never the final authority.
-          </p>
-        </div>
-      </section>
-
-      <!-- Capabilities -->
-      <section class="si-shell si-section" id="capabilities">
-        <div class="si-section__head">
-          <h2 class="si-section__title">The system, in parts</h2>
-          <span class="faint mono" style="font-size: 0.8rem">evidence-backed surfaces only</span>
-        </div>
-        <div class="si-grid">
-          <div class="si-card">
-            <span class="si-card__dtype">Expert systems</span>
-            <span class="si-card__title">Symbolic planning &amp; verification</span>
-            <span class="si-card__desc">
-              On-disk Prolog knowledge bases plan work, track dependencies, and verify invariants
-              before anything ships. Research publication is gated by machine-checked approval
-              state, not vibes.
-            </span>
-          </div>
-          <div class="si-card">
-            <span class="si-card__dtype">Actors</span>
-            <span class="si-card__title">Deterministic orchestration</span>
-            <span class="si-card__desc">
-              Sento actors and RabbitMQ topic exchanges route typed messages between services.
-              Documents flow through <span class="mono">documents.ingest</span> and
-              <span class="mono">documents.new</span> with recursive, supervised dataflow.
-            </span>
-          </div>
-          <div class="si-card" id="documents">
-            <span class="si-card__dtype">Structured intelligence</span>
-            <span class="si-card__title">StarIntel v0.9 documents</span>
-            <span class="si-card__desc">
-              Fifty typed document kinds — people, orgs, claims, relations, evidence — each carrying
-              sources, evidence, assessment, and verification metadata. Schema-validated, hash-pinned,
-              machine-checkable.
-            </span>
-          </div>
-          <div class="si-card">
-            <span class="si-card__dtype">Autonomous research</span>
-            <span class="si-card__title">Auto Dig &amp; Auto Research</span>
-            <span class="si-card__desc">
-              Investigator and research actors that work the corpus autonomously — and publish
-              nothing that has not passed explicit human approval gates with recorded evidence.
-            </span>
-          </div>
-          <div class="si-card">
-            <span class="si-card__dtype">Operator workspace</span>
-            <span class="si-card__title">Quasar</span>
-            <span class="si-card__desc">
-              A graph-first operator interface for investigating the corpus: typed projections,
-              capability discovery, offline-first workspaces, and the visual DNA this site borrows.
-            </span>
-          </div>
-          <div class="si-card">
-            <span class="si-card__dtype">Publishing</span>
-            <span class="si-card__title">Org-mode as the source of truth</span>
-            <span class="si-card__desc">
-              Editorial and research content is authored in Org, exported deterministically, validated
-              by Prolog, and published with full provenance — no CMS, no markdown drift.
-            </span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Recent documents (dynamic, public-safe projection) -->
-      <section class="si-shell si-section" id="recent">
-        <div class="si-section__head">
-          <h2 class="si-section__title">Recent documents</h2>
-          <span class="faint mono" style="font-size: 0.8rem" id="recent-note">
-            newest 100 public documents, sampled live
-          </span>
-        </div>
-        <div class="si-grid" id="recent-docs" aria-live="polite">
-          <div class="si-card"><span class="si-card__desc">Loading public corpus snapshot…</span></div>
-        </div>
-      </section>
-
-      <!-- Radar teaser -->
-      <section class="si-shell si-section">
-        <div class="si-section__head">
-          <h2 class="si-section__title">Live activity</h2>
-          <a class="si-section__more" href="/radar">open radar →</a>
-        </div>
-        <div class="si-panel" style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap">
-          <div style="flex: 1; min-width: 260px">
-            <p style="margin: 0 0 0.6rem">
-              <strong style="color: var(--si-text-strong)">/radar</strong> renders the platform's
-              observed message traffic as it happens — event families, rates, and payload volume —
-              through a private projector that allowlists every field the browser is allowed to see.
+        <div class="si-hero__grid">
+          <div>
+            <p class="si-hero__kicker">symbolic systems · documents · actors · research</p>
+            <h1 class="si-hero__title"><span data-wordmark-lg></span></h1>
+            <p class="si-hero__lede">
+              StarIntel is a document-driven intelligence platform. Everything the system knows is
+              a typed, versioned StarIntel document — one of fifty document kinds in the hash-pinned
+              v0.9 schema — validated on write, stored in CouchDB, and routed between services by
+              Sento actors over RabbitMQ topic exchanges.
             </p>
-            <p class="muted" style="margin: 0; font-size: 0.9rem">
-              No message bodies. No routing keys. No internal names. Aggregate truth only.
+            <p class="si-hero__lede">
+              Publishing is a pipeline, not a CMS: research and editorial content is written in
+              Org, exported deterministically, validated against the schema, checked by a Prolog
+              verification suite, and released with recorded provenance — repository, path, commit,
+              and content hash. Public surfaces are fail-closed projections of that pipeline.
+            </p>
+            <div class="si-hero__actions">
+              <a class="si-btn si-btn--primary" href="/research">explore research</a>
+              <a class="si-btn" href="https://git.starintel.actor/starintel-labs" target="_blank" rel="noopener">view code</a>
+            </div>
+            <p class="si-hero__tech">
+              CouchDB<span class="sep">·</span>RabbitMQ<span class="sep">·</span>Valkey<span class="sep">·</span>Prolog<span class="sep">·</span>Quasar
             </p>
           </div>
-          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap">
-            <span class="si-chip si-chip--cyan">SSE</span>
-            <span class="si-chip">allowlisted schema</span>
-            <span class="si-chip">fail closed</span>
+          <div class="si-hero__visual si-graphframe">
+            <span class="si-graphframe__corner si-graphframe__corner--tl">fig. 01 — symbolic network</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 470" role="img" aria-label="Symbolic network: a lambda term bound to typed document, actor, and evidence nodes">
+              <defs>
+                <radialGradient id="hero-halo" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#e0b04a" stop-opacity="0.10"/>
+                  <stop offset="60%" stop-color="#e0b04a" stop-opacity="0.03"/>
+                  <stop offset="100%" stop-color="#e0b04a" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <circle cx="280" cy="225" r="190" fill="url(#hero-halo)"/>
+              <g stroke="#241e13" stroke-width="1">
+                <line x1="40" y1="225" x2="90" y2="225"/>
+                <line x1="470" y1="225" x2="520" y2="225"/>
+                <line x1="280" y1="25" x2="280" y2="60"/>
+                <line x1="280" y1="390" x2="280" y2="425"/>
+              </g>
+              <g stroke="#3a3324" stroke-width="1.5" fill="none">
+                <path d="M280 225 C 210 190, 160 160, 108 128"/>
+                <path d="M280 225 C 350 190, 400 160, 452 128"/>
+                <path d="M280 225 C 205 265, 150 290, 96 312"/>
+                <path d="M280 225 C 355 265, 410 290, 464 312"/>
+                <path d="M280 225 C 250 300, 230 340, 208 384"/>
+                <path d="M280 225 C 310 300, 330 340, 352 384"/>
+              </g>
+              <path d="M280 225 C 280 160, 280 120, 280 78" stroke="#9a7a24" stroke-width="1.5" fill="none" stroke-dasharray="4 8" class="si-anim-edge"/>
+              <g font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="12">
+                <g>
+                  <circle cx="108" cy="128" r="6" fill="#ece5d6"/>
+                  <circle cx="108" cy="128" r="10" fill="none" stroke="#3a3324" stroke-width="1"/>
+                  <text x="108" y="106" fill="#b5ab96" text-anchor="middle">documents</text>
+                </g>
+                <g>
+                  <circle cx="452" cy="128" r="6" fill="#ece5d6"/>
+                  <circle cx="452" cy="128" r="10" fill="none" stroke="#3a3324" stroke-width="1"/>
+                  <text x="452" y="106" fill="#b5ab96" text-anchor="middle">actors</text>
+                </g>
+                <g>
+                  <rect x="90" y="306" width="12" height="12" fill="#ece5d6" transform="rotate(45 96 312)"/>
+                  <text x="96" y="340" fill="#b5ab96" text-anchor="middle">evidence</text>
+                </g>
+                <g>
+                  <rect x="458" y="306" width="12" height="12" fill="#ece5d6" transform="rotate(45 464 312)"/>
+                  <text x="464" y="340" fill="#b5ab96" text-anchor="middle">claims</text>
+                </g>
+                <g>
+                  <circle cx="208" cy="384" r="6" fill="#ece5d6"/>
+                  <text x="208" y="408" fill="#b5ab96" text-anchor="middle">relations</text>
+                </g>
+                <g>
+                  <circle cx="352" cy="384" r="6" fill="#ece5d6"/>
+                  <text x="352" y="408" fill="#b5ab96" text-anchor="middle">sources</text>
+                </g>
+              </g>
+              <g font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="12">
+                <circle cx="280" cy="78" r="7" fill="#e0b04a"/>
+                <circle cx="280" cy="78" r="12" fill="none" stroke="#9a7a24" stroke-width="1"/>
+                <text x="280" y="52" fill="#e0b04a" text-anchor="middle">publish</text>
+              </g>
+              <g>
+                <circle cx="280" cy="225" r="52" fill="#090807" stroke="#52452a" stroke-width="1.5"/>
+                <circle cx="280" cy="225" r="62" fill="none" stroke="#332b1b" stroke-width="1" stroke-dasharray="2 5"/>
+                <text x="280" y="244" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="52" fill="#e0b04a" text-anchor="middle">λ</text>
+                <text x="280" y="292" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="11" fill="#8a8172" text-anchor="middle">(λx.xx)</text>
+              </g>
+              <g stroke="#52452a" stroke-width="1">
+                <line x1="24" y1="16" x2="24" y2="30"/>
+                <line x1="24" y1="16" x2="38" y2="16"/>
+                <line x1="536" y1="454" x2="536" y2="440"/>
+                <line x1="536" y1="454" x2="522" y2="454"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- Capability band: Documents | Actors | Research Publishing | Quasar -->
+      <section class="si-band" id="capabilities">
+        <div class="si-shell si-section">
+          <div class="si-section__head">
+            <h2 class="si-section__title">The system, in parts</h2>
+            <span class="faint mono" style="font-size: 0.8rem">every claim maps to code</span>
+          </div>
+          <div class="si-grid si-grid--quad">
+            <div class="si-card si-card--open" id="documents">
+              <span class="si-card__dtype">documents</span>
+              <span class="si-card__title">StarIntel v0.9 documents</span>
+              <span class="si-card__desc">
+                Fifty typed document kinds — people, orgs, claims, evidence, relations — each
+                carrying sources, evidence, and handling metadata. Validation runs against a
+                sha256-pinned schema; anything that fails is rejected, not coerced.
+              </span>
+              <span class="si-card__meta"><span class="si-badge">implemented</span></span>
+            </div>
+            <div class="si-card si-card--open">
+              <span class="si-card__dtype">actors</span>
+              <span class="si-card__title">Sento actors on RabbitMQ</span>
+              <span class="si-card__desc">
+                Supervised Sento actor systems move documents across
+                topic exchanges (<span class="mono">documents.ingest.#</span>,
+                <span class="mono">documents.new.target.#</span>) with durable CouchDB outbox
+                mutation, recovery, and retry policy.
+              </span>
+              <span class="si-card__meta"><span class="si-badge">implemented</span></span>
+            </div>
+            <div class="si-card si-card--open">
+              <span class="si-card__dtype">publishing</span>
+              <span class="si-card__title">Approval-gated research</span>
+              <span class="si-card__desc">
+                Nothing publishes merely because it exists. Research documents must carry an
+                explicit APPROVED state with recorded evidence before the renderer will touch them;
+                every artifact traces back to repo, path, commit, and content hash.
+              </span>
+              <span class="si-card__meta"><span class="si-badge">implemented</span></span>
+            </div>
+            <div class="si-card si-card--open">
+              <span class="si-card__dtype">operator workspace</span>
+              <span class="si-card__title">Quasar</span>
+              <span class="si-card__desc">
+                A graph-first operator workspace for investigating the corpus as a graph — typed
+                projections, relations, offline-first sessions. This site's design language is
+                its sibling.
+              </span>
+              <span class="si-card__meta"><span class="si-badge si-badge--dev">in development</span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent documents: real public projection, live -->
+      <section class="si-band" id="recent">
+        <div class="si-shell si-section">
+          <div class="si-section__head">
+            <h2 class="si-section__title">Recent public documents</h2>
+            <span class="faint mono" style="font-size: 0.8rem" id="recent-note">
+              newest 100 public documents, sampled live
+            </span>
+          </div>
+          <div class="si-grid" id="recent-docs" aria-live="polite">
+            <div class="si-card"><span class="si-card__desc">Loading public corpus snapshot…</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Research | Live activity | Public surfaces -->
+      <section class="si-band">
+        <div class="si-shell si-section">
+          <div class="si-grid si-grid--trio">
+            <div class="si-panel" id="research">
+              <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.7rem">
+                <h3 style="margin:0;font-size:1rem">Research publishing</h3>
+                <span class="si-badge si-badge--research">approval-gated</span>
+              </div>
+              <p style="margin:0 0 0.8rem;font-size:0.9rem;color:var(--si-text-secondary)">
+                Auto Dig and Auto Research actors work the corpus autonomously, but publication is
+                fail closed: an operator must approve each document with recorded evidence, and
+                every artifact carries its source repository, path, commit, and content hash.
+              </p>
+              <p class="faint mono" style="margin:0 0 1rem;font-size:0.75rem">
+                state: queue empty — publication is fail closed, not idle
+              </p>
+              <a class="si-btn si-btn--ghost" href="/research">open research flow</a>
+            </div>
+            <div class="si-panel">
+              <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.7rem">
+                <h3 style="margin:0;font-size:1rem">Live activity</h3>
+                <a class="si-section__more" href="/radar" style="margin-left:auto">open radar →</a>
+              </div>
+              <p style="margin:0 0 0.8rem;font-size:0.9rem;color:var(--si-text-secondary)">
+                <strong style="color:var(--si-text-bright)">/radar</strong> renders the platform's
+                observed message traffic as it happens — event families, rates, and payload volume
+                — through a private projector that allowlists every field the browser may see.
+              </p>
+              <p class="muted" style="margin:0 0 1rem;font-size:0.82rem">
+                No message bodies. No routing keys. No internal names. Aggregate truth only.
+              </p>
+              <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+                <span class="si-chip si-chip--accent">SSE</span>
+                <span class="si-chip">allowlisted schema</span>
+                <span class="si-chip">fail closed</span>
+              </div>
+            </div>
+            <div class="si-panel">
+              <h3 style="margin:0 0 0.7rem;font-size:1rem">Public surfaces</h3>
+              <ul style="margin:0;padding-left:1.1em;font-family:var(--si-font-mono);font-size:0.8rem;color:var(--si-text-secondary)">
+                <li style="margin-bottom:0.35em"><a href="/api/recent-documents?sample=4">/api/recent-documents</a> — allowlisted projection</li>
+                <li style="margin-bottom:0.35em"><a href="/radar/stream">/radar/stream</a> — aggregate SSE feed</li>
+                <li><a href="/healthz">/healthz</a> · <a href="/readyz">/readyz</a> — service state</li>
+              </ul>
+              <p class="faint" style="margin:0.8rem 0 0;font-size:0.78rem">
+                Internal infrastructure is never exposed to the browser; projections scrub and
+                reject anything that smells like it.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- Pipeline -->
-      <section class="si-shell si-section">
-        <div class="si-section__head">
-          <h2 class="si-section__title">How content moves</h2>
-        </div>
-        <div class="si-panel mono" style="font-size: 0.85rem; line-height: 2.1; overflow-x: auto">
-          <pre style="margin: 0; background: none; border: 0; padding: 0; box-shadow: none">org source ──▶ deterministic export ──▶ schema validation ──▶ prolog verification ──▶ provenance manifest ──▶ publish
-                                                                                │
-events ──▶ private projector ──▶ allowlisted stream ──▶ /radar                   └── every artifact traceable to source repo, commit, hash</pre>
+      <section class="si-band">
+        <div class="si-shell si-section">
+          <div class="si-section__head">
+            <h2 class="si-section__title">How content moves</h2>
+          </div>
+          <div class="si-terminal">
+            <div class="si-terminal__bar"><span class="dot"></span><span>publication pipeline — every artifact traceable to source repo, commit, hash</span></div>
+            <pre class="si-terminal__body">org source ──▶ deterministic export ──▶ schema validation ──▶ prolog verification ──▶ provenance manifest ──▶ publish
+                                                                                    │
+events ──▶ private projector ──▶ allowlisted stream ──▶ /radar                       └── approval gate: APPROVED + evidence, else refuse</pre>
+          </div>
         </div>
       </section>
     </main>
 
     <footer class="si-footer">
       <div class="si-shell">
-        <span><span data-wordmark-sm></span> <span class="muted">— symbolic AI, structurally.</span></span>
+        <span><span data-wordmark-sm></span> <span class="muted">— symbolic systems, structurally.</span></span>
         <span>
-          <a href="/research/">Research</a> ·
+          <a href="/research">Research</a> ·
           <a href="/radar">Radar</a> ·
           <a href="https://blog.starintel.actor/" target="_blank" rel="noopener">Blog</a> ·
           <a href="https://nsaspy.starintel.actor/" target="_blank" rel="noopener">nsaspy</a> ·
+          <a href="https://git.starintel.actor/starintel-labs" target="_blank" rel="noopener">Code</a> ·
           <a href="https://discord.gg/R3VY8wr86Y" target="_blank" rel="noopener">Community</a>
         </span>
       </div>
