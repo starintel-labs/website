@@ -41,6 +41,7 @@ export async function fetchNewestPublic(cfg: Config, fetchImpl: typeof fetch = f
   const out: StarIntelV09Doc[] = [];
   for (const row of rows) {
     if (!row.doc) continue;
+    if (row.doc.tenant_id !== cfg.publicTenantId) continue;
     let doc: StarIntelV09Doc;
     try {
       // CouchDB carries private storage metadata outside the pinned wire schema.

@@ -12,6 +12,8 @@ export interface Config {
   couchdbDb: string;
   rabbitUrl: string | null;
   rabbitExchange: string;
+  /** Stable shared tenant whose explicitly public documents may reach the website. */
+  publicTenantId: string;
   /** Optional Auto Research harness base URL; only /health is projected publicly. */
   autoResearchUrl: string | null;
   /** Recent-documents window and cache. */
@@ -30,6 +32,8 @@ function int(name: string, def: number): number {
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
+  const publicTenantId = env.PUBLIC_TENANT_ID ?? "public";
+  if (publicTenantId !== "public") throw new Error("invalid PUBLIC_TENANT_ID");
   return {
     port: int("PORT", 8787),
     host: env.HOST ?? "127.0.0.1",
@@ -41,6 +45,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     rabbitUrl: env.RABBIT_URL ?? null,
     // starintel-server's durable topic exchange is named "documents".
     rabbitExchange: env.RABBIT_EXCHANGE ?? "documents",
+    publicTenantId,
     autoResearchUrl: env.AUTO_RESEARCH_URL ?? null,
     recentWindow: Math.min(int("RECENT_WINDOW", 100), 100),
     recentCacheMs: int("RECENT_CACHE_MS", 60_000),
