@@ -11,6 +11,7 @@ import { loadConfig, type Config } from "./config.ts";
 import { RecentDocumentsService } from "./recent.ts";
 import { RadarFeed } from "./radar-feed.ts";
 import { SseHub } from "./sse.ts";
+import { serializePublicJson } from "@starintel/starintel-doc";
 
 const MIME: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -44,7 +45,7 @@ function send(res: ServerResponse, status: number, body: string, type = "applica
 }
 
 function sendJson(res: ServerResponse, status: number, value: unknown): void {
-  send(res, status, JSON.stringify(value));
+  send(res, status, serializePublicJson(value));
 }
 
 function serveStatic(res: ServerResponse, cfg: Config, urlPath: string): void {

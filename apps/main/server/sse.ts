@@ -2,6 +2,7 @@
  * SSE hub for /radar/stream.
  */
 import type { PublicRadarEvent, RateTotals } from "./projector.ts";
+import { serializePublicJson } from "@starintel/starintel-doc";
 
 export interface SseClient {
   write(chunk: string): void;
@@ -38,12 +39,12 @@ export class SseHub {
   }
 
   sendEvents(events: PublicRadarEvent[]): void {
-    this.#broadcast(events.map((e) => `data: ${JSON.stringify(e)}\n\n`).join(""));
+    this.#broadcast(events.map((e) => `data: ${serializePublicJson(e)}\n\n`).join(""));
   }
 
   sendRate(totals: RateTotals, rps: number): void {
     this.#broadcast(
-      `data: ${JSON.stringify({ type: "rate", rps: Number(rps.toFixed(2)), total: totals.total, families: totals.families, sizes: totals.sizes })}\n\n`,
+      `data: ${serializePublicJson({ type: "rate", rps: Number(rps.toFixed(2)), total: totals.total, families: totals.families, sizes: totals.sizes })}\n\n`,
     );
   }
 

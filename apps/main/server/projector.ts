@@ -5,6 +5,7 @@
  * never inspects or forwards message bodies. Anything unrecognized is
  * counted as `unknown` and carries no other information (fail closed).
  */
+import { isTenantMetadataKey } from "@starintel/starintel-doc";
 
 export const RADAR_EVENT_FAMILIES = ["document", "actor", "system", "unknown"] as const;
 export const RADAR_SIZE_BUCKETS = ["s", "m", "l", "xl"] as const;
@@ -54,7 +55,7 @@ export function projectDelivery(routingKey: string, payloadBytes: number, now = 
   if (parts[0] === "documents" && DOCUMENT_KINDS.has(parts[1] ?? "") && parts.length === 3) {
     family = "document";
     kind = parts[1]!;
-    dtype = DTYPE_RE.test(parts[2] ?? "") ? parts[2] : undefined;
+    dtype = DTYPE_RE.test(parts[2] ?? "") && !isTenantMetadataKey(parts[2]!) ? parts[2] : undefined;
     if (!dtype) {
       // Unrecognized dtype string: keep only family/kind, drop the value.
       family = "unknown";
@@ -62,7 +63,7 @@ export function projectDelivery(routingKey: string, payloadBytes: number, now = 
     }
   } else if (parts[0] === "actors" && parts.length >= 2) {
     family = "actor";
-    kind = KIND_RE.test(parts.at(-1) ?? "") ? parts.at(-1)! : "event";
+    kind = KIND_RE.test(parts.at(-1) ?? "") && !isTenantMetadataKey(parts.at(-1)!) ? parts.at(-1)! : "event";
   } else {
     family = "unknown";
     kind = "event";
