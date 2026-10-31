@@ -1,0 +1,50 @@
+[
+  {
+    "id": "documents",
+    "title": "Typed documents",
+    "caption": "Keep people, organizations and findings in structured records.",
+    "description": "Documents are validated against the pinned StarIntel schema and stored in CouchDB.",
+    "status": "available",
+    "image": "/figures/documents.svg"
+  },
+  {
+    "id": "actors",
+    "title": "Actors & queues",
+    "caption": "Actors process messages. An actor is not an AI agent.",
+    "description": "A Sento actor is a message-processing service with a specific job. Actors exchange documents through RabbitMQ; a service may use AI, but the actor model does not require it.",
+    "status": "available",
+    "image": "/figures/actors.svg"
+  },
+  {
+    "id": "relations",
+    "title": "Evidence & relations",
+    "caption": "Follow a finding back to the material that supports it.",
+    "description": "Connect documents with typed relations, sources and supporting evidence.",
+    "status": "available",
+    "image": "/figures/relations.svg"
+  },
+  {
+    "id": "publishing",
+    "title": "Research publishing",
+    "caption": "Review research before it reaches the public site.",
+    "description": "Research requires operator approval and recorded evidence before publication. Published artifacts retain source and revision information.",
+    "status": "available",
+    "image": "/figures/publishing.svg"
+  },
+  {
+    "id": "radar",
+    "title": "Live activity",
+    "caption": "Watch message activity through the public radar.",
+    "description": "Radar shows public message activity, event families and volume through a filtered stream.",
+    "status": "available",
+    "image": "/figures/radar.svg"
+  },
+  {
+    "id": "quasar",
+    "title": "Quasar workspace",
+    "caption": "Explore documents and their connections.",
+    "description": "Quasar is a graph workspace for investigating documents, relations and sources.",
+    "status": "in development",
+    "image": "/figures/quasar.svg"
+  }
+]
