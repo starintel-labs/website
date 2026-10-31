@@ -1,0 +1,44 @@
+.si-hero__lede--primary {
+  max-width: 38rem;
+  color: var(--si-text-bright);
+  font-size: clamp(1.1rem, 1.8vw, 1.32rem);
+  line-height: 1.65;
+}
+
+.si-hero__proof,
+.si-section__note {
+  color: var(--si-text-faint);
+  font-family: var(--si-font-mono);
+  font-size: 0.78rem;
+}
+
+.si-hero__proof {
+  margin: -0.25rem 0 var(--si-space-5);
+}
+
+#capabilities .si-card {
+  background: transparent;
+  border-width: 1px 0 0;
+  border-radius: 0;
+  padding-inline: 0;
+}
+
+#capabilities .si-card:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .si-hero__visual {
+    order: initial;
+    margin-top: var(--si-space-4);
+  }
+
+  .si-hero {
+    padding-top: 2.5rem;
+  }
+
+  .si-hero__proof {
+    line-height: 1.7;
+  }
+}

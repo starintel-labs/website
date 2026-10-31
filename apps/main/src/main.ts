@@ -10,6 +10,7 @@ import "@starintel/design/css/base.css";
 import "@starintel/design/css/layout.css";
 import "@starintel/design/css/components.css";
 import "@starintel/design/css/motion.css";
+import "./main.css";
 
 const brand = document.querySelector<HTMLElement>("[data-wordmark]");
 if (brand) brand.replaceChildren(renderWordmark({ size: "sm", compact: true }));
@@ -19,10 +20,14 @@ const foot = document.querySelector<HTMLElement>("[data-wordmark-sm]");
 if (foot) foot.replaceChildren(renderWordmark({ size: "sm", compact: true }));
 
 const path = location.pathname;
-for (const a of document.querySelectorAll<HTMLAnchorElement>(".si-topbar__nav a")) {
+for (const a of document.querySelectorAll<HTMLAnchorElement>(
+  ".si-topbar__nav a",
+)) {
   const target = a.dataset.active;
-  if (target === "radar" && path.startsWith("/radar")) a.setAttribute("aria-current", "page");
-  else if (target === "home" && (path === "/" || path === "")) a.setAttribute("aria-current", "page");
+  if (target === "radar" && path.startsWith("/radar"))
+    a.setAttribute("aria-current", "page");
+  else if (target === "home" && (path === "/" || path === ""))
+    a.setAttribute("aria-current", "page");
 }
 
 interface PublicDoc {
@@ -70,7 +75,10 @@ async function loadRecent(): Promise<void> {
       headers: { accept: "application/json" },
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const body = (await res.json()) as { documents: PublicDoc[]; window: number };
+    const body = (await res.json()) as {
+      documents: PublicDoc[];
+      window: number;
+    };
     grid.replaceChildren();
     if (body.documents.length === 0) {
       grid.append(
@@ -81,7 +89,8 @@ async function loadRecent(): Promise<void> {
       );
       return;
     }
-    if (note) note.textContent = `sampled from newest ${body.window} public documents`;
+    if (note)
+      note.textContent = `sampled from newest ${body.window} public documents`;
     for (const doc of body.documents) {
       grid.append(
         card({
