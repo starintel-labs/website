@@ -1,8 +1,3 @@
-/**
- * starintel.actor landing page behavior.
- * Progressive enhancement: the page is complete without JS; this module adds
- * the wordmark, active nav state, and the recent-documents discovery feed.
- */
 import { renderWordmark } from "@starintel/design/wordmark";
 import { card } from "@starintel/design/components";
 import "@starintel/design/css/tokens.css";
@@ -10,6 +5,12 @@ import "@starintel/design/css/base.css";
 import "@starintel/design/css/layout.css";
 import "@starintel/design/css/components.css";
 import "@starintel/design/css/motion.css";
+
+import "./home.css";
+import { initFeatureSlider } from "./feature-slider.js";
+
+const slider = document.querySelector<HTMLElement>(".si-feature-slider");
+if (slider) initFeatureSlider(slider);
 
 const brand = document.querySelector<HTMLElement>("[data-wordmark]");
 if (brand) brand.replaceChildren(renderWordmark({ size: "sm", compact: true }));
@@ -19,10 +20,14 @@ const foot = document.querySelector<HTMLElement>("[data-wordmark-sm]");
 if (foot) foot.replaceChildren(renderWordmark({ size: "sm", compact: true }));
 
 const path = location.pathname;
-for (const a of document.querySelectorAll<HTMLAnchorElement>(".si-topbar__nav a")) {
+for (const a of document.querySelectorAll<HTMLAnchorElement>(
+  ".si-topbar__nav a",
+)) {
   const target = a.dataset.active;
-  if (target === "radar" && path.startsWith("/radar")) a.setAttribute("aria-current", "page");
-  else if (target === "home" && (path === "/" || path === "")) a.setAttribute("aria-current", "page");
+  if (target === "radar" && path.startsWith("/radar"))
+    a.setAttribute("aria-current", "page");
+  else if (target === "home" && (path === "/" || path === ""))
+    a.setAttribute("aria-current", "page");
 }
 
 interface PublicDoc {
@@ -70,18 +75,22 @@ async function loadRecent(): Promise<void> {
       headers: { accept: "application/json" },
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const body = (await res.json()) as { documents: PublicDoc[]; window: number };
+    const body = (await res.json()) as {
+      documents: PublicDoc[];
+      window: number;
+    };
     grid.replaceChildren();
     if (body.documents.length === 0) {
       grid.append(
         emptyCard(
           "No public documents published yet",
-          "The public-safe projection is empty right now. Documents appear here when the operator marks batches public.",
+          "Documents appear here when an operator publishes them.",
         ),
       );
       return;
     }
-    if (note) note.textContent = `sampled from newest ${body.window} public documents`;
+    if (note)
+      note.textContent = `${body.documents.length} records · latest ${body.window} published`;
     for (const doc of body.documents) {
       grid.append(
         card({
@@ -96,7 +105,7 @@ async function loadRecent(): Promise<void> {
     grid.replaceChildren(
       emptyCard(
         "Corpus snapshot unavailable",
-        "The public projection service is not reachable right now. This section recovers automatically on the next visit — no fabricated data is shown in the meantime.",
+        "Public documents could not be loaded. Try again later.",
       ),
     );
   }

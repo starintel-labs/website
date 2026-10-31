@@ -1,7 +1,10 @@
 import { defineConfig } from "vite";
 import { resolve } from "node:path";
 
+import { featureContent } from "./feature-content.ts";
+
 export default defineConfig({
+  plugins: [featureContent()],
   appType: "mpa",
   build: {
     outDir: "dist",

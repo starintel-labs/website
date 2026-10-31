@@ -31,7 +31,8 @@ try {
   browserAvailable = false;
 }
 
-const canRun = browserAvailable && existsSync(distIndex) && existsSync(serverMain);
+const canRun =
+  browserAvailable && existsSync(distIndex) && existsSync(serverMain);
 
 interface Handle {
   port: number;
@@ -68,65 +69,122 @@ async function startServer(): Promise<Handle> {
   };
 }
 
-test("main site ui smoke", { skip: !canRun && "playwright/chromium or built dist unavailable" }, async (t) => {
-  const chromium = playwright as { launch(o?: unknown): Promise<unknown> };
-  const server = await startServer();
-  const base = `http://127.0.0.1:${server.port}`;
-  t.after(async () => {
-    await server.stop();
-  });
+test(
+  "main site ui smoke",
+  { skip: !canRun && "playwright/chromium or built dist unavailable" },
+  async (t) => {
+    const chromium = playwright as { launch(o?: unknown): Promise<unknown> };
+    const server = await startServer();
+    const base = `http://127.0.0.1:${server.port}`;
+    t.after(async () => {
+      await server.stop();
+    });
 
-  const browser = (await chromium.launch()) as {
-    newPage(o: unknown): Promise<any>;
-    close(): Promise<void>;
-  };
-  t.after(async () => {
-    await browser.close();
-  });
+    const browser = (await chromium.launch({
+      executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+    })) as {
+      newPage(o: unknown): Promise<any>;
+      close(): Promise<void>;
+    };
+    t.after(async () => {
+      await browser.close();
+    });
 
-  // ---- desktop viewport ----
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  const consoleErrors: string[] = [];
-  page.on("console", (msg: any) => {
-    // the 503 from the unprovisioned projection API is expected locally;
-    // anything else is a regression.
-    if (msg.type() === "error" && !msg.text().includes("503")) {
-      consoleErrors.push(msg.text());
-    }
-  });
-  page.on("pageerror", (err: Error) => consoleErrors.push(`pageerror: ${err.message}`));
+    // ---- desktop viewport ----
+    const page = await browser.newPage({
+      viewport: { width: 1440, height: 900 },
+    });
+    const consoleErrors: string[] = [];
+    page.on("console", (msg: any) => {
+      // the 503 from the unprovisioned projection API is expected locally;
+      // anything else is a regression.
+      if (msg.type() === "error" && !msg.text().includes("503")) {
+        consoleErrors.push(msg.text());
+      }
+    });
+    page.on("pageerror", (err: Error) =>
+      consoleErrors.push(`pageerror: ${err.message}`),
+    );
 
-  await page.goto(`${base}/`, { waitUntil: "networkidle" });
+    await page.goto(`${base}/`, { waitUntil: "networkidle" });
 
-  const overflowDesktop = await page.evaluate(
-    () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
-  );
-  assert.equal(overflowDesktop, false, "horizontal overflow at 1440x900");
+    const overflowDesktop = await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth >
+        document.documentElement.clientWidth,
+    );
+    assert.equal(overflowDesktop, false, "horizontal overflow at 1440x900");
 
-  assert.ok(await page.locator(".si-topbar__nav a").count() >= 5, "primary navigation exists");
-  assert.ok(await page.locator(".si-hero").count() === 1, "hero exists");
-  assert.ok(await page.locator("#capabilities .si-card").count() >= 4, "capability band renders");
-  assert.ok(await page.locator("#recent").count() === 1, "recent documents section exists");
-  assert.ok(await page.locator("text=How content moves").count() >= 1, "pipeline section exists");
-  assert.ok(await page.locator(".si-footer").count() === 1, "footer exists");
+    assert.ok(
+      (await page.locator(".si-topbar__nav a").count()) >= 5,
+      "primary navigation exists",
+    );
+    assert.ok((await page.locator(".si-hero").count()) === 1, "hero exists");
+    assert.ok(
+      (await page.locator("#capabilities .si-card").count()) >= 4,
+      "capability band renders",
+    );
+    assert.ok(
+      (await page.locator("#recent").count()) === 1,
+      "recent documents section exists",
+    );
+    assert.ok(
+      (await page.locator("text=How StarIntel works").count()) >= 1,
+      "pipeline section exists",
+    );
+    assert.ok(
+      (await page.locator(".si-footer").count()) === 1,
+      "footer exists",
+    );
 
-  const theme = await page.evaluate(() => document.documentElement.dataset["siTheme"]);
-  assert.equal(theme, "obsidian-gold", "obsidian-gold theme attribute set");
+    assert.equal(await page.locator(".si-feature-slide").count(), 6);
+    assert.equal(await page.locator("#capabilities .si-card").count(), 6);
+    await page.getByRole("button", { name: "Next figure" }).click();
+    assert.equal(
+      await page.locator(".si-slider-count").textContent(),
+      "02 / 06",
+    );
+    assert.ok(
+      await page
+        .locator('.si-feature-slide[aria-hidden="false"]')
+        .innerText()
+        .then((s: string) => s.includes("An actor is not an AI agent")),
+    );
+    await page.getByRole("button", { name: "Previous figure" }).click();
+    assert.equal(
+      await page.locator(".si-slider-count").textContent(),
+      "01 / 06",
+    );
+    await page.getByRole("button", { name: "Pause slideshow" }).click();
+    assert.equal(
+      await page.getByRole("button", { name: "Play slideshow" }).count(),
+      1,
+    );
 
-  assert.deepEqual(consoleErrors, [], "no unexpected console errors");
-  await page.close();
+    const theme = await page.evaluate(
+      () => document.documentElement.dataset["siTheme"],
+    );
+    assert.equal(theme, "obsidian-gold", "obsidian-gold theme attribute set");
 
-  // ---- mobile viewport: genuine layout transformation ----
-  const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
-  await mobile.goto(`${base}/`, { waitUntil: "networkidle" });
-  const overflowMobile = await mobile.evaluate(
-    () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
-  );
-  assert.equal(overflowMobile, false, "horizontal overflow at 390x844");
-  const navWrapped = await mobile.evaluate(() => {
-    const nav = document.querySelector<HTMLElement>(".si-topbar__nav");
-    return nav !== null && getComputedStyle(nav).flexWrap === "wrap";
-  });
-  assert.equal(navWrapped, true, "mobile nav wraps (layout transformation)");
-  await mobile.close();
-});
+    assert.deepEqual(consoleErrors, [], "no unexpected console errors");
+    await page.close();
+
+    // ---- mobile viewport: genuine layout transformation ----
+    const mobile = await browser.newPage({
+      viewport: { width: 390, height: 844 },
+    });
+    await mobile.goto(`${base}/`, { waitUntil: "networkidle" });
+    const overflowMobile = await mobile.evaluate(
+      () =>
+        document.documentElement.scrollWidth >
+        document.documentElement.clientWidth,
+    );
+    assert.equal(overflowMobile, false, "horizontal overflow at 390x844");
+    const navWrapped = await mobile.evaluate(() => {
+      const nav = document.querySelector<HTMLElement>(".si-topbar__nav");
+      return nav !== null && getComputedStyle(nav).flexWrap === "wrap";
+    });
+    assert.equal(navWrapped, true, "mobile nav wraps (layout transformation)");
+    await mobile.close();
+  },
+);
