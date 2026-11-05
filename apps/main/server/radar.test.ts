@@ -4,6 +4,7 @@ import { loadConfig } from "./config.ts";
 import { projectDelivery, projectAggregateDelivery, RadarAggregator } from "./projector.ts";
 import { isPublicRadarDelivery } from "./radar-feed.ts";
 import { SseHub } from "./sse.ts";
+import type { Person } from "../../../schema/starintel/0.10.1/generated/starintel_types.ts";
 
 test("radar defaults to the StarIntel documents exchange", () => {
   const cfg = loadConfig({});
@@ -24,7 +25,7 @@ test("radar projects document update traffic", () => {
   });
 });
 
-test("radar admits only explicitly safe documents in the shared public tenant", () => {
+test("radar honors explicit legacy handling in the shared public tenant", () => {
   const doc = {
     _id: "test-public-radar", dataset: "public", dtype: "document",
     schema_version: "0.9.0", version: 1,
@@ -39,7 +40,29 @@ test("radar admits only explicitly safe documents in the shared public tenant", 
   assert.equal(isPublicRadarDelivery(body("public", { ...safe, visibility: "private" }), "public"), false);
   assert.equal(isPublicRadarDelivery(Buffer.from("not json"), "public"), false);
   assert.equal(isPublicRadarDelivery(Buffer.from("[]"), "public"), false);
-  assert.equal(isPublicRadarDelivery(Buffer.from(JSON.stringify({ tenant_id: "public", handling: safe })), "public"), false);
+  assert.equal(isPublicRadarDelivery(Buffer.from(JSON.stringify({ tenant_id: "public", handling: safe })), "public"), true);
+});
+
+test("current StarLang flat documents use visibility and sensitivity, not the legacy v0.9 envelope", () => {
+  // org.starintel/core@1, specs/starintel/0.10.1/core.star at 010873f8e4462b5c705a21206d8cee55e5c5b2e0.
+  const doc = {
+    tenant_id: "public", id: "person-current", dataset: "fixture", dtype: "person",
+    schemaVersion: "0.10.1", fname: "Ada", lname: "Lovelace",
+    visibility: "public", sensitivity: "public",
+  } satisfies Person & { tenant_id: string };
+  const eligible = (changes: Record<string, unknown>) => isPublicRadarDelivery(Buffer.from(JSON.stringify({ ...doc, ...changes })), "public");
+  assert.equal(eligible({}), true);
+  for (const visibility of ["private", "shared", "inherited", "unknown", null, false]) {
+    assert.equal(eligible({ visibility }), false);
+  }
+  for (const sensitivity of ["internal", "confidential", "restricted", "secret", "unknown", null]) {
+    assert.equal(eligible({ sensitivity }), false);
+  }
+  assert.equal(eligible({ deleted: true }), false);
+  assert.equal(eligible({ accessControl: { readers: ["private-user"] } }), false);
+  assert.equal(eligible({ tenantId: "private" }), false);
+  assert.equal(eligible({ handling: { visibility: "private" } }), false);
+  assert.equal(eligible({ tenant_id: "private" }), false);
 });
 
 test("legacy events in the exact public tenant do not require modern document fields or handling", () => {

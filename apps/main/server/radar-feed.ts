@@ -5,7 +5,7 @@
 import type { ChannelModel } from "amqplib";
 import type { Config } from "./config.ts";
 import { projectDelivery, projectAggregateDelivery, RADAR_SCOPES, RadarAggregator, type PublicRadarEvent, type RateTotals, type RadarScope } from "./projector.ts";
-import { isPublicEligible, validateV09 } from "@starintel/starintel-doc";
+import { isPublicEligible, isTenantMetadataKey } from "@starintel/starintel-doc";
 
 /** Legacy public-tenant events are public; explicit handling still takes precedence. */
 export function isPublicRadarDelivery(body: Buffer, publicTenantId: string): boolean {
@@ -14,10 +14,14 @@ export function isPublicRadarDelivery(body: Buffer, publicTenantId: string): boo
     if (doc === null || typeof doc !== "object" || Array.isArray(doc)) return false;
     const candidate = doc as Record<string, unknown>;
     if (candidate.tenant_id !== publicTenantId) return false;
-    if (!Object.hasOwn(candidate, "handling")) return true;
-    const wire = { ...candidate };
-    delete wire.tenant_id;
-    return isPublicEligible(validateV09(wire));
+    if (Object.keys(candidate).some((key) => key !== "tenant_id" && isTenantMetadataKey(key))) return false;
+    // Current StarLang documents carry these restrictions at the top level.
+    if (Object.hasOwn(candidate, "visibility") && candidate.visibility !== "public") return false;
+    if (Object.hasOwn(candidate, "sensitivity") && candidate.sensitivity !== "public") return false;
+    if (Object.hasOwn(candidate, "deleted") && candidate.deleted !== false) return false;
+    if (Object.hasOwn(candidate, "accessControl")) return false;
+    // Radar emits counters, not documents: do not require the historical v0.9 envelope.
+    return !Object.hasOwn(candidate, "handling") || isPublicEligible(candidate);
   } catch {
     return false;
   }

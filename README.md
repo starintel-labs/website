@@ -9,6 +9,32 @@ StarIntel website applications and public web properties.
 
 Deployment is owned by `starintel-labs/starintel-infra`.
 
+## StarIntel authority pin
+
+`schema/starintel-schema.lock.json` pins the active StarLang release and its
+complete generated consumer bundle, including the canonical compatibility reader.
+The sync tool is copied byte-for-byte from the same immutable authority commit.
+The old package-local v0.9 lock is retained only for the legacy recent-documents
+API; it is not the current wire authority and records are never silently relabelled.
+
+```sh
+pnpm spec:update                       # resolve upstream main once; verify and pin
+pnpm spec:update --commit <full-SHA>   # reproducible explicit repin
+pnpm spec:check                        # offline hashes and complete closure
+pnpm spec:check:upstream               # compare every byte with immutable upstream
+```
+
+For a local authority checkout, append `--source /path/to/star-lang`. The updater
+reads committed objects, never dirty working files, and is a no-op when the
+upstream release/tool bytes have not changed. No manual lock edits or schema
+generation are needed. Unsupported releases and hash drift fail closed.
+
+Forgejo's **StarIntel pin update** workflow runs daily or on manual dispatch:
+update → full CI → one bot PR. Configure repository secret
+`STARINTEL_PIN_UPDATE_TOKEN` with repository-content and pull-request write access.
+It never auto-merges or deploys unreviewed changes. Regular CI checks both the
+offline bundle and the exact upstream commit; deployment consumes the tested pin.
+
 ## Radar configuration
 
 `/radar` consumes the public-safe projection of RabbitMQ routing metadata only;
@@ -28,9 +54,13 @@ allowlisted metadata schema, and `/readyz` reports `radar: "live"` once connecte
 The scope selector uses `/radar/stream?scope=public` (the default) or
 `?scope=aggregate`. Public activity requires the exact shared public tenant.
 Legacy events without a `handling` field are public in that tenant; when
-handling is present, pinned-schema validation and explicit public/safety flags
-are still required. This radar-only fallback does not publish document bodies
-or change the recent-documents eligibility policy.
+handling is present, explicit public/safety flags are still required. Current
+StarLang flat documents are supported without requiring the historical v0.9
+envelope: top-level `visibility` and `sensitivity` must be public when present;
+deletions, explicit access controls, and ambiguous tenant aliases are excluded.
+Radar validates disclosure metadata, not the document's application payload.
+This radar-only policy never publishes document bodies or changes the separate
+legacy recent-documents validator or its schema lock.
 
 All-traffic aggregates count every delivery on the subscribed routes, including
 private or malformed bodies, but expose only fixed event categories, timestamps,
