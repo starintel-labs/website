@@ -166,6 +166,26 @@ test(
     );
     assert.equal(theme, "obsidian-gold", "obsidian-gold theme attribute set");
 
+    await page.route("**/radar/stream?scope=*", async (route: any) => {
+      const aggregate = route.request().url().includes("scope=aggregate");
+      const total = aggregate ? 120 : 7;
+      const family = aggregate ? "actor" : "document";
+      await route.fulfill({
+        status: 200,
+        contentType: "text/event-stream",
+        body: `data: ${JSON.stringify({ type: "rate", rps: aggregate ? 12 : 0.7, total, families: { [family]: total }, sizes: { s: total } })}\n\n`,
+      });
+    });
+    await page.goto(`${base}/radar`);
+    await page.waitForFunction(() => document.querySelector("#radar-total")?.textContent === "7 events observed");
+    await page.selectOption("#radar-scope", "aggregate");
+    await page.waitForFunction(() => document.querySelector("#radar-total")?.textContent === "120 events observed");
+    assert.ok(!(await page.locator("#radar-families").innerText()).includes("document"));
+    await page.selectOption("#radar-scope", "public");
+    await page.waitForFunction(() => document.querySelector("#radar-total")?.textContent === "7 events observed");
+    assert.ok(!(await page.locator("#radar-families").innerText()).includes("actor"));
+    assert.equal(await page.locator("#radar-rate").innerText(), "0.7");
+
     assert.deepEqual(consoleErrors, [], "no unexpected console errors");
     await page.close();
 

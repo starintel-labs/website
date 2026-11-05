@@ -33,6 +33,11 @@
         <h2 class="si-section__title">Radar</h2>
         <span class="si-chip si-chip--live" id="radar-status" data-state="connecting">connecting</span>
       </div>
+      <label class="mono" for="radar-scope">Traffic scope</label>
+      <select id="radar-scope" class="si-chip">
+        <option value="public">Public activity</option>
+        <option value="aggregate">All traffic — anonymous aggregates</option>
+      </select>
       <div class="si-grid" style="grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr)">
         <div class="si-panel" style="padding: 0.6rem">
           <canvas
@@ -69,9 +74,10 @@
       </div>
       <p class="faint" style="font-size: 0.82rem; max-width: 60rem">
         The browser receives only aggregate, allowlisted fields: timestamps, event family, public
-        document type, payload-size bucket, and counts. The projector processing the full event
-        stream fails closed on anything it does not recognize. Raw messages never leave the
-        private network.
+        document type (public scope only), payload-size bucket, and counts. Public activity includes
+        legacy public-tenant events without handling labels; explicit restrictions still apply.
+        All-traffic aggregates omit document types and arbitrary routing values. Raw messages,
+        identifiers, and tenant details never leave the private network.
       </p>
     </main>
 

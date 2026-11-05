@@ -2,14 +2,19 @@
 :- module(facts, [autodig_backend_present/1, ci_workflow/2, ci_workflow_no_internal_hosts/3, ci_workflow_runs_prolog/3, ci_workflow_secrets_ok/3, ci_workflow_self_contained/3, content_manifest/2, daily_date/2, daily_doc/1, doc_provenance_ok/3, docs_app_present/1, docs_deploy_in_ci/1, importer_present/1, internal_hostname_leaks/1, opencode_harness_present/1, output_repo_configurable/1, publish_targets_configured/1, published_doc/2, radar_fails_closed/1, radar_no_payload_forwarding/1, radar_projector_present/1, v09_required_fields_complete/1, v09_schema_pinned/1, www_canonicalization_present/1]).
 autodig_backend_present(false).
 ci_workflow('forgejo', 'ci.yml').
+ci_workflow('forgejo', 'starintel-pin.yml').
 ci_workflow('github', 'ci.yml').
 ci_workflow_no_internal_hosts('forgejo', 'ci.yml', true).
+ci_workflow_no_internal_hosts('forgejo', 'starintel-pin.yml', true).
 ci_workflow_no_internal_hosts('github', 'ci.yml', true).
 ci_workflow_runs_prolog('forgejo', 'ci.yml', true).
+ci_workflow_runs_prolog('forgejo', 'starintel-pin.yml', true).
 ci_workflow_runs_prolog('github', 'ci.yml', true).
 ci_workflow_secrets_ok('forgejo', 'ci.yml', true).
+ci_workflow_secrets_ok('forgejo', 'starintel-pin.yml', true).
 ci_workflow_secrets_ok('github', 'ci.yml', true).
 ci_workflow_self_contained('forgejo', 'ci.yml', true).
+ci_workflow_self_contained('forgejo', 'starintel-pin.yml', true).
 ci_workflow_self_contained('github', 'ci.yml', true).
 content_manifest('blog', present).
 content_manifest('research', present).

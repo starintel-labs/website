@@ -39,6 +39,7 @@ export class SseHub {
   }
 
   sendEvents(events: PublicRadarEvent[]): void {
+    if (events.length === 0) return;
     this.#broadcast(events.map((e) => `data: ${serializePublicJson(e)}\n\n`).join(""));
   }
 

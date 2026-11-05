@@ -89,7 +89,7 @@ export interface StarIntelV09DocLike {
  * Eligibility gate for public discovery.
  * Require the pinned schema's explicit public visibility and safety flags.
  */
-export function isPublicEligible(doc: StarIntelV09DocLike): boolean {
+export function isPublicEligible(doc: Pick<StarIntelV09DocLike, "handling">): boolean {
   const h = doc.handling;
   if (h === null || typeof h !== "object") return false;
   const rec = h as Record<string, unknown>;

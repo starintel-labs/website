@@ -16,7 +16,7 @@ jobs:
       - name: system deps
         run: |
           apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git swi-prolog emacs-nox jq > /dev/null
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git swi-prolog emacs-nox jq python3 > /dev/null
       # The sole allowed action is the official checkout action, pinned to the
       # exact v6.1.0 commit. Everything else remains self-contained `run:`.
       - name: checkout
@@ -33,6 +33,10 @@ jobs:
         run: pnpm typecheck
       - name: v0.9 schema pin check
         run: node scripts/sync-v09-schema.mjs --check
+      - name: current StarLang bundle and exact upstream pin
+        run: |
+          pnpm spec:check
+          pnpm spec:check:upstream
       - name: org export test
         run: bash tests/run-org-export-test.sh
       - name: prolog facts

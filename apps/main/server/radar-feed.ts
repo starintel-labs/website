@@ -4,19 +4,24 @@
  */
 import type { ChannelModel } from "amqplib";
 import type { Config } from "./config.ts";
-import { projectDelivery, RadarAggregator, type PublicRadarEvent, type RateTotals } from "./projector.ts";
-import { isPublicEligible, validateV09 } from "@starintel/starintel-doc";
+import { projectDelivery, projectAggregateDelivery, RADAR_SCOPES, RadarAggregator, type PublicRadarEvent, type RateTotals, type RadarScope } from "./projector.ts";
+import { isPublicEligible, isTenantMetadataKey } from "@starintel/starintel-doc";
 
-/** Only explicitly public documents in the shared tenant can affect public radar. */
+/** Legacy public-tenant events are public; explicit handling still takes precedence. */
 export function isPublicRadarDelivery(body: Buffer, publicTenantId: string): boolean {
   try {
     const doc: unknown = JSON.parse(body.toString("utf8"));
     if (doc === null || typeof doc !== "object" || Array.isArray(doc)) return false;
     const candidate = doc as Record<string, unknown>;
     if (candidate.tenant_id !== publicTenantId) return false;
-    const wire = { ...candidate };
-    delete wire.tenant_id;
-    return isPublicEligible(validateV09(wire));
+    if (Object.keys(candidate).some((key) => key !== "tenant_id" && isTenantMetadataKey(key))) return false;
+    // Current StarLang documents carry these restrictions at the top level.
+    if (Object.hasOwn(candidate, "visibility") && candidate.visibility !== "public") return false;
+    if (Object.hasOwn(candidate, "sensitivity") && candidate.sensitivity !== "public") return false;
+    if (Object.hasOwn(candidate, "deleted") && candidate.deleted !== false) return false;
+    if (Object.hasOwn(candidate, "accessControl")) return false;
+    // Radar emits counters, not documents: do not require the historical v0.9 envelope.
+    return !Object.hasOwn(candidate, "handling") || isPublicEligible(candidate);
   } catch {
     return false;
   }
@@ -24,7 +29,7 @@ export function isPublicRadarDelivery(body: Buffer, publicTenantId: string): boo
 
 export class RadarFeed {
   #cfg: Config;
-  #aggregator: RadarAggregator;
+  #aggregators: Record<RadarScope, RadarAggregator>;
   #conn: ChannelModel | null = null;
   #state: "off" | "connecting" | "live" | "down" = "off";
   #retryMs = 3000;
@@ -33,14 +38,15 @@ export class RadarFeed {
 
   constructor(
     cfg: Config,
-    onEvents: (events: PublicRadarEvent[]) => void,
-    onRate: (totals: RateTotals, rps: number) => void,
+    onEvents: (events: PublicRadarEvent[], scope: RadarScope) => void,
+    onRate: (totals: RateTotals, rps: number, scope: RadarScope) => void,
   ) {
     this.#cfg = cfg;
-    this.#aggregator = new RadarAggregator(cfg.radarFrameMs, (events, totals) => {
-      onEvents(events);
-      onRate(totals, this.#aggregator.currentRate());
+    const aggregator = (scope: RadarScope) => new RadarAggregator(cfg.radarFrameMs, (events, totals) => {
+      onEvents(events, scope);
+      onRate(totals, this.#aggregators[scope].currentRate(), scope);
     });
+    this.#aggregators = { public: aggregator("public"), aggregate: aggregator("aggregate") };
   }
 
   get state(): string {
@@ -54,7 +60,7 @@ export class RadarFeed {
       this.#state = "off";
       return;
     }
-    this.#aggregator.start();
+    for (const scope of RADAR_SCOPES) this.#aggregators[scope].start();
     void this.connect();
   }
 
@@ -62,7 +68,7 @@ export class RadarFeed {
     this.#started = false;
     if (this.#retryTimer) clearTimeout(this.#retryTimer);
     this.#retryTimer = undefined;
-    this.#aggregator.stop();
+    for (const scope of RADAR_SCOPES) this.#aggregators[scope].stop();
     const conn = this.#conn;
     this.#conn = null;
     this.#state = "off";
@@ -111,10 +117,11 @@ export class RadarFeed {
       this.#state = "live";
       await ch.consume(q.queue, (msg) => {
         if (!msg) return;
+        this.#aggregators.aggregate.add(projectAggregateDelivery(msg.fields.routingKey, msg.content.length));
         const event = isPublicRadarDelivery(msg.content, this.#cfg.publicTenantId)
           ? projectDelivery(msg.fields.routingKey, msg.content.length)
           : null;
-        if (event) this.#aggregator.add(event);
+        if (event) this.#aggregators.public.add(event);
         ch.ack(msg);
       });
     } catch {

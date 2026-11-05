@@ -1,0 +1,46 @@
+name: StarIntel pin update
+on:
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+concurrency:
+  group: starintel-pin-update
+  cancel-in-progress: false
+jobs:
+  propose:
+    runs-on: ubuntu-latest
+    container: docker.io/library/node:24-bookworm
+    steps:
+      - name: checkout main
+        run: |
+          git clone --branch main --depth=1 "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" repo
+          cp -a repo/. "$GITHUB_WORKSPACE"/
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: dependencies
+        run: |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git python3 swi-prolog emacs-nox jq > /dev/null
+          npm install --global pnpm@11.24.0
+          pnpm install --frozen-lockfile
+      - name: resolve and verify immutable upstream bundle
+        run: |
+          pnpm spec:update
+          pnpm spec:check
+          pnpm spec:check:upstream
+      - name: full local gate before proposing
+        run: |
+          pnpm build
+          pnpm test
+          pnpm typecheck
+          node scripts/sync-design.mjs --check
+          node scripts/sync-v09-schema.mjs --check
+          bash tests/run-org-export-test.sh
+          node scripts/generate-facts.mjs
+          pnpm "verify:ci"
+          node scripts/ci-hygiene.mjs
+      - name: propose tested pin update
+        env:
+          FORGEJO_REPOSITORY: ${{ github.repository }}
+          FORGEJO_SERVER_URL: ${{ github.server_url }}
+          FORGEJO_TOKEN: ${{ secrets.STARINTEL_PIN_UPDATE_TOKEN }}
+        run: python3 scripts/propose-starintel-pin.py

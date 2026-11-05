@@ -5,6 +5,8 @@ out/
 .vite/
 node_modules/
 *.tsbuildinfo
+__pycache__/
+*.pyc
 
 # Emacs
 *~
