@@ -50,6 +50,7 @@ const rateEl = document.getElementById("radar-rate")!;
 const totalEl = document.getElementById("radar-total")!;
 const familiesEl = document.getElementById("radar-families")!;
 const sizesEl = document.getElementById("radar-sizes")!;
+const scopeEl = document.getElementById("radar-scope") as HTMLSelectElement;
 
 const total = { events: 0, rps: 0 };
 const familyCounts = new Map<string, number>();
@@ -189,15 +190,19 @@ function loop(now: number): void {
 requestAnimationFrame(loop);
 setInterval(renderStats, 2000); // totals stay fresh even without new events
 
+let stream: EventSource | undefined;
 function connect(): void {
-  const es = new EventSource("/radar/stream");
-  es.onopen = () => setStatus("live", "live");
+  stream?.close();
+  const es = new EventSource(`/radar/stream?scope=${encodeURIComponent(scopeEl.value)}`);
+  stream = es;
+  es.onopen = () => {
+    if (es === stream) setStatus("live", "live");
+  };
   es.onerror = () => {
-    setStatus("reconnecting", "reconnecting");
-    es.close();
-    setTimeout(connect, 2500);
+    if (es === stream) setStatus("reconnecting", "reconnecting");
   };
   es.onmessage = (msg) => {
+    if (es !== stream) return;
     let frame: RadarFrame;
     try {
       frame = JSON.parse(msg.data) as RadarFrame;
@@ -206,7 +211,9 @@ function connect(): void {
     }
     if (frame.type === "rate") {
       total.rps = frame.rps;
-      if (frame.total > total.events) total.events = frame.total;
+      total.events = frame.total;
+      familyCounts.clear();
+      sizeCounts.clear();
       for (const [f, n] of Object.entries(frame.families)) familyCounts.set(f, n);
       for (const [s, n] of Object.entries(frame.sizes)) sizeCounts.set(s, n);
     } else {
@@ -215,5 +222,16 @@ function connect(): void {
     statsDirty = true;
   };
 }
+
+scopeEl.addEventListener("change", () => {
+  total.events = 0;
+  total.rps = 0;
+  familyCounts.clear();
+  sizeCounts.clear();
+  blips.length = 0;
+  renderStats();
+  setStatus("connecting", "connecting");
+  connect();
+});
 
 connect();

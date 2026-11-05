@@ -20,6 +20,7 @@ async function withServer(run: (base: string) => Promise<void>): Promise<void> {
   try {
     await run(`http://127.0.0.1:${address.port}`);
   } finally {
+    app.stop();
     await new Promise<void>((resolve, reject) =>
       server.close((error) => (error ? reject(error) : resolve())),
     );
@@ -35,6 +36,25 @@ test("clean MPA routes resolve generated HTML", async () => {
     const radar = await fetch(`${base}/radar`);
     assert.equal(radar.status, 200);
     assert.match(await radar.text(), /radar/i);
+  });
+});
+
+test("radar accepts both scopes, defaults to public, and rejects unknown scopes", async () => {
+  await withServer(async (base) => {
+    for (const query of ["", "?scope=public", "?scope=aggregate"]) {
+      const controller = new AbortController();
+      const response = await fetch(`${base}/radar/stream${query}`, {
+        headers: { accept: "text/event-stream" }, signal: controller.signal,
+      });
+      assert.equal(response.status, 200);
+      assert.equal(response.headers.get("content-type"), "text/event-stream");
+      const reader = response.body!.getReader();
+      assert.match(new TextDecoder().decode((await reader.read()).value), /:ok/);
+      controller.abort();
+    }
+    const invalid = await fetch(`${base}/radar/stream?scope=private`, { headers: { accept: "text/event-stream" } });
+    assert.equal(invalid.status, 400);
+    assert.deepEqual(await invalid.json(), { error: "invalid radar scope" });
   });
 });
 

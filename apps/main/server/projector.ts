@@ -9,6 +9,8 @@ import { isTenantMetadataKey } from "@starintel/starintel-doc";
 
 export const RADAR_EVENT_FAMILIES = ["document", "actor", "system", "unknown"] as const;
 export const RADAR_SIZE_BUCKETS = ["s", "m", "l", "xl"] as const;
+export const RADAR_SCOPES = ["public", "aggregate"] as const;
+export type RadarScope = (typeof RADAR_SCOPES)[number];
 
 /** Public-safe event: the complete schema the browser may ever receive. */
 export interface PublicRadarEvent {
@@ -30,7 +32,6 @@ interface PendingAggregate {
 }
 
 const DTYPE_RE = /^[a-z][a-z0-9-]{0,63}$/;
-const KIND_RE = /^[a-z][a-z0-9_-]{0,63}$/;
 const DOCUMENT_KINDS = new Set(["new", "ingest", "updated"]);
 
 export function sizeBucket(bytes: number): (typeof RADAR_SIZE_BUCKETS)[number] {
@@ -59,11 +60,11 @@ export function projectDelivery(routingKey: string, payloadBytes: number, now = 
     if (!dtype) {
       // Unrecognized dtype string: keep only family/kind, drop the value.
       family = "unknown";
-      kind = KIND_RE.test(parts[1] ?? "") ? parts[1]! : "event";
+      kind = parts[1]!;
     }
   } else if (parts[0] === "actors" && parts.length >= 2) {
     family = "actor";
-    kind = KIND_RE.test(parts.at(-1) ?? "") && !isTenantMetadataKey(parts.at(-1)!) ? parts.at(-1)! : "event";
+    kind = "event";
   } else {
     family = "unknown";
     kind = "event";
@@ -77,6 +78,13 @@ export function projectDelivery(routingKey: string, payloadBytes: number, now = 
     size_bucket: sizeBucket(payloadBytes),
     count: 1,
   };
+}
+
+/** All-traffic counters never reveal document types or arbitrary routing values. */
+export function projectAggregateDelivery(routingKey: string, payloadBytes: number, now = new Date()): PublicRadarEvent {
+  const event = projectDelivery(routingKey, payloadBytes, now)!;
+  const { dtype: _dtype, ...aggregate } = event;
+  return aggregate;
 }
 
 /** Batches raw events into compact public frames with preserved counts. */
@@ -125,18 +133,16 @@ export class RadarAggregator {
   }
 
   flush(): void {
-    if (this.#pending.size > 0) {
-      const events = [...this.#pending.values()].map((p) => ({
-        t: p.t,
-        family: p.family as PublicRadarEvent["family"],
-        kind: p.kind,
-        ...(p.dtype ? { dtype: p.dtype } : {}),
-        size_bucket: p.size_bucket as PublicRadarEvent["size_bucket"],
-        count: p.count,
-      }));
-      this.#pending.clear();
-      this.#onFrame(events, this.totals());
-    }
+    const events = [...this.#pending.values()].map((p) => ({
+      t: p.t,
+      family: p.family as PublicRadarEvent["family"],
+      kind: p.kind,
+      ...(p.dtype ? { dtype: p.dtype } : {}),
+      size_bucket: p.size_bucket as PublicRadarEvent["size_bucket"],
+      count: p.count,
+    }));
+    this.#pending.clear();
+    this.#onFrame(events, this.totals());
   }
 
   stop(): void {

@@ -11,6 +11,7 @@ import { loadConfig, type Config } from "./config.ts";
 import { RecentDocumentsService } from "./recent.ts";
 import { RadarFeed } from "./radar-feed.ts";
 import { SseHub } from "./sse.ts";
+import { RADAR_SCOPES, type RadarScope } from "./projector.ts";
 import { serializePublicJson } from "@starintel/starintel-doc";
 
 const MIME: Record<string, string> = {
@@ -85,9 +86,9 @@ export function createApp(cfg: Config): AppRuntime {
   const here = fileURLToPath(new URL(".", import.meta.url));
   const resolvedCfg: Config = { ...cfg, staticDir: join(here, "..", cfg.staticDir) };
   const recent = new RecentDocumentsService(resolvedCfg);
-  const hub = new SseHub();
-  const radar = new RadarFeed(resolvedCfg, (events) => hub.sendEvents(events), (totals, rps) => {
-    hub.sendRate(totals, rps);
+  const hubs = { public: new SseHub(), aggregate: new SseHub() };
+  const radar = new RadarFeed(resolvedCfg, (events, scope) => hubs[scope].sendEvents(events), (totals, rps, scope) => {
+    hubs[scope].sendRate(totals, rps);
   });
   radar.start();
 
@@ -151,6 +152,12 @@ export function createApp(cfg: Config): AppRuntime {
       return;
     }
     if (url.pathname === "/radar/stream") {
+      const scope = url.searchParams.get("scope") ?? "public";
+      if (!RADAR_SCOPES.includes(scope as RadarScope)) {
+        sendJson(res, 400, { error: "invalid radar scope" });
+        return;
+      }
+      const hub = hubs[scope as RadarScope];
       const accept = req.headers.accept ?? "";
       if (!accept.split(",").some((value) => value.trim().startsWith("text/event-stream"))) {
         sendJson(res, 406, { error: "text/event-stream required" });
@@ -199,7 +206,7 @@ export function createApp(cfg: Config): AppRuntime {
     readyz: async () => ({ radar: radar.state, recent: "ok" }),
     stop: () => {
       radar.stop();
-      hub.closeAll();
+      for (const scope of RADAR_SCOPES) hubs[scope].closeAll();
     },
   };
 }

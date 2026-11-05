@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { loadConfig } from "./config.ts";
-import { projectDelivery } from "./projector.ts";
+import { projectDelivery, projectAggregateDelivery, RadarAggregator } from "./projector.ts";
 import { isPublicRadarDelivery } from "./radar-feed.ts";
 import { SseHub } from "./sse.ts";
 
@@ -40,6 +40,74 @@ test("radar admits only explicitly safe documents in the shared public tenant", 
   assert.equal(isPublicRadarDelivery(Buffer.from("not json"), "public"), false);
   assert.equal(isPublicRadarDelivery(Buffer.from("[]"), "public"), false);
   assert.equal(isPublicRadarDelivery(Buffer.from(JSON.stringify({ tenant_id: "public", handling: safe })), "public"), false);
+});
+
+test("legacy events in the exact public tenant do not require modern document fields or handling", () => {
+  for (const doc of [
+    { tenant_id: "public" },
+    { tenant_id: "public", dtype: "user", schema_version: "0.8.0", username: "legacy-user" },
+    { tenant_id: "public", event: "actor-completed" },
+  ]) {
+    assert.equal(isPublicRadarDelivery(Buffer.from(JSON.stringify(doc)), "public"), true);
+  }
+  for (const tenant_id of [undefined, null, "private", "Public", "public ", ["public"]]) {
+    assert.equal(isPublicRadarDelivery(Buffer.from(JSON.stringify({ tenant_id })), "public"), false);
+  }
+  for (const doc of [null, [], "public", 1, { tenantId: "public" }, { tenant: "public" }]) {
+    assert.equal(isPublicRadarDelivery(Buffer.from(JSON.stringify(doc)), "public"), false);
+  }
+});
+
+test("legacy public-tenant fallback never overrides explicit or malformed handling", () => {
+  for (const handling of [
+    null, false, "public", [], {},
+    { visibility: "private" },
+    { visibility: "public", pii: true },
+    { visibility: "public", sensitive: true },
+    { visibility: "public", pii: false, sensitive: false, classification: "secret" },
+    { visibility: "public", pii: false, sensitive: false, embargo_until: "2099-01-01T00:00:00Z" },
+  ]) {
+    assert.equal(isPublicRadarDelivery(Buffer.from(JSON.stringify({ tenant_id: "public", handling })), "public"), false);
+  }
+});
+
+test("all-traffic projection cannot expose arbitrary routing text or document types", () => {
+  const now = new Date("2026-11-05T00:00:00Z");
+  for (const key of ["documents.new.private-customer", "actors.private-customer.secret-action", "private.internal.host"]) {
+    const event = projectAggregateDelivery(key, 4096, now);
+    assert.equal(event.t, now.toISOString());
+    assert.equal(event.size_bucket, "m");
+    assert.equal(event.count, 1);
+    assert.equal("dtype" in event, false);
+    assert.equal(JSON.stringify(event).includes("private"), false);
+    assert.equal(JSON.stringify(event).includes("secret"), false);
+    assert.deepEqual(Object.keys(event).sort(), ["count", "family", "kind", "size_bucket", "t"]);
+  }
+});
+
+test("scope aggregators keep independent counts and publish idle rate updates", () => {
+  const publicFrames: { events: unknown[]; total: number; rate: number }[] = [];
+  const aggregateFrames: { events: unknown[]; total: number }[] = [];
+  const publicAggregator = new RadarAggregator(250, (events, totals) => {
+    publicFrames.push({ events, total: totals.total, rate: publicAggregator.currentRate() });
+  });
+  const aggregate = new RadarAggregator(250, (events, totals) => aggregateFrames.push({ events, total: totals.total }));
+  publicAggregator.add(projectDelivery("documents.new.user", 10)!);
+  aggregate.add(projectAggregateDelivery("documents.new.user", 10));
+  aggregate.add(projectAggregateDelivery("documents.new.private-customer", 10));
+  publicAggregator.flush();
+  aggregate.flush();
+  assert.equal(publicFrames[0]!.total, 1);
+  assert.equal(aggregateFrames[0]!.total, 2);
+  assert.equal(aggregateFrames[0]!.events.length, 1);
+  const now = Date.now;
+  try {
+    Date.now = () => now() + 11_000;
+    publicAggregator.flush();
+  } finally {
+    Date.now = now;
+  }
+  assert.deepEqual(publicFrames[1], { events: [], total: 1, rate: 0 });
 });
 
 test("radar does not forward tenant metadata from routing keys", () => {
