@@ -3,6 +3,7 @@
  */
 import type { PublicRadarEvent, RateTotals } from "./projector.ts";
 import { serializePublicJson } from "@starintel/starintel-doc";
+import type { PublicDocument } from "../shared/public-document.ts";
 
 export interface SseClient {
   write(chunk: string): void;
@@ -47,6 +48,15 @@ export class SseHub {
     this.#broadcast(
       `data: ${serializePublicJson({ type: "rate", rps: Number(rps.toFixed(2)), total: totals.total, families: totals.families, sizes: totals.sizes })}\n\n`,
     );
+  }
+
+  sendDocuments(documents: PublicDocument[], removed: string[] = []): void {
+    if (!documents.length && !removed.length) return;
+    this.#broadcast(`event: documents\ndata: ${serializePublicJson({ documents, removed })}\n\n`);
+  }
+
+  sendStatus(state: string): void {
+    this.#broadcast(`event: status\ndata: ${serializePublicJson({ state })}\n\n`);
   }
 
   #broadcast(chunk: string): void {

@@ -89,6 +89,12 @@ export function createApp(cfg: Config): AppRuntime {
   const hubs = { public: new SseHub(), aggregate: new SseHub() };
   const radar = new RadarFeed(resolvedCfg, (events, scope) => hubs[scope].sendEvents(events), (totals, rps, scope) => {
     hubs[scope].sendRate(totals, rps);
+    hubs[scope].sendStatus(radar.state);
+  }, (documents) => {
+    for (const document of [...documents].reverse()) recent.remember(document);
+    hubs.public.sendDocuments(documents);
+  }, (id) => {
+    if (recent.forget(id)) hubs.public.sendDocuments([], [id]);
   });
   radar.start();
 
@@ -170,9 +176,16 @@ export function createApp(cfg: Config): AppRuntime {
         "x-accel-buffering": "no",
       });
       res.write(":ok\n\n");
+      res.write(`event: status\ndata: ${serializePublicJson({ state: radar.state })}\n\n`);
       const clientId = hub.add({
-        write: (chunk: string) => res.write(chunk),
-        close: () => res.end(),
+        write: (chunk: string) => {
+          if (res.writableLength > 1_048_576) {
+            res.destroy();
+            throw new Error("slow stream client");
+          }
+          res.write(chunk);
+        },
+        close: () => res.destroy(),
       });
       const heartbeat = setInterval(() => {
         try {

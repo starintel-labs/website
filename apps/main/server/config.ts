@@ -47,7 +47,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     rabbitExchange: env.RABBIT_EXCHANGE ?? "documents",
     publicTenantId,
     autoResearchUrl: env.AUTO_RESEARCH_URL ?? null,
-    recentWindow: Math.min(int("RECENT_WINDOW", 100), 100),
+    recentWindow: Math.max(1, Math.min(int("RECENT_WINDOW", 100), 100)),
     recentCacheMs: int("RECENT_CACHE_MS", 60_000),
     radarFrameMs: Math.max(int("RADAR_FRAME_MS", 250), 50),
   };

@@ -33,9 +33,9 @@
   },
   {
     "id": "radar",
-    "title": "Live activity",
-    "caption": "Watch message activity through the public radar.",
-    "description": "Radar shows public message activity, event families and volume through a filtered stream.",
+    "title": "Live public documents",
+    "caption": "Read public records as they arrive.",
+    "description": "Search a live feed of public documents, open each record, and keep anonymous network activity separate.",
     "status": "available",
     "image": "/figures/radar.svg"
   },

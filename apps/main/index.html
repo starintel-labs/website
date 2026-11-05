@@ -198,13 +198,13 @@
                 "
               >
                 <strong style="color: var(--si-text-bright)">/radar</strong>
-                renders the platform's observed message traffic as it happens —
-                event families, rates, and payload volume — through a private
-                projector that allowlists every field the browser may see.
+                renders public documents as they arrive. Search the live feed,
+                open a record, and read its content and sources through an
+                allowlisted public projection.
               </p>
               <p class="muted" style="margin: 0 0 1rem; font-size: 0.82rem">
-                The public feed contains activity summaries, without message
-                bodies or internal routing details.
+                Anonymous network telemetry stays in a separate scope, without
+                document contents or internal routing details.
               </p>
               <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
                 <span class="si-chip si-chip--accent">SSE</span>
@@ -232,7 +232,7 @@
                   — allowlisted projection
                 </li>
                 <li style="margin-bottom: 0.35em">
-                  <a href="/radar/stream">/radar/stream</a> — aggregate SSE feed
+                  <code>/radar/stream</code> — public document and telemetry SSE
                 </li>
                 <li>
                   <a href="/healthz">/healthz</a> ·

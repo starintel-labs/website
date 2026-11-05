@@ -1,5 +1,7 @@
 import { renderWordmark } from "@starintel/design/wordmark";
-import { card } from "@starintel/design/components";
+import { documentCard } from "./document-view.ts";
+import type { PublicDocument } from "../shared/public-document.ts";
+import { isPublicDocument } from "../shared/public-document.ts";
 import "@starintel/design/css/tokens.css";
 import "@starintel/design/css/base.css";
 import "@starintel/design/css/layout.css";
@@ -30,26 +32,6 @@ for (const a of document.querySelectorAll<HTMLAnchorElement>(
     a.setAttribute("aria-current", "page");
 }
 
-interface PublicDoc {
-  _id: string;
-  dtype: string;
-  title?: string;
-  summary?: string;
-  description?: string;
-  dataset: string;
-  date_updated: string;
-}
-
-function fmtDate(iso: string): string {
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : d.toISOString().slice(0, 10);
-}
-
-function shortId(id: string): string {
-  const tail = id.split(":").slice(2).join(":");
-  return tail.length > 0 ? tail : id;
-}
-
 function emptyCard(title: string, desc: string): HTMLElement {
   const empty = document.createElement("div");
   empty.className = "si-empty";
@@ -66,48 +48,58 @@ function emptyCard(title: string, desc: string): HTMLElement {
   return empty;
 }
 
+let snapshotRequest: AbortController | undefined;
 async function loadRecent(): Promise<void> {
   const grid = document.getElementById("recent-docs");
   const note = document.getElementById("recent-note");
   if (!grid) return;
+  snapshotRequest?.abort();
+  const controller = new AbortController();
+  snapshotRequest = controller;
+  const timeout = setTimeout(() => controller.abort(), 12_000);
+  if (note) note.textContent = "Loading the public corpus…";
   try {
     const res = await fetch("/api/recent-documents?sample=12", {
       headers: { accept: "application/json" },
+      signal: controller.signal,
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const body = (await res.json()) as {
-      documents: PublicDoc[];
+      documents: PublicDocument[];
       window: number;
+      stale?: boolean;
     };
+    if (!Array.isArray(body.documents) || !body.documents.every(isPublicDocument)) throw new Error("invalid public snapshot");
+    if (snapshotRequest !== controller) return;
     grid.replaceChildren();
     if (body.documents.length === 0) {
       grid.append(
         emptyCard(
-          "No public documents published yet",
-          "Documents appear here when an operator publishes them.",
+          "No public records in this recent window",
+          "Read the live public document feed on Radar, or check this snapshot again shortly.",
         ),
       );
+      if (note) note.textContent = "Public snapshot connected · no matching recent records";
       return;
     }
     if (note)
-      note.textContent = `${body.documents.length} records · latest ${body.window} published`;
+      note.textContent = `${body.documents.length} public records · ${body.window} in this window${body.stale ? " · cached while the source reconnects" : ""}`;
     for (const doc of body.documents) {
-      grid.append(
-        card({
-          dtype: doc.dtype,
-          title: doc.title ?? shortId(doc._id),
-          desc: doc.summary ?? doc.description,
-          meta: [doc.dataset, fmtDate(doc.date_updated), shortId(doc._id)],
-        }),
-      );
+      grid.append(documentCard(doc));
     }
   } catch {
-    grid.replaceChildren(
-      emptyCard(
-        "Corpus snapshot unavailable",
-        "Public documents could not be loaded. Try again later.",
-      ),
-    );
+    if (snapshotRequest !== controller) return;
+    if (note) note.textContent = "Snapshot source temporarily unavailable · live activity may still be available on Radar";
+    const empty = emptyCard("Snapshot temporarily unavailable", "The public source did not respond in time. Retry the snapshot, or read incoming records on Radar.");
+    const retry = document.createElement("button");
+    retry.className = "snapshot-retry";
+    retry.type = "button";
+    retry.textContent = "Retry snapshot";
+    retry.addEventListener("click", () => { void loadRecent(); });
+    empty.append(retry);
+    if (!grid.querySelector(".public-document-card")) grid.replaceChildren(empty);
+  } finally {
+    clearTimeout(timeout);
   }
 }
 

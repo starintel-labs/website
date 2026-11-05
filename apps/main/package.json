@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "node --experimental-strip-types server/main.ts",
-    "test": "node --experimental-strip-types --test server/*.test.ts",
+    "test": "node --experimental-strip-types --experimental-test-module-mocks --test server/*.test.ts",
     "lint": "true",
     "typecheck": "tsc --noEmit"
   },

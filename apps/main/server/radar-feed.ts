@@ -5,26 +5,13 @@
 import type { ChannelModel } from "amqplib";
 import type { Config } from "./config.ts";
 import { projectDelivery, projectAggregateDelivery, RADAR_SCOPES, RadarAggregator, type PublicRadarEvent, type RateTotals, type RadarScope } from "./projector.ts";
-import { isPublicEligible, isTenantMetadataKey } from "@starintel/starintel-doc";
+import { isPublicRecord, parseRecord, projectPublicRecord, recordId } from "./public-documents.ts";
+import type { PublicDocument } from "../shared/public-document.ts";
 
 /** Legacy public-tenant events are public; explicit handling still takes precedence. */
 export function isPublicRadarDelivery(body: Buffer, publicTenantId: string): boolean {
-  try {
-    const doc: unknown = JSON.parse(body.toString("utf8"));
-    if (doc === null || typeof doc !== "object" || Array.isArray(doc)) return false;
-    const candidate = doc as Record<string, unknown>;
-    if (candidate.tenant_id !== publicTenantId) return false;
-    if (Object.keys(candidate).some((key) => key !== "tenant_id" && isTenantMetadataKey(key))) return false;
-    // Current StarLang documents carry these restrictions at the top level.
-    if (Object.hasOwn(candidate, "visibility") && candidate.visibility !== "public") return false;
-    if (Object.hasOwn(candidate, "sensitivity") && candidate.sensitivity !== "public") return false;
-    if (Object.hasOwn(candidate, "deleted") && candidate.deleted !== false) return false;
-    if (Object.hasOwn(candidate, "accessControl")) return false;
-    // Radar emits counters, not documents: do not require the historical v0.9 envelope.
-    return !Object.hasOwn(candidate, "handling") || isPublicEligible(candidate);
-  } catch {
-    return false;
-  }
+  const record = parseRecord(body);
+  return record !== null && isPublicRecord(record, publicTenantId);
 }
 
 export class RadarFeed {
@@ -35,16 +22,27 @@ export class RadarFeed {
   #retryMs = 3000;
   #retryTimer: NodeJS.Timeout | undefined;
   #started = false;
+  #pendingDocuments = new Map<string, PublicDocument>();
+  #onDocuments: (documents: PublicDocument[]) => void;
+  #onRemove: (id: string) => void;
 
   constructor(
     cfg: Config,
     onEvents: (events: PublicRadarEvent[], scope: RadarScope) => void,
     onRate: (totals: RateTotals, rps: number, scope: RadarScope) => void,
+    onDocuments: (documents: PublicDocument[]) => void = () => {},
+    onRemove: (id: string) => void = () => {},
   ) {
     this.#cfg = cfg;
+    this.#onDocuments = onDocuments;
+    this.#onRemove = onRemove;
     const aggregator = (scope: RadarScope) => new RadarAggregator(cfg.radarFrameMs, (events, totals) => {
       onEvents(events, scope);
       onRate(totals, this.#aggregators[scope].currentRate(), scope);
+      if (scope === "public" && this.#pendingDocuments.size) {
+        this.#onDocuments([...this.#pendingDocuments.values()].reverse());
+        this.#pendingDocuments.clear();
+      }
     });
     this.#aggregators = { public: aggregator("public"), aggregate: aggregator("aggregate") };
   }
@@ -66,6 +64,7 @@ export class RadarFeed {
 
   stop(): void {
     this.#started = false;
+    this.#pendingDocuments.clear();
     if (this.#retryTimer) clearTimeout(this.#retryTimer);
     this.#retryTimer = undefined;
     for (const scope of RADAR_SCOPES) this.#aggregators[scope].stop();
@@ -118,10 +117,24 @@ export class RadarFeed {
       await ch.consume(q.queue, (msg) => {
         if (!msg) return;
         this.#aggregators.aggregate.add(projectAggregateDelivery(msg.fields.routingKey, msg.content.length));
-        const event = isPublicRadarDelivery(msg.content, this.#cfg.publicTenantId)
+        const record = parseRecord(msg.content);
+        const eligible = record !== null && isPublicRecord(record, this.#cfg.publicTenantId);
+        const event = eligible
           ? projectDelivery(msg.fields.routingKey, msg.content.length)
           : null;
         if (event) this.#aggregators.public.add(event);
+        if (record && record.tenant_id === this.#cfg.publicTenantId) {
+          const document = projectPublicRecord(record, this.#cfg.publicTenantId);
+          const id = recordId(record);
+          if (document) {
+            this.#pendingDocuments.delete(document.id);
+            this.#pendingDocuments.set(document.id, document);
+            if (this.#pendingDocuments.size > 32) this.#pendingDocuments.delete(this.#pendingDocuments.keys().next().value!);
+          } else if (id && !eligible) {
+            this.#pendingDocuments.delete(id);
+            this.#onRemove(id);
+          }
+        }
         ch.ack(msg);
       });
     } catch {

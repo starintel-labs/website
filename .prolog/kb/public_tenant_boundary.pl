@@ -1,24 +1,28 @@
 % CouchDB storage metadata is outside the pinned public StarIntel document schema.
 public_storage_metadata(tenant_id, couchdb_timeline_row).
-public_validation_boundary(couchdb_timeline_row, shallow_copy_without(tenant_id), pinned_v09_schema).
+public_validation_boundary(couchdb_timeline_row, shared_disclosure_gate, explicit_display_field_projection).
 public_validation_alias_policy(tenant_id, exact_storage_key_only).
-public_validation_alias_policy(tenantId, schema_rejected).
-public_validation_alias_policy('Tenant_ID', schema_rejected).
-public_validation_alias_policy('tenant-id', schema_rejected).
-public_validation_alias_policy(tenantid, schema_rejected).
-public_validation_alias_policy(tenant_ids, schema_rejected).
-public_validation_alias_policy(tenantIds, schema_rejected).
-public_validation_alias_policy('tenant-ids', schema_rejected).
-public_validation_alias_policy(tenant, schema_rejected).
+public_validation_alias_policy(tenantId, disclosure_gate_rejected).
+public_validation_alias_policy('Tenant_ID', disclosure_gate_rejected).
+public_validation_alias_policy('tenant-id', disclosure_gate_rejected).
+public_validation_alias_policy(tenantid, disclosure_gate_rejected).
+public_validation_alias_policy(tenant_ids, disclosure_gate_rejected).
+public_validation_alias_policy(tenantIds, disclosure_gate_rejected).
+public_validation_alias_policy('tenant-ids', disclosure_gate_rejected).
+public_validation_alias_policy(tenant, disclosure_gate_rejected).
 public_output_boundary(recent_documents, allowlisted_projection).
 public_output_boundary(json_response, recursive_tenant_metadata_key_filter).
 public_output_boundary(radar_sse, recursive_tenant_metadata_key_filter).
 public_output_boundary(json_string_value, redact_whole_string_with_tenant_metadata_token).
 public_radar_source_policy(amqp_delivery, shared_public_tenant_and_disclosure_metadata_legacy_or_current_flat).
-public_radar_egress_policy(amqp_delivery, routing_key_and_size_only, no_message_body).
+public_radar_egress_policy(public_scope, allowlisted_document_presentation, no_raw_message_body).
+public_radar_egress_policy(aggregate_scope, fixed_routing_categories_and_size_only, no_document_contents).
 public_radar_rejection(private_tenant_delivery, before_public_scope_aggregation).
 public_radar_rejection(private_or_sensitive_document, before_public_scope_aggregation).
 public_radar_anonymous_scope(all_subscribed_deliveries, fixed_categories_sizes_timestamps_counts_only).
 public_recent_tenant_policy(couchdb_timeline_row, shared_public_tenant_only).
 future_human_user_tenant_membership(own_tenant, shared_public_tenant).
 public_static_source_policy(main_site, generated_from_tracked_html_and_assets).
+public_snapshot_source(live_projected_records, bounded_couchdb_timeline_fallback).
+public_snapshot_cold_query(maximum_rows(50), maximum_bytes(8388608), timeout_ms(10000)).
+public_snapshot_resilience(live_arrival_can_satisfy_inflight_request, cached_failure_max_age_ms(300000)).

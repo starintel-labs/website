@@ -1,0 +1,91 @@
+.radar { padding-top: 3.5rem; padding-bottom: 2rem; }
+.radar-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; padding-bottom: 2rem; }
+.radar-eyebrow, .radar-metric__label { font: 0.68rem var(--si-font-mono, monospace); letter-spacing: 0.14em; color: var(--si-accent-primary, #e0b04a); }
+.radar-heading h1 { font-size: clamp(2.4rem, 5vw, 4.4rem); line-height: 1.08; letter-spacing: -0.045em; margin: 0.8rem 0 1rem; font-weight: 500; }
+.radar-heading h1 span { color: var(--si-text-secondary, #a49b88); }
+.radar-intro { max-width: 38rem; margin: 0; color: var(--si-text-secondary, #a49b88); line-height: 1.65; font-size: 0.95rem; }
+.radar-connection { min-width: 14rem; display: grid; gap: 0.6rem; }
+.radar-connection label, .radar-tools label > span { font: 0.7rem var(--si-font-mono, monospace); color: var(--si-text-secondary, #a49b88); }
+.radar-status { display: flex; align-items: center; gap: 0.6rem; font: 0.75rem var(--si-font-mono, monospace); margin-bottom: 0.6rem; }
+.radar-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #c2a263; }
+.radar-status[data-state="live"]::before { background: #8bad87; box-shadow: 0 0 0 4px #8bad8714; }
+.radar select, .radar input, .radar button { font: 0.8rem var(--si-font-mono, monospace); color: var(--si-text-primary, #e5ddcf); background: #12110e; border: 1px solid #494032; border-radius: 3px; min-height: 44px; padding: 0.65rem 0.85rem; }
+.radar select { color-scheme: dark; }
+.radar button { cursor: pointer; }
+.radar button:hover, .radar select:hover { border-color: #a28b58; }
+.radar :is(button, input, select, a, summary):focus-visible { outline: 2px solid var(--si-accent-primary, #e0b04a); outline-offset: 3px; }
+.radar button[aria-pressed="true"] { border-color: var(--si-accent-primary, #e0b04a); color: var(--si-accent-primary, #e0b04a); }
+.radar-metrics { border-top: 1px solid #493e2c; border-bottom: 1px solid #493e2c; display: grid; grid-template-columns: 1fr 1.5fr 1fr; margin-bottom: 2rem; }
+.radar-metrics > div { padding: 1.2rem 1.5rem; display: grid; gap: 0.45rem; border-right: 1px solid #332d24; }
+.radar-metrics > div:first-child { padding-left: 0; }
+.radar-metrics > div:last-child { border-right: 0; }
+.radar-metric__label { color: #a49b88; font-size: 0.62rem; letter-spacing: 0.09em; }
+.radar-metrics strong { font: 1.4rem var(--si-font-mono, monospace); font-weight: 400; }
+.radar-tools { display: flex; align-items: flex-end; gap: 0.75rem; flex-wrap: wrap; }
+.radar-tools label { display: grid; gap: 0.5rem; }
+.radar-search { flex: 1; min-width: 14rem; }
+.radar-search input { width: 100%; }
+.radar-type-filter { min-width: 10rem; }
+.radar-feed-meta { display: flex; justify-content: space-between; gap: 1rem; margin: 1rem 0; min-height: 1.2em; font: 0.68rem var(--si-font-mono, monospace); color: #a49b88; }
+#radar-snapshot-note { max-width: 32rem; text-align: right; }
+.radar-workspace { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.2fr); gap: 2rem; align-items: start; }
+.radar-feed-window { min-width: 0; border-top: 1px solid #493e2c; max-height: 75vh; overflow-y: auto; scrollbar-color: #665334 #100e0b; }
+.document-feed { list-style: none; padding: 0; margin: 0; }
+.document-feed > li { border-bottom: 1px solid #302b22; }
+.document-feed .document-row { display: grid; gap: 0.6rem; width: 100%; text-align: left; border: 0; border-radius: 0; background: transparent; padding: 1.25rem 1rem; border-left: 2px solid transparent; }
+.document-feed .document-row:hover { background: #1b170f; }
+.document-feed .document-row[aria-pressed="true"] { background: #211b10; border-left-color: #e0b04a; color: inherit; }
+.document-row__title { font: 1rem/1.45 var(--si-font-body, sans-serif); color: #eee4d2; overflow-wrap: anywhere; }
+.document-row__excerpt { font: 0.8rem/1.5 var(--si-font-body, sans-serif); color: #ada493; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.document-row__meta { color: #a49b88; font-size: 0.65rem; line-height: 1.6; overflow-wrap: anywhere; }
+.document-type { font: 0.65rem var(--si-font-mono, monospace); color: #e0b04a; letter-spacing: 0.04em; overflow-wrap: anywhere; }
+.radar-reader { position: sticky; top: 5rem; scroll-margin-top: 7rem; min-width: 0; padding: 1.75rem; border: 1px solid #493e2c; background: #100f0c; max-height: 80vh; overflow-y: auto; scrollbar-color: #665334 #100e0b; }
+.radar-empty { padding: 3rem 1rem; color: #a49b88; }
+.radar-empty h2 { font-size: 1.25rem; font-weight: 500; color: #e5ddcf; letter-spacing: -0.02em; }
+.radar-empty p { font-size: 0.9rem; line-height: 1.7; max-width: 28rem; }
+.document-reader__title { font-size: clamp(1.3rem, 2vw, 1.9rem); font-weight: 500; line-height: 1.3; margin: 0.9rem 0; letter-spacing: -0.025em; overflow-wrap: anywhere; }
+.document-reader__origin { font: 0.68rem/1.7 var(--si-font-mono, monospace); color: #a49b88; overflow-wrap: anywhere; }
+.document-reader__header { padding-bottom: 1rem; border-bottom: 1px solid #332d24; }
+.document-reader__body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.95rem; line-height: 1.85; color: #d9d0bf; margin: 1.5rem 0; }
+.document-reader__fields { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.85rem 1rem; margin: 1.5rem 0; font: 0.72rem/1.6 var(--si-font-mono, monospace); }
+.document-reader__fields dt { color: #a49b88; }
+.document-reader__fields dd { margin: 0; overflow-wrap: anywhere; }
+.document-reader__source { display: inline-block; font: 0.75rem var(--si-font-mono, monospace); color: #e0b04a; padding: 0.75rem 0; margin-right: 1.25rem; }
+.document-reader__json { border-top: 1px solid #332d24; margin-top: 1.5rem; padding-top: 1rem; font: 0.7rem var(--si-font-mono, monospace); color: #a49b88; }
+.document-reader__json summary { cursor: pointer; padding: 0.4rem 0; }
+.document-reader__json pre { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; max-height: 20rem; overflow: auto; }
+.radar-aggregate { border: 1px solid #493e2c; padding: 2rem; }
+.radar-aggregate h2 { font-size: 1.7rem; font-weight: 500; }
+.radar-aggregate p { color: #a49b88; max-width: 40rem; line-height: 1.7; }
+.radar-aggregate__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 2rem; }
+.radar-aggregate h3 { font: 0.75rem var(--si-font-mono, monospace); color: #c0b5a0; }
+.radar-family-row { display: grid; grid-template-columns: 5rem minmax(0, 1fr) 4rem; gap: 0.75rem; margin: 1rem 0; align-items: center; font: 0.7rem var(--si-font-mono, monospace); }
+.radar-family-bar { height: 5px; background: #bc9551; }
+#radar-sizes { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+#radar-sizes span { border: 1px solid #493e2c; padding: 0.5rem; font: 0.7rem var(--si-font-mono, monospace); }
+.radar-disclosure { color: #9b927f; font: 0.65rem/1.8 var(--si-font-mono, monospace); margin-top: 2rem; max-width: 60rem; }
+[hidden] { display: none !important; }
+@media (max-width: 800px) {
+  .radar { padding-top: 2rem; }
+  .radar-heading { align-items: flex-start; flex-direction: column; }
+  .radar-connection { width: 100%; grid-template-columns: 1fr 1fr; align-items: center; }
+  .radar-connection label { display: none; }
+  .radar-status { margin: 0; }
+  .radar-workspace { grid-template-columns: 1fr; gap: 1.5rem; }
+  .radar-reader { position: static; max-height: none; padding: 1.25rem; }
+  .radar-feed-window { max-height: 28rem; }
+  .radar-metrics strong { font-size: 1rem; }
+  .radar-metrics > div { padding: 1rem 0.6rem; }
+  .radar-metric__label { font-size: 0.55rem; }
+  .radar-aggregate__grid { grid-template-columns: 1fr; gap: 1rem; }
+  .radar-feed-meta { flex-direction: column; gap: 0.5rem; }
+  #radar-snapshot-note { text-align: left; }
+}
+@media (max-width: 450px) {
+  .radar-tools > label { min-width: 0; width: 100%; flex-basis: 100%; }
+  .radar-tools button { flex: 1; }
+  .radar-metrics { grid-template-columns: 1fr 1.6fr; }
+  .radar-metrics > div:last-child { grid-column: 1 / -1; border-top: 1px solid #332d24; padding-left: 0; }
+  .document-reader__fields { grid-template-columns: 1fr; gap: 0.2rem; }
+  .document-reader__fields dd { margin-bottom: 0.75rem; }
+}

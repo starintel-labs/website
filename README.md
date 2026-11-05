@@ -14,8 +14,9 @@ Deployment is owned by `starintel-labs/starintel-infra`.
 `schema/starintel-schema.lock.json` pins the active StarLang release and its
 complete generated consumer bundle, including the canonical compatibility reader.
 The sync tool is copied byte-for-byte from the same immutable authority commit.
-The old package-local v0.9 lock is retained only for the legacy recent-documents
-API; it is not the current wire authority and records are never silently relabelled.
+The old package-local v0.9 lock belongs to historical validation helpers and
+their conformance tests, not the current wire authority. Public display supports
+both stored legacy records and current flat records without relabelling either.
 
 ```sh
 pnpm spec:update                       # resolve upstream main once; verify and pin
@@ -37,8 +38,9 @@ offline bundle and the exact upstream commit; deployment consumes the tested pin
 
 ## Radar configuration
 
-`/radar` consumes the public-safe projection of RabbitMQ routing metadata only;
-message bodies are never forwarded to browsers.
+`/radar` is a searchable public-document feed with a selected-record reader,
+source links, type filters, pause/resume, and a separate anonymous telemetry
+scope. Its appearance follows the existing obsidian/gold design system.
 
 The runtime needs:
 
@@ -49,7 +51,7 @@ The runtime needs:
 When `RABBIT_URL` is unset, radar stays in standby and `/readyz` reports `radar: "off"`.
 With a valid broker URL it binds `documents.new.#`, `documents.ingest.#`,
 `documents.updated.#`, and `actors.#`; the projector exposes only its small
-allowlisted metadata schema, and `/readyz` reports `radar: "live"` once connected.
+allowlisted schema, and `/readyz` reports `radar: "live"` once connected.
 
 The scope selector uses `/radar/stream?scope=public` (the default) or
 `?scope=aggregate`. Public activity requires the exact shared public tenant.
@@ -58,15 +60,39 @@ handling is present, explicit public/safety flags are still required. Current
 StarLang flat documents are supported without requiring the historical v0.9
 envelope: top-level `visibility` and `sensitivity` must be public when present;
 deletions, explicit access controls, and ambiguous tenant aliases are excluded.
-Radar validates disclosure metadata, not the document's application payload.
-This radar-only policy never publishes document bodies or changes the separate
-legacy recent-documents validator or its schema lock.
+The same disclosure gate and explicit presentation-field allowlist now serve
+Radar and `/api/recent-documents`. Named `documents` SSE frames contain bounded
+public display projections, never complete RabbitMQ bodies, raw/data maps,
+arbitrary extensions, tenant metadata, or credential/contact fields. Flat
+current records and nested legacy display fields share one implementation.
+Known public records that become restricted or deleted are removed from the
+live window; older in-flight snapshots cannot reintroduce them. The reader
+inserts all content as text, not HTML, and source links accept public HTTP(S)
+URLs only, excluding credential-bearing or signed URLs.
+
+The backend retains at most `RECENT_WINDOW` (1–100, default 100) public records;
+the browser retains 100. Public document frames batch at most 32 records per
+tick and slow SSE clients are disconnected before unbounded buffering. A live
+record can satisfy a waiting homepage request without waiting for CouchDB.
+Fallback snapshots fetch at most 50 rows with an 8 MiB response bound and a
+ten-second deadline, replacing the old 300-full-document/five-second query.
+Transient failures may serve a clearly labelled cache for at most five minutes;
+an unavailable source without a safe cache remains HTTP 503 with a retry action.
 
 All-traffic aggregates count every delivery on the subscribed routes, including
 private or malformed bodies, but expose only fixed event categories, timestamps,
 coarse payload-size buckets, and counts. They omit document types, identifiers,
 tenant details, and arbitrary routing-key text. The scopes have independent
 totals; idle rate updates return to zero after the rolling ten-second window.
+
+### Browser regression
+
+After `pnpm build:main`, run `uv run --with playwright python tests/radar-browser.py`
+(or run that Python script in an environment with Playwright). Set
+`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` to an existing Chromium executable when
+needed. The test covers document rendering, filtering, bounded pause/resume,
+revocation, anonymous-scope isolation, HTML injection, homepage retry/cache
+states, and desktop/mobile screenshots. Fixtures are local test records only.
 
 ## Design system
 
