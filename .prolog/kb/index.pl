@@ -4,3 +4,4 @@
 :- ensure_loaded('nix_closure.pl').
 :- ensure_loaded('public_tenant_boundary.pl').
 :- ensure_loaded('homepage_features.pl').
+:- ensure_loaded('blog_announcements.pl').

@@ -110,6 +110,7 @@ writeFileSync(
       isoDate: d.isoDate,
       excerpt: d.description || d.excerpt,
       url: `${BASE}/${d.slug}/`,
+      tags: filetagsToTags(d.filetags, d.tags),
     })),
   }),
 );

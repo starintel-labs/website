@@ -9,6 +9,10 @@ StarIntel website applications and public web properties.
 
 Deployment is owned by `starintel-labs/starintel-infra`.
 
+Live blog posts can be announced to Discord by the Forgejo-only
+[tag-aware announcement workflow](docs/blog-announcements.md). It waits for
+the public RSS feed and article pages, and keeps durable per-URL delivery state.
+
 ## StarIntel authority pin
 
 `schema/starintel-schema.lock.json` pins the active StarLang release and its

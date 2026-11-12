@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseOrgDate } from "@starintel/content";
+import { parseOrgDate, renderRss } from "@starintel/content";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
@@ -35,6 +35,15 @@ test("parseOrgDate handles org timestamp forms", () => {
   assert.equal(parseOrgDate("2026-08-28T10:00:00Z"), "2026-08-28");
   assert.equal(parseOrgDate("undated"), null);
   assert.equal(parseOrgDate(null), null);
+});
+
+test("RSS carries XML-escaped tags for live announcement selection", () => {
+  const rss = renderRss({ title: "Blog", description: "Posts", baseUrl: "https://blog.starintel.actor",
+    path: "/", docs: [{ slug: "test", title: "A & B", isoDate: "2026-11-11", excerpt: "Text",
+      url: "https://blog.starintel.actor/test/", tags: ["prolog", "data & research"] }] });
+  assert.match(rss, /<category>prolog<\/category>/);
+  assert.match(rss, /<category>data &amp; research<\/category>/);
+  assert.match(rss, /<title>A &amp; B<\/title>/);
 });
 
 test("v0.9 schema pin check passes", () => {

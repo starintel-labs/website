@@ -1,7 +1,7 @@
 name: website-ci
 on:
   push:
-    branches: ["**"]
+    branches: ["**", "!blog-announcement-state"]
   pull_request:
 
 jobs:
@@ -34,6 +34,8 @@ jobs:
         run: node scripts/sync-design.mjs --check
       - name: unit tests
         run: pnpm test
+      - name: blog announcement phrase rules
+        run: swipl -q -s tests/blog_phrases_test.pl -g run_tests -t halt
       - name: typecheck
         run: pnpm typecheck
       - name: v0.9 schema pin check

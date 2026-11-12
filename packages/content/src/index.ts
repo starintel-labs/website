@@ -212,7 +212,7 @@ export function renderRss(opts: {
   description: string;
   baseUrl: string;
   path: string;
-  docs: { slug: string; title: string; isoDate: string | null; excerpt: string; url: string }[];
+  docs: { slug: string; title: string; isoDate: string | null; excerpt: string; url: string; tags?: string[] }[];
 }): string {
   const items = opts.docs
     .map(
@@ -222,6 +222,7 @@ export function renderRss(opts: {
       <guid isPermaLink="true">${escapeHtml(d.url)}</guid>
       <pubDate>${d.isoDate ? new Date(d.isoDate + "T00:00:00Z").toUTCString() : new Date().toUTCString()}</pubDate>
       <description>${escapeHtml(d.excerpt)}</description>
+${(d.tags ?? []).map((tag) => `      <category>${escapeHtml(tag)}</category>`).join("\n")}
     </item>`,
     )
     .join("\n");

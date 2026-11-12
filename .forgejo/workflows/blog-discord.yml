@@ -1,0 +1,41 @@
+name: Announce live blog posts
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+concurrency:
+  group: blog-discord-announcements
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  announce:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container: docker.io/library/node:24-bookworm
+    steps:
+      - name: checkout main
+        run: |
+          git clone --branch main --depth=1 "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" repo
+          cp -a repo/. "$GITHUB_WORKSPACE"/
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: dependencies
+        run: |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git python3 swi-prolog > /dev/null
+          npm install --global pnpm@11.24.0
+      - name: announcement tests and Prolog verification gate
+        run: |
+          python3 -m unittest discover -s tests -p 'blog_announcement_test.py'
+          swipl -q -s tests/blog_phrases_test.pl -g run_tests -t halt
+          node scripts/generate-facts.mjs
+          pnpm "verify:ci"
+          node scripts/ci-hygiene.mjs
+      - name: announce only verified live articles
+        env:
+          BLOG_DISCORD_WEBHOOK: ${{ secrets.BLOG_DISCORD_WEBHOOK }}
+          FORGEJO_SERVER_URL: ${{ github.server_url }}
+          FORGEJO_REPOSITORY: ${{ github.repository }}
+          FORGEJO_TOKEN: ${{ secrets.BLOG_ANNOUNCEMENT_TOKEN || github.token }}
+        run: python3 scripts/announce-blog.py
